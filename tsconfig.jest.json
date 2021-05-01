@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "files": [],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES2018",
+    "plugins": [
+      {
+        "transform": "@effect-ts/tracing-plugin",
+        "moduleMap": {
+          "^packages/schema/src/(.*)": "(@effect-ts/schema): src/$1",
+          "^packages/schema/test/(.*)": "(@effect-ts/schema/test): test/$1"
+        }
+      }
+    ]
+  }
+}
