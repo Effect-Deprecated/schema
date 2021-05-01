@@ -106,6 +106,8 @@ export const interpreters: ((
   })
 ]
 
+const cache = new WeakMap()
+
 function parserFor<
   ParserInput,
   ParserError,
@@ -127,18 +129,20 @@ function parserFor<
     Api
   >
 ): Parser<ParserInput, ParserError, ParsedShape> {
+  if (cache.has(schema)) {
+    return cache.get(schema)
+  }
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
     if (_._tag === "Some") {
+      cache.set(schema, _.value)
       return _.value as Parser<ParserInput, ParserError, ParsedShape>
     }
   }
   if (hasContinuation(schema)) {
-    return parserFor(schema[SchemaContinuationSymbol]) as Parser<
-      ParserInput,
-      ParserError,
-      ParsedShape
-    >
+    const cont = parserFor(schema[SchemaContinuationSymbol])
+    cache.set(schema, cont)
+    return cont as Parser<ParserInput, ParserError, ParsedShape>
   }
   throw new Error(`Missing parser integration for: ${schema.constructor}`)
 }

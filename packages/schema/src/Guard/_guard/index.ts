@@ -44,6 +44,8 @@ export const interpreters: ((schema: S.SchemaAny) => O.Option<Guard<unknown>>)[]
   })
 ]
 
+const cache = new WeakMap()
+
 function guardFor<
   ParserInput,
   ParserError,
@@ -65,14 +67,20 @@ function guardFor<
     Api
   >
 ): Guard<ParsedShape> {
+  if (cache.has(schema)) {
+    return cache.get(schema)
+  }
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
     if (_._tag === "Some") {
+      cache.set(schema, _.value)
       return _.value as Guard<ParsedShape>
     }
   }
   if (hasContinuation(schema)) {
-    return guardFor(schema[SchemaContinuationSymbol]) as Guard<ParsedShape>
+    const guard = guardFor(schema[SchemaContinuationSymbol])
+    cache.set(schema, guard)
+    return guard as Guard<ParsedShape>
   }
   throw new Error(`Missing guard integration for: ${schema.constructor}`)
 }

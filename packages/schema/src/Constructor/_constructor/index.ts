@@ -104,6 +104,8 @@ export const interpreters: ((
   })
 ]
 
+const cache = new WeakMap()
+
 function constructorFor<
   ParserInput,
   ParserError,
@@ -125,9 +127,13 @@ function constructorFor<
     Api
   >
 ): Constructor<ConstructorInput, ConstructedShape, ConstructorError> {
+  if (cache.has(schema)) {
+    return cache.get(schema)
+  }
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
     if (_._tag === "Some") {
+      cache.set(schema, _.value)
       return _.value as Constructor<
         ConstructorInput,
         ConstructedShape,
@@ -136,11 +142,9 @@ function constructorFor<
     }
   }
   if (hasContinuation(schema)) {
-    return constructorFor(schema[SchemaContinuationSymbol]) as Constructor<
-      ConstructorInput,
-      ConstructedShape,
-      ConstructorError
-    >
+    const of_ = constructorFor(schema[SchemaContinuationSymbol])
+    cache.set(schema, of_)
+    return of_ as Constructor<ConstructorInput, ConstructedShape, ConstructorError>
   }
   throw new Error(`Missing guard integration for: ${JSON.stringify(schema)}`)
 }

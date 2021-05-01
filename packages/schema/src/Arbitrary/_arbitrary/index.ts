@@ -45,6 +45,8 @@ export const interpreters: ((schema: S.SchemaAny) => O.Option<Gen<unknown>>)[] =
   })
 ]
 
+const cache = new WeakMap()
+
 function for_<
   ParserInput,
   ParserError,
@@ -66,14 +68,20 @@ function for_<
     Api
   >
 ): Gen<ParsedShape> {
+  if (cache.has(schema)) {
+    return cache.get(schema)
+  }
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
     if (_._tag === "Some") {
+      cache.set(schema, _.value)
       return _.value as Gen<ParsedShape>
     }
   }
   if (hasContinuation(schema)) {
-    return for_(schema[SchemaContinuationSymbol]) as Gen<ParsedShape>
+    const arb = for_(schema[SchemaContinuationSymbol])
+    cache.set(schema, arb)
+    return arb as Gen<ParsedShape>
   }
   throw new Error(`Missing arbitrary integration for: ${schema.constructor}`)
 }
