@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.12](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.11...@effect-ts/schema@0.1.12) (2021-05-01)
+
+
+### Bug Fixes
+
+* **schema:** fix api ([cd317b5](https://github.com/Effect-TS/schema/commit/cd317b50e414754494379c0ce0d5e7593a707990))
+
+
+### Features
+
+* **schema:** composeParser ([8cfb326](https://github.com/Effect-TS/schema/commit/8cfb3268e249cb566f8d515c719d379d11c96eb1))
+
+
+
+
+
 ## 0.1.11 (2021-05-01)
 
 **Note:** Version bump only for package @effect-ts/schema
