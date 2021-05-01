@@ -11,7 +11,6 @@ import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
-import { literal } from "./literal"
 
 export interface TagApi<K> {
   value: K
@@ -19,30 +18,13 @@ export interface TagApi<K> {
 
 export const tagIdentifier = Symbol.for("@effect-ts/schema/ids/tag")
 
-export function tag<K extends string>(
-  _tag: K
-): S.Schema<
-  unknown,
-  S.RefinementE<S.LeafE<S.LiteralE<[K]>>>,
-  K,
-  K,
-  never,
-  K,
-  string,
-  TagApi<K>
-> {
-  return literal(_tag)
-    ["|>"](S.mapApi((_) => ({ value: _tag })))
-    ["|>"](S.identified(tagIdentifier, { _tag }))
-}
-
 type SchemaK<Key extends string, N extends string> = S.Schema<
   unknown,
   any,
   any,
   any,
-  { readonly [K in Key]: N },
   any,
+  { readonly [K in Key]: N },
   any,
   {
     fields: {
@@ -57,19 +39,13 @@ export interface TaggedApi<
 > extends ApiSelfType<unknown> {
   readonly of: {
     [K in Props[number]["Api"]["fields"][Key]["value"]]: (
-      _: Omit<
-        Extract<
-          {
-            [K in keyof Props]: Props[K] extends S.SchemaAny
-              ? S.ConstructorInputOf<Props[K]>
-              : never
-          }[number],
-          {
-            [k in Key]: K
-          }
-        >,
-        Key
-      >
+      _: {
+        [H in keyof Props]: Props[H] extends S.SchemaAny
+          ? S.ParsedShapeOf<Props[H]> extends { readonly [k in Key]: K }
+            ? S.ConstructorInputOf<Props[H]>
+            : never
+          : never
+      }[number]
     ) => Th.These<
       UnionE<
         {
@@ -173,7 +149,8 @@ export function makeTagged<Key extends string>(key: Key) {
     }[number],
     {
       [K in keyof Props]: Props[K] extends S.SchemaAny
-        ? S.ConstructorInputOf<Props[K]>
+        ? S.ConstructorInputOf<Props[K]> &
+            { readonly [k in Key]: S.ParsedShapeOf<Props[K]>[Key] }
         : never
     }[number],
     UnionE<
@@ -435,39 +412,73 @@ export function makeTagged<Key extends string>(key: Key) {
 
 export const tagged = makeTagged("_tag")
 
-export function withTag<Key extends string, Value extends string>(
-  key: Key,
+export function tag<Value extends string>(
   value: Value
-) {
-  return <
+): <
+  ParserError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError,
+  ConstructedShape extends ParsedShape,
+  Encoded,
+  Api
+>(
+  self: S.Schema<
+    unknown,
     ParserError,
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape extends ParsedShape,
+    ConstructedShape,
     Encoded,
     Api
-  >(
-    self: S.Schema<
-      unknown,
-      ParserError,
-      ParsedShape,
-      ConstructorInput,
-      ConstructorError,
-      ConstructedShape,
-      Encoded,
-      Api
-    >
-  ): S.Schema<
+  >
+) => S.Schema<
+  unknown,
+  S.CompositionE<S.PrevE<S.LeafE<S.ExtractKeyE>> | S.NextE<ParserError>>,
+  ParsedShape & { readonly _tag: Value },
+  ConstructorInput,
+  ConstructorError,
+  ConstructedShape & { readonly _tag: Value },
+  Encoded & { readonly _tag: Value },
+  Api & { fields: { _tag: TagApi<Value> } }
+> {
+  return (self) => withTag("_tag", value)(self)
+}
+
+export function withTag<Key extends string, Value extends string>(
+  key: Key,
+  value: Value
+): <
+  ParserError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError,
+  ConstructedShape extends ParsedShape,
+  Encoded,
+  Api
+>(
+  self: S.Schema<
     unknown,
-    S.CompositionE<S.PrevE<S.LeafE<S.ExtractKeyE>> | S.NextE<ParserError>>,
-    ParsedShape & { readonly [k in Key]: Value },
+    ParserError,
+    ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape & { readonly [k in Key]: Value },
-    Encoded & { readonly [k in Key]: Value },
-    Api & { fields: { [k in Key]: TagApi<Value> } }
-  > => {
+    ConstructedShape,
+    Encoded,
+    Api
+  >
+) => S.Schema<
+  unknown,
+  S.CompositionE<S.PrevE<S.LeafE<S.ExtractKeyE>> | S.NextE<ParserError>>,
+  ParsedShape & { readonly [k in Key]: Value },
+  ConstructorInput,
+  ConstructorError,
+  ConstructedShape & { readonly [k in Key]: Value },
+  Encoded & { readonly [k in Key]: Value },
+  Api & { fields: { [k in Key]: TagApi<Value> } }
+> {
+  return (self) => {
     const parseSelf = Parser.for(self)
     const constructSelf = Constructor.for(self)
     const arbSelf = Arbitrary.for(self)
@@ -527,7 +538,7 @@ export function withTag<Key extends string, Value extends string>(
         return x
       }),
       S.guard(
-        (u): u is ParsedShape =>
+        (u): u is unknown =>
           guardSelf(u) &&
           typeof u === "object" &&
           u != null &&

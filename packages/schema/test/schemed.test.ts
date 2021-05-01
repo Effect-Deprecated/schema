@@ -13,7 +13,7 @@ export class Person extends MO.Schemed(
       firstName: MO.string,
       lastName: MO.string
     }),
-    MO.withTag("_tag", "Person")
+    MO.tag("Person")
   )
 ) {
   static Model = MO.schema(Person)
@@ -24,7 +24,7 @@ export class Animal extends MO.Schemed(
     MO.required({
       size: MO.literal("small", "mid")
     }),
-    MO.withTag("_tag", "Animal")
+    MO.tag("Animal")
   )
 ) {
   static Model = MO.schema(Animal)

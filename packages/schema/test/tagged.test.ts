@@ -7,21 +7,21 @@ import * as Parser from "../src/Parser"
 
 const addS_ = S.struct({
   required: {
-    _tag: S.tag("Add"),
     x: S.number,
     y: S.number
   }
-})
+})["|>"](S.tag("Add"))
+
 interface Add extends S.ParsedShapeOf<typeof addS_> {}
 const addS = S.opaque<Add>()(addS_)
 
 const mulS_ = S.struct({
   required: {
-    _tag: S.tag("Mul"),
     x: S.number,
     y: S.number
   }
-})
+})["|>"](S.tag("Mul"))
+
 interface Mul extends S.ParsedShapeOf<typeof mulS_> {}
 const mulS = S.opaque<Mul>()(mulS_)
 
