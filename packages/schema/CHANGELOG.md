@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.13](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.12...@effect-ts/schema@0.1.13) (2021-05-01)
+
+
+### Performance Improvements
+
+* **schema:** cache interpreters ([6eb4b98](https://github.com/Effect-TS/schema/commit/6eb4b9827b61ded2bb192781ed9f64b49b6c83c3))
+
+
+
+
+
 ## [0.1.12](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.11...@effect-ts/schema@0.1.12) (2021-05-01)
 
 
