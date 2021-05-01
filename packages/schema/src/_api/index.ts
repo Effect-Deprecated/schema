@@ -4,6 +4,7 @@
 export * from "./array"
 export * from "./brand"
 export * from "./chunk"
+export * from "./composeParser"
 export * from "./condemn"
 export * from "./date"
 export * from "./int"

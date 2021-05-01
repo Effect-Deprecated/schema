@@ -4,8 +4,8 @@ import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
-import * as Constructor from "../Constructor"
 import * as Th from "../These"
+import { composeParser } from "./composeParser"
 import { number } from "./number"
 import { string } from "./string"
 
@@ -54,9 +54,6 @@ export const stringIntIdentifier = Symbol.for("@effect-ts/schema/ids/stringInt")
 
 export const stringInt = pipe(
   string,
-  S.compose(pipe(int, S.parser(parseStringInt), S.constructor(parseStringInt))),
-  S.constructor(Constructor.for(int)),
-  S.encoder((_) => `${_}`),
-  S.mapApi(() => ({})),
+  composeParser(int, parseStringInt, (_) => String(_)),
   S.identified(stringIntIdentifier, {})
 )
