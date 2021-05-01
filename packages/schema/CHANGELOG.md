@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.14](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.13...@effect-ts/schema@0.1.14) (2021-05-01)
+
+
+### Features
+
+* **schema:** consolidate withTag usage ([cb71cd3](https://github.com/Effect-TS/schema/commit/cb71cd320f457539d669c77456bd035bed3c9c43))
+
+
+
+
+
 ## [0.1.13](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.12...@effect-ts/schema@0.1.13) (2021-05-01)
 
 
