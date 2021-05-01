@@ -55,5 +55,6 @@ export const stringIntIdentifier = Symbol.for("@effect-ts/schema/ids/stringInt")
 export const stringInt = pipe(
   string,
   composeParser(int, parseStringInt, (_) => String(_)),
+  S.mapApi(() => ({})),
   S.identified(stringIntIdentifier, {})
 )
