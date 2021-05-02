@@ -10,7 +10,7 @@
     "plugins": [
       {
         "transform": "@effect-ts/tracing-plugin",
-        "moduleMap": { "^src/(.*)": "(@effect-ts/core): _src/$1" }
+        "moduleMap": { "^src/(.*)": "(@effect-ts/schema): _src/$1" }
       }
     ]
   },
