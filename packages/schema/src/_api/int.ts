@@ -40,15 +40,10 @@ export const int: S.Schema<
 export const stringIntIdentifier = Symbol.for("@effect-ts/schema/ids/stringInt")
 
 export const stringInt: S.Schema<
-  unknown,
+  string,
   S.CompositionE<
-    | S.PrevE<
-        S.CompositionE<
-          | S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>>
-          | S.NextE<S.LeafE<S.ParseNumberE>>
-        >
-      >
     | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
+    | S.PrevE<S.LeafE<S.ParseNumberE>>
   >,
   number & IntBrand,
   number,
@@ -56,9 +51,4 @@ export const stringInt: S.Schema<
   number & IntBrand,
   string,
   {}
-> = pipe(
-  stringNumber,
-  S.into(int),
-  S.mapApi(() => ({})),
-  S.identified(stringIntIdentifier, {})
-)
+> = stringNumber[">>>"](int).id(stringIntIdentifier, {})

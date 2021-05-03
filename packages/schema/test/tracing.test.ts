@@ -12,28 +12,28 @@ interface IdBrand {
 }
 type Id = S.Int & S.Positive & IdBrand
 
-const idS = S.positiveInt["|>"](S.brand((_) => _ as Id))
+const idS = S.unknownPositiveInt["|>"](S.brand((_) => _ as Id))
 
 interface NameBrand {
   readonly NameBrand: unique symbol
 }
 type Name = S.NonEmptyString & NameBrand
 
-const nameS = S.nonEmptyString["|>"](S.brand((_) => _ as Name))
+const nameS = S.unknownNonEmptyString["|>"](S.brand((_) => _ as Name))
 
 interface AddressBrand {
   readonly AddressBrand: unique symbol
 }
 type Address = S.NonEmptyString & AddressBrand
 
-const addressS = S.nonEmptyString["|>"](S.brand((_) => _ as Address))
+const addressS = S.unknownNonEmptyString["|>"](S.brand((_) => _ as Address))
 
 interface AgeBrand {
   readonly AgeBrand: unique symbol
 }
 type Age = S.Int & S.Positive & AgeBrand
 
-const ageS = S.positiveInt["|>"](S.brand((_) => _ as Age))
+const ageS = S.unknownPositiveInt["|>"](S.brand((_) => _ as Age))
 
 interface SexBrand {
   readonly SexBrand: unique symbol

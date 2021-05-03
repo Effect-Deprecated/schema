@@ -1,5 +1,6 @@
 // tracing: off
 
+import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
@@ -49,10 +50,8 @@ export const unknownNumber: S.Schema<
 )
 
 export const stringNumber: S.Schema<
-  unknown,
-  S.CompositionE<
-    S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>> | S.NextE<S.LeafE<S.ParseNumberE>>
-  >,
+  string,
+  S.LeafE<S.ParseNumberE>,
   number,
   number,
   never,
@@ -69,4 +68,4 @@ export const stringNumber: S.Schema<
       )
     )
   )
-)["|>"](S.mapApi(() => ({})))
+)["|>"](S.mapParserError((e) => Chunk.unsafeHead(e.errors).error))

@@ -24,7 +24,7 @@ export interface PersonEncoded {
 const personS = S.recursive<unknown, Person, PersonInput, Person, PersonEncoded>((F) =>
   S.struct({
     required: {
-      id: S.string,
+      id: S.unknownString,
       friends: S.chunk(F)
     }
   })

@@ -51,7 +51,6 @@ export function nonEmpty<
       (n): n is ParsedShape & NonEmptyBrand => n.length > 0,
       (n) => S.leafE(S.nonEmptyE(n))
     ),
-    S.mapApi((_) => _.Self),
     S.identified(nonEmptyIdentifier, { self })
   )
 }

@@ -69,8 +69,22 @@ export abstract class Schema<
     ThatConstructorError,
     ThatConstructedShape,
     Encoded,
-    { Self: Api; That: ThatApi }
+    ThatApi
   > => new SchemaPipe(this, that)
+
+  readonly id = <Meta>(
+    identifier: symbol,
+    meta: Meta
+  ): Schema<
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    ConstructedShape,
+    Encoded,
+    Api
+  > => new SchemaIdentified(this, identifier, meta)
 }
 
 export type SchemaAny = Schema<any, any, any, any, any, any, any, any>
@@ -164,10 +178,6 @@ export type ConstructedShapeOf<
 
 export type ApiOf<X extends Schema<any, any, any, any, any, any, any, any>> = X["Api"]
 
-export interface SelfApi<Api> {
-  Self: Api
-}
-
 export class SchemaIdentity<A> extends Schema<A, never, A, A, never, A, A, {}> {
   readonly Api = {}
 
@@ -197,10 +207,10 @@ export class SchemaConstructor<
     NewConstructorError,
     NewConstructedShape,
     Encoded,
-    SelfApi<Api>
+    Api
   >
   implements HasContinuation {
-  readonly Api = { Self: this.self.Api };
+  readonly Api = this.self.Api;
   readonly [SchemaContinuationSymbol]: SchemaAny
   constructor(
     readonly self: Schema<
@@ -242,10 +252,10 @@ export class SchemaParser<
     ConstructorError,
     ConstructedShape,
     Encoded,
-    SelfApi<Api>
+    Api
   >
   implements HasContinuation {
-  readonly Api = { Self: this.self.Api };
+  readonly Api = this.self.Api;
   readonly [SchemaContinuationSymbol]: SchemaAny
   constructor(
     readonly self: Schema<
@@ -283,10 +293,10 @@ export class SchemaArbitrary<
     ConstructorError,
     ConstructedShape,
     Encoded,
-    SelfApi<Api>
+    Api
   >
   implements HasContinuation {
-  readonly Api = { Self: this.self.Api };
+  readonly Api = this.self.Api;
   readonly [SchemaContinuationSymbol]: SchemaAny
   constructor(
     readonly self: Schema<
@@ -325,10 +335,10 @@ export class SchemaEncoder<
     ConstructorError,
     ConstructedShape,
     Encoded2,
-    SelfApi<Api>
+    Api
   >
   implements HasContinuation {
-  readonly Api = { Self: this.self.Api };
+  readonly Api = this.self.Api;
   readonly [SchemaContinuationSymbol]: SchemaAny
   constructor(
     readonly self: Schema<
@@ -367,9 +377,9 @@ export class SchemaRefinement<
   CompositionE<PrevE<ConstructorError> | NextE<RefinementE<E>>>,
   ConstructedShape & NewParsedShape,
   Encoded,
-  SelfApi<Api>
+  Api
 > {
-  readonly Api = { Self: this.self.Api }
+  readonly Api = this.self.Api
   constructor(
     readonly self: Schema<
       ParserInput,
@@ -464,11 +474,11 @@ export class SchemaPipe<
     ThatConstructorError,
     ThatConstructedShape,
     Encoded,
-    { Self: Api; That: ThatApi }
+    ThatApi
   >
   implements HasContinuation {
   readonly [SchemaContinuationSymbol]: SchemaAny = this.that
-  readonly Api = { Self: this.self.Api, That: this.that.Api }
+  readonly Api = this.that.Api
   constructor(
     readonly self: Schema<
       ParserInput,
@@ -514,10 +524,10 @@ export class SchemaMapParserError<
     ConstructorError,
     ConstructedShape,
     Encoded,
-    SelfApi<Api>
+    Api
   >
   implements HasContinuation {
-  readonly Api = { Self: this.self.Api };
+  readonly Api = this.self.Api;
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
 
@@ -557,10 +567,10 @@ export class SchemaMapConstructorError<
     ConstructorError2,
     ConstructedShape,
     Encoded,
-    SelfApi<Api>
+    Api
   >
   implements HasContinuation {
-  readonly Api = { Self: this.self.Api };
+  readonly Api = this.self.Api;
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
 

@@ -50,7 +50,6 @@ export function positive<
       (n): n is ParsedShape & Positive => n >= 0,
       (n) => S.leafE(S.positiveE(n))
     ),
-    S.mapApi((_) => _.Self),
     S.identified(positiveIdentifier, { self })
   )
 }

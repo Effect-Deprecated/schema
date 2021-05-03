@@ -5,7 +5,7 @@ import type * as fc from "fast-check"
 
 import type * as Th from "../These"
 import type { AnyError, CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
-import type { ApiSelfType, Schema, SelfApi } from "./schema"
+import type { ApiSelfType, Schema } from "./schema"
 import {
   SchemaArbitrary,
   SchemaCompose,
@@ -162,7 +162,7 @@ export function constructor<
     NewConstructorError,
     NewConstructedShape,
     Encoded,
-    SelfApi<Api>
+    Api
   > => new SchemaConstructor(self, f)
 }
 
@@ -198,7 +198,7 @@ export function constructor_<
   NewConstructorError,
   NewConstructedShape,
   Encoded,
-  SelfApi<Api>
+  Api
 > {
   return new SchemaConstructor(self, f)
 }
@@ -234,7 +234,7 @@ export function parser<
     ConstructorError,
     ConstructedShape,
     Encoded,
-    SelfApi<Api>
+    Api
   > => new SchemaParser(self, f)
 }
 
@@ -269,7 +269,7 @@ export function parser_<
   ConstructorError,
   ConstructedShape,
   Encoded,
-  SelfApi<Api>
+  Api
 > {
   return new SchemaParser(self, f)
 }
@@ -304,7 +304,7 @@ export function arbitrary<A extends ParsedShape, ParsedShape>(
     ConstructorError,
     ConstructedShape,
     Encoded,
-    SelfApi<Api>
+    Api
   > => new SchemaArbitrary(self, f) as any
 }
 
@@ -337,7 +337,7 @@ export function arbitrary_<
   ConstructorError,
   ConstructedShape,
   Encoded,
-  SelfApi<Api>
+  Api
 > {
   return new SchemaArbitrary(self, f)
 }
@@ -370,7 +370,7 @@ export function encoder<ParsedShape, A>(f: (_: ParsedShape) => A) {
     ConstructorError,
     ConstructedShape,
     A,
-    SelfApi<Api>
+    Api
   > => new SchemaEncoder(self, f)
 }
 
@@ -404,7 +404,7 @@ export function encoder_<
   ConstructorError,
   ConstructedShape,
   A,
-  SelfApi<Api>
+  Api
 > {
   return new SchemaEncoder(self, f)
 }
@@ -439,7 +439,7 @@ export function refine<E, NewParsedShape extends ParsedShape, ParsedShape>(
   CompositionE<PrevE<ConstructorError> | NextE<RefinementE<E>>>,
   ConstructedShape & NewParsedShape,
   Encoded,
-  SelfApi<Api>
+  Api
 > {
   return (self) => new SchemaRefinement(self, refinement, error)
 }
@@ -566,7 +566,7 @@ export function mapParserError<E, E1>(f: (e: E) => E1) {
     ConstructorError,
     ConstructedShape,
     Encoded,
-    SelfApi<Api>
+    Api
   > => new SchemaMapParserError(self, f)
 }
 
@@ -598,7 +598,7 @@ export function mapConstructorError<E, E1>(f: (e: E) => E1) {
     E1,
     ConstructedShape,
     Encoded,
-    SelfApi<Api>
+    Api
   > => new SchemaMapConstructorError(self, f)
 }
 
@@ -817,7 +817,7 @@ export function into_<
   ThatConstructorError,
   ThatConstructedShape,
   Encoded,
-  { Self: Api; That: ThatApi }
+  ThatApi
 > {
   return new SchemaPipe(self, that)
 }
@@ -868,7 +868,7 @@ export function into<
   ThatConstructorError,
   ThatConstructedShape,
   Encoded,
-  { Self: Api; That: ThatApi }
+  ThatApi
 > {
   return (self) => new SchemaPipe(self, that)
 }
