@@ -7,15 +7,15 @@ import * as S from "../_schema"
 import { brand } from "./brand"
 import type { NonEmptyBrand } from "./nonEmpty"
 import { nonEmpty } from "./nonEmpty"
-import { string, unknownString } from "./string"
+import { fromString, string } from "./string"
 
 export type NonEmptyString = string & NonEmptyBrand
 
-export const nonEmptyStringIdentifier = Symbol.for(
+export const nonEmptyStringFromStringIdentifier = Symbol.for(
   "@effect-ts/schema/ids/nonEmptyString"
 )
 
-export const nonEmptyString: S.Schema<
+export const nonEmptyStringFromString: S.Schema<
   string,
   S.RefinementE<S.LeafE<S.NonEmptyE<string>>>,
   NonEmptyString,
@@ -25,16 +25,16 @@ export const nonEmptyString: S.Schema<
   string,
   S.ApiSelfType<NonEmptyString>
 > = pipe(
-  string,
+  fromString,
   S.arbitrary((FC) => FC.string({ minLength: 1 })),
   nonEmpty,
   S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
   brand((_) => _ as NonEmptyString),
-  S.identified(nonEmptyStringIdentifier, {})
+  S.identified(nonEmptyStringFromStringIdentifier, {})
 )
 
-export const unknownNonEmptyString: S.Schema<
+export const nonEmptyString: S.Schema<
   unknown,
   S.CompositionE<
     | S.NextE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
@@ -46,4 +46,4 @@ export const unknownNonEmptyString: S.Schema<
   NonEmptyString,
   string,
   S.ApiSelfType<NonEmptyString>
-> = unknownString[">>>"](nonEmptyString)
+> = string[">>>"](nonEmptyStringFromString)

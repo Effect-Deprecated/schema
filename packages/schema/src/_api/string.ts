@@ -6,10 +6,9 @@ import * as S from "../_schema"
 import * as Th from "../These"
 import { refinement } from "./refinement"
 
-export const unknownStringIdentifier = Symbol.for("@effect-ts/schema/ids/unknownString")
 export const stringIdentifier = Symbol.for("@effect-ts/schema/ids/string")
 
-export const unknownString: S.Schema<
+export const string: S.Schema<
   unknown,
   S.RefinementE<S.LeafE<S.ParseStringE>>,
   string,
@@ -27,10 +26,12 @@ export const unknownString: S.Schema<
   S.arbitrary((_) => _.string()),
   S.encoder((s) => s),
   S.mapApi(() => ({})),
-  S.identified(unknownStringIdentifier, {})
+  S.identified(stringIdentifier, {})
 )
 
-export const string: S.Schema<
+export const fromStringIdentifier = Symbol.for("@effect-ts/schema/ids/fromString")
+
+export const fromString: S.Schema<
   string,
   never,
   string,
@@ -43,5 +44,5 @@ export const string: S.Schema<
   S.identity((u): u is string => typeof u === "string"),
   S.arbitrary((_) => _.string()),
   S.mapApi(() => ({})),
-  S.identified(stringIdentifier, {})
+  S.identified(fromStringIdentifier, {})
 )

@@ -10,8 +10,8 @@ import * as Parser from "../src/Parser"
 export class Person extends MO.Schemed(
   pipe(
     MO.required({
-      firstName: MO.unknownString,
-      lastName: MO.unknownString
+      firstName: MO.string,
+      lastName: MO.string
     }),
     MO.tag("Person")
   )

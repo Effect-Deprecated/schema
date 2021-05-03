@@ -7,7 +7,7 @@ import * as Parser from "../src/Parser"
 export class A extends MO.Schemed(
   pipe(
     MO.required({
-      a: MO.unknownString
+      a: MO.string
     }),
     MO.tag("A")
   )
@@ -18,7 +18,7 @@ export class A extends MO.Schemed(
 export class B extends MO.Schemed(
   pipe(
     MO.required({
-      b: MO.unknownString
+      b: MO.string
     }),
     MO.withTag("_type", "TB"),
     MO.withTag("_tag", "B")
@@ -30,7 +30,7 @@ export class B extends MO.Schemed(
 export class C extends MO.Schemed(
   pipe(
     MO.required({
-      c: MO.unknownString
+      c: MO.string
     }),
     MO.withTag("_type", "TC"),
     MO.withTag("_tag", "C")

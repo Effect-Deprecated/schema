@@ -4,7 +4,7 @@ import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
-import { number, stringNumber } from "./number"
+import { fromNumber, number, stringNumber } from "./number"
 
 export interface IntBrand {
   readonly Int: unique symbol
@@ -12,9 +12,9 @@ export interface IntBrand {
 
 export type Int = number & IntBrand
 
-export const intIdentifier = Symbol.for("@effect-ts/schema/ids/int")
+export const intFromNumberIdentifier = Symbol.for("@effect-ts/schema/ids/intFromNumber")
 
-export const int: S.Schema<
+export const intFromNumber: S.Schema<
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
   number & IntBrand,
@@ -24,7 +24,7 @@ export const int: S.Schema<
   number,
   {}
 > = pipe(
-  number,
+  fromNumber,
   S.arbitrary((_) => _.integer()),
   S.refine(
     (n): n is Int => Number.isInteger(n),
@@ -34,7 +34,7 @@ export const int: S.Schema<
   S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapApi(() => ({})),
-  S.identified(intIdentifier, {})
+  S.identified(intFromNumberIdentifier, {})
 )
 
 export const stringIntIdentifier = Symbol.for("@effect-ts/schema/ids/stringInt")
@@ -51,4 +51,20 @@ export const stringInt: S.Schema<
   number & IntBrand,
   string,
   {}
-> = stringNumber[">>>"](int).id(stringIntIdentifier, {})
+> = stringNumber[">>>"](intFromNumber).id(stringIntIdentifier, {})
+
+export const intIdentifier = Symbol.for("@effect-ts/schema/ids/int")
+
+export const int: S.Schema<
+  unknown,
+  S.CompositionE<
+    | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
+    | S.PrevE<S.RefinementE<S.LeafE<S.ParseNumberE>>>
+  >,
+  number & IntBrand,
+  number,
+  S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
+  number & IntBrand,
+  number,
+  {}
+> = number[">>>"](intFromNumber).id(intIdentifier, {})

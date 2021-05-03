@@ -6,13 +6,11 @@ import { pipe } from "@effect-ts/core/Function"
 import * as S from "../_schema"
 import * as Th from "../These"
 import { refinement } from "./refinement"
-import { string } from "./string"
+import { fromString } from "./string"
 
-export const numberIdentifier = Symbol.for("@effect-ts/schema/ids/number")
-export const unknownNumberIdentifier = Symbol.for("@effect-ts/schema/ids/unknownNumber")
-export const stringNumberIdentifier = Symbol.for("@effect-ts/schema/ids/stringNumber")
+export const fromNumberIdentifier = Symbol.for("@effect-ts/schema/ids/fromNumber")
 
-export const number: S.Schema<
+export const fromNumber: S.Schema<
   number,
   never,
   number,
@@ -25,10 +23,12 @@ export const number: S.Schema<
   S.identity((u): u is number => typeof u === "number"),
   S.arbitrary((_) => _.double()),
   S.mapApi(() => ({})),
-  S.identified(numberIdentifier, {})
+  S.identified(fromNumberIdentifier, {})
 )
 
-export const unknownNumber: S.Schema<
+export const numberIdentifier = Symbol.for("@effect-ts/schema/ids/number")
+
+export const number: S.Schema<
   unknown,
   S.RefinementE<S.LeafE<S.ParseNumberE>>,
   number,
@@ -46,8 +46,10 @@ export const unknownNumber: S.Schema<
   S.constructor((n: number) => Th.succeed(n)),
   S.encoder((_) => _),
   S.mapApi(() => ({})),
-  S.identified(unknownNumberIdentifier, {})
+  S.identified(numberIdentifier, {})
 )
+
+export const stringNumberIdentifier = Symbol.for("@effect-ts/schema/ids/stringNumber")
 
 export const stringNumber: S.Schema<
   string,
@@ -58,9 +60,9 @@ export const stringNumber: S.Schema<
   number,
   string,
   {}
-> = string[">>>"](
+> = fromString[">>>"](
   pipe(
-    unknownNumber,
+    number,
     S.encoder((_) => String()),
     S.parser((s) =>
       pipe(Number.parseFloat(s), (n) =>
