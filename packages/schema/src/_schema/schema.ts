@@ -46,34 +46,31 @@ export abstract class Schema<
   readonly [">>>"] = <
     ThatParserError,
     ThatParsedShape,
+    ThatConstructorInput,
     ThatConstructorError,
     ThatConstructedShape extends ThatParsedShape,
-    ThatEncoded,
     ThatApi
   >(
     that: Schema<
       ParsedShape,
       ThatParserError,
       ThatParsedShape,
-      ConstructedShape,
+      ThatConstructorInput,
       ThatConstructorError,
       ThatConstructedShape,
-      ThatEncoded,
+      ParsedShape,
       ThatApi
     >
   ): Schema<
     ParserInput,
     CompositionE<PrevE<ParserError> | NextE<ThatParserError>>,
     ThatParsedShape,
-    ConstructorInput,
-    CompositionE<PrevE<ConstructorError> | NextE<ThatConstructorError>>,
+    ThatConstructorInput,
+    ThatConstructorError,
     ThatConstructedShape,
-    ThatEncoded,
-    {
-      Self: Api
-      That: ThatApi
-    }
-  > => new SchemaCompose(this, that)
+    Encoded,
+    { Self: Api; That: ThatApi }
+  > => new SchemaPipe(this, that)
 }
 
 export type SchemaAny = Schema<any, any, any, any, any, any, any, any>
@@ -436,6 +433,61 @@ export class SchemaCompose<
       ThatConstructorError,
       ThatConstructedShape,
       ThatEncoded,
+      ThatApi
+    >
+  ) {
+    super()
+  }
+}
+
+export class SchemaPipe<
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    ConstructedShape extends ParsedShape,
+    Encoded,
+    Api,
+    ThatParserError,
+    ThatParsedShape,
+    ThatConstructorInput,
+    ThatConstructorError,
+    ThatConstructedShape extends ThatParsedShape,
+    ThatApi
+  >
+  extends Schema<
+    ParserInput,
+    CompositionE<PrevE<ParserError> | NextE<ThatParserError>>,
+    ThatParsedShape,
+    ThatConstructorInput,
+    ThatConstructorError,
+    ThatConstructedShape,
+    Encoded,
+    { Self: Api; That: ThatApi }
+  >
+  implements HasContinuation {
+  readonly [SchemaContinuationSymbol]: SchemaAny = this.that
+  readonly Api = { Self: this.self.Api, That: this.that.Api }
+  constructor(
+    readonly self: Schema<
+      ParserInput,
+      ParserError,
+      ParsedShape,
+      ConstructorInput,
+      ConstructorError,
+      ConstructedShape,
+      Encoded,
+      Api
+    >,
+    readonly that: Schema<
+      ParsedShape,
+      ThatParserError,
+      ThatParsedShape,
+      ThatConstructorInput,
+      ThatConstructorError,
+      ThatConstructedShape,
+      ParsedShape,
       ThatApi
     >
   ) {

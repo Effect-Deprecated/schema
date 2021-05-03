@@ -19,6 +19,7 @@ import {
   SchemaMapParserError,
   SchemaNamed,
   SchemaParser,
+  SchemaPipe,
   SchemaRecursive,
   SchemaRefinement
 } from "./schema"
@@ -770,4 +771,104 @@ export function guard<ParsedShape>(
   Api
 > {
   return (self) => new SchemaGuard(self, guard)
+}
+
+export function into_<
+  ParserInput,
+  ParserError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError,
+  ConstructedShape extends ParsedShape,
+  Encoded,
+  Api,
+  ThatParserError,
+  ThatParsedShape,
+  ThatConstructorInput,
+  ThatConstructorError,
+  ThatConstructedShape extends ThatParsedShape,
+  ThatApi
+>(
+  self: Schema<
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    ConstructedShape,
+    Encoded,
+    Api
+  >,
+  that: Schema<
+    ParsedShape,
+    ThatParserError,
+    ThatParsedShape,
+    ThatConstructorInput,
+    ThatConstructorError,
+    ThatConstructedShape,
+    ParsedShape,
+    ThatApi
+  >
+): Schema<
+  ParserInput,
+  CompositionE<PrevE<ParserError> | NextE<ThatParserError>>,
+  ThatParsedShape,
+  ThatConstructorInput,
+  ThatConstructorError,
+  ThatConstructedShape,
+  Encoded,
+  { Self: Api; That: ThatApi }
+> {
+  return new SchemaPipe(self, that)
+}
+
+export function into<
+  Api,
+  ThatParserError,
+  ThatParsedShape,
+  ThatConstructorInput,
+  ThatConstructorError,
+  ThatConstructedShape extends ThatParsedShape,
+  ThatApi,
+  ParsedShape
+>(
+  that: Schema<
+    ParsedShape,
+    ThatParserError,
+    ThatParsedShape,
+    ThatConstructorInput,
+    ThatConstructorError,
+    ThatConstructedShape,
+    ParsedShape,
+    ThatApi
+  >
+): <
+  ParserInput,
+  ParserError,
+  ConstructorInput,
+  ConstructorError,
+  ConstructedShape extends ParsedShape,
+  Encoded
+>(
+  self: Schema<
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    ConstructedShape,
+    Encoded,
+    Api
+  >
+) => Schema<
+  ParserInput,
+  CompositionE<PrevE<ParserError> | NextE<ThatParserError>>,
+  ThatParsedShape,
+  ThatConstructorInput,
+  ThatConstructorError,
+  ThatConstructedShape,
+  Encoded,
+  { Self: Api; That: ThatApi }
+> {
+  return (self) => new SchemaPipe(self, that)
 }

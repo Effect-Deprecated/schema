@@ -7,8 +7,8 @@ import * as Parser from "../src/Parser"
 
 const addS_ = S.struct({
   required: {
-    x: S.number,
-    y: S.number
+    x: S.unknownNumber,
+    y: S.unknownNumber
   }
 })["|>"](S.tag("Add"))
 
@@ -17,8 +17,8 @@ const addS = S.opaque<Add>()(addS_)
 
 const mulS_ = S.struct({
   required: {
-    x: S.number,
-    y: S.number
+    x: S.unknownNumber,
+    y: S.unknownNumber
   }
 })["|>"](S.tag("Mul"))
 

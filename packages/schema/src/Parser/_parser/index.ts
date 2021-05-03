@@ -71,6 +71,31 @@ export const interpreters: ((
             )
         )
     }
+    if (schema instanceof S.SchemaPipe) {
+      const self = parserFor(schema.self)
+      const that = parserFor(schema.that)
+      return (u) =>
+        Th.chain_(
+          self(u)["|>"](Th.mapError((e) => S.compositionE(Chunk.single(S.prevE(e))))),
+          (a, w) =>
+            that(a)["|>"](
+              Th.foldM(
+                (a) => (w._tag === "Some" ? Th.warn(a, w.value) : Th.succeed(a)),
+                (a, e) =>
+                  w._tag === "Some"
+                    ? Th.warn(
+                        a,
+                        S.compositionE(Chunk.append_(w.value.errors, S.nextE(e)))
+                      )
+                    : Th.warn(a, e),
+                (e) =>
+                  w._tag === "None"
+                    ? Th.fail(S.compositionE(Chunk.single(S.nextE(e))))
+                    : Th.fail(S.compositionE(Chunk.append_(w.value.errors, S.nextE(e))))
+              )
+            )
+        )
+    }
     if (schema instanceof S.SchemaParser) {
       return schema.parser
     }
