@@ -557,6 +557,7 @@ export function withDefaultConstructorField<Key extends string, Value>(
   key: Key,
   value: Lazy<Value>
 ): <
+  ParserInput,
   ParserError,
   ParsedShape,
   ConstructorInput extends { [k in Key]: Value },
@@ -566,7 +567,7 @@ export function withDefaultConstructorField<Key extends string, Value>(
   Api
 >(
   self: S.Schema<
-    unknown,
+    ParserInput,
     ParserError,
     ParsedShape,
     ConstructorInput,
@@ -576,7 +577,7 @@ export function withDefaultConstructorField<Key extends string, Value>(
     Api
   >
 ) => S.Schema<
-  unknown,
+  ParserInput,
   ParserError,
   ParsedShape,
   Omit<ConstructorInput, Key> & Partial<Pick<ConstructorInput, Key>>,
