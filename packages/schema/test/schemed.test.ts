@@ -1,5 +1,5 @@
 import * as T from "@effect-ts/core/Effect"
-import { pipe } from "@effect-ts/core/Function"
+import { constant, pipe } from "@effect-ts/core/Function"
 import * as FC from "fast-check"
 
 import * as MO from "../src"
@@ -14,7 +14,7 @@ export class Person extends MO.Schemed(
       lastName: MO.string
     }),
     MO.tag("Person"),
-    MO.withDefault("firstName", "Mike")
+    MO.withDefaultConstructorField("firstName", constant("Mike"))
   )
 ) {
   static Model = MO.schema(Person)

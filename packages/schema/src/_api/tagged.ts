@@ -1,6 +1,7 @@
 // tracing: off
 
 import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
+import type { Lazy } from "@effect-ts/core/Function"
 import { pipe } from "@effect-ts/system/Function"
 
 import type { ApiSelfType, UnionE } from "../_schema"
@@ -552,9 +553,9 @@ export function withTag<Key extends string, Value extends string>(
   }
 }
 
-export function withDefault<Key extends string, Value>(
+export function withDefaultConstructorField<Key extends string, Value>(
   key: Key,
-  value: Value
+  value: Lazy<Value>
 ): <
   ParserError,
   ParsedShape extends { [k in Key]: Value },
@@ -621,20 +622,7 @@ export function withDefault<Key extends string, Value>(
       //   return Th.succeed(x)
       // }),
       S.constructor((u: any): any => {
-        const res = constructSelf(u)
-        if (res.effect._tag === "Left") {
-          return Th.fail(res.effect.left)
-        }
-        const warnings = res.effect.right.get(1)
-        const x = res.effect.right.get(0)
-        if (typeof x[key] === "undefined") {
-          // @ts-expect-error
-          x[key] = value
-        }
-        if (warnings._tag === "Some") {
-          return Th.warn(warnings, warnings.value)
-        }
-        return Th.succeed(x)
+        return constructSelf(key in u ? u : { ...u, [key]: value() })
       }),
       S.arbitrary(arbSelf),
       // S.arbitrary((_) =>
