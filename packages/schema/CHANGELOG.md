@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.15](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.14...@effect-ts/schema@0.1.15) (2021-05-05)
+
+
+### Bug Fixes
+
+* **schema:** moduleMap es6 build ([466b980](https://github.com/Effect-TS/schema/commit/466b980885c76a2a98a33ef70dddf3ab919a5c78))
+
+
+### Features
+
+* **schema:** Add withDefaultConstructorField ([#6](https://github.com/Effect-TS/schema/issues/6)) ([d4d252d](https://github.com/Effect-TS/schema/commit/d4d252ddb7c171b1eca1d8940f58df62c751d208))
+* **schema:** improve composability ([c128e63](https://github.com/Effect-TS/schema/commit/c128e63b353b8a26f5a766e2c309d45e3784e7b7))
+* **schema:** improve naming convention ([c64b1be](https://github.com/Effect-TS/schema/commit/c64b1bea301726ba3d3f835d76ec1eff10315632))
+* **schema:** optimise for composition ([02080a0](https://github.com/Effect-TS/schema/commit/02080a07eddddab75d2e4ba0d4e37de623537cf5))
+
+
+
+
+
 ## [0.1.14](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.13...@effect-ts/schema@0.1.14) (2021-05-01)
 
 
