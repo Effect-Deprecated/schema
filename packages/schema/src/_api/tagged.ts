@@ -551,3 +551,118 @@ export function withTag<Key extends string, Value extends string>(
     ) as any
   }
 }
+
+export function withDefault<Key extends string, Value>(
+  key: Key,
+  value: Value
+): <
+  ParserError,
+  ParsedShape extends { [k in Key]: Value },
+  ConstructorInput extends { [k in Key]: Value },
+  ConstructorError,
+  ConstructedShape extends ParsedShape,
+  Encoded,
+  Api
+>(
+  self: S.Schema<
+    unknown,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    ConstructedShape,
+    Encoded,
+    Api
+  >
+) => S.Schema<
+  unknown,
+  S.CompositionE<S.PrevE<S.LeafE<S.ExtractKeyE>> | S.NextE<ParserError>>,
+  ParsedShape,
+  Omit<ConstructorInput, Key> & Partial<Pick<ConstructorInput, Key>>,
+  ConstructorError,
+  ConstructedShape,
+  Encoded,
+  Api
+> {
+  return (self) => {
+    const parseSelf = Parser.for(self)
+    const constructSelf = Constructor.for(self)
+    const arbSelf = Arbitrary.for(self)
+    const encodeSelf = Encoder.for(self)
+    const guardSelf = Guard.for(self)
+    return pipe(
+      self,
+      S.parser(parseSelf),
+      // S.parser((u: any): any => {
+      //   if (typeof u !== "object" || u == null || u[key] !== value) {
+      //     return Th.fail(
+      //       S.compositionE(
+      //         Chunk.single(S.prevE(S.leafE(S.extractKeyE(key, [value], u))))
+      //       )
+      //     )
+      //   }
+      //   const res = parseSelf(u)
+      //   if (res.effect._tag === "Left") {
+      //     return Th.fail(S.compositionE(Chunk.single(S.nextE(res.effect.left))))
+      //   }
+      //   const warnings = res.effect.right.get(1)
+      //   const x = res.effect.right.get(0)
+      //   // @ts-expect-error
+      //   if (typeof x[key] === "undefined") {
+      //     // @ts-expect-error
+      //     x[key] = value
+      //   }
+      //   if (warnings._tag === "Some") {
+      //     return Th.warn(
+      //       S.compositionE(Chunk.single(S.nextE(warnings))),
+      //       warnings.value
+      //     )
+      //   }
+      //   return Th.succeed(x)
+      // }),
+      S.constructor((u: any): any => {
+        const res = constructSelf(u)
+        if (res.effect._tag === "Left") {
+          return Th.fail(res.effect.left)
+        }
+        const warnings = res.effect.right.get(1)
+        const x = res.effect.right.get(0)
+        if (typeof x[key] === "undefined") {
+          // @ts-expect-error
+          x[key] = value
+        }
+        if (warnings._tag === "Some") {
+          return Th.warn(warnings, warnings.value)
+        }
+        return Th.succeed(x)
+      }),
+      S.arbitrary(arbSelf),
+      // S.arbitrary((_) =>
+      //   arbSelf(_).map((x) => {
+      //     // @ts-expect-error
+      //     x[key] = value
+      //     return x
+      //   })
+      // ),
+      S.encoder(encodeSelf),
+      // S.encoder((_) => {
+      //   const x = encodeSelf(_)
+      //   // @ts-expect-error
+      //   x[key] = value
+      //   return x
+      // }),
+      S.guard(guardSelf)
+      // S.guard(
+      //   (u): u is unknown =>
+      //     guardSelf(u) &&
+      //     typeof u === "object" &&
+      //     u != null &&
+      //     (u as any)[key] === value
+      // ),
+      // S.mapApi(() => ({
+      //   ...self.Api,
+      //   fields: { [key]: { value }, ...(self.Api["fields"] ? self.Api["fields"] : {}) }
+      // }))
+    ) as any
+  }
+}
