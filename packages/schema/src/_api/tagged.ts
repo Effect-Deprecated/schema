@@ -590,9 +590,7 @@ export function withDefaultConstructorField<Key extends string, Value>(
     const constructSelf = Constructor.for(self)
     return pipe(
       self,
-      S.constructor((u: any) => {
-        return constructSelf(key in u ? u : { ...u, [key]: value() })
-      })
+      S.constructor((u: any) => constructSelf(key in u ? u : { ...u, [key]: value() }))
     )
   }
 }
