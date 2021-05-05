@@ -14,7 +14,7 @@ export class Person extends MO.Schemed(
       lastName: MO.string
     }),
     MO.tag("Person"),
-    MO.withDefaultConstructorField("firstName", constant("Mike"))
+    MO.withDefaultConstructorField("firstName", constant("Michael"))
   )
 ) {
   static Model = MO.schema(Person)
@@ -40,11 +40,11 @@ const isPerson = Guard.for(Person.Model)
 describe("Schemed", () => {
   it("construct objects", () => {
     const person = new Person({ lastName: "Arnaldi" })
-    expect(person.firstName).toEqual("Mike")
+    expect(person.firstName).toEqual("Michael")
     expect(person._tag).toEqual("Person")
     expect(isPerson(person)).toEqual(true)
-    const newPerson = person.copy({ firstName: "Michael" })
-    expect(newPerson).equals(new Person({ firstName: "Michael", lastName: "Arnaldi" }))
+    const newPerson = person.copy({ firstName: "Mike" })
+    expect(newPerson).equals(new Person({ firstName: "Mike", lastName: "Arnaldi" }))
   })
   it("parse person", async () => {
     const person = await T.runPromise(

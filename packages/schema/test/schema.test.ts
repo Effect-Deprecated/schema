@@ -1,5 +1,6 @@
 import * as T from "@effect-ts/core/Effect"
 import * as E from "@effect-ts/core/Either"
+import { constant } from "@effect-ts/core/Function"
 import * as FC from "fast-check"
 
 import * as S from "../src"
@@ -55,7 +56,9 @@ const Person_ = S.struct({
   optional: {
     Addresses: S.chunk(addressS)
   }
-})["|>"](S.named("Person"))
+})
+  ["|>"](S.named("Person"))
+  ["|>"](S.withDefaultConstructorField("Name", constant("Michael")))
 
 interface Person extends S.ParsedShapeOf<typeof Person_> {}
 
@@ -160,7 +163,6 @@ describe("Schema", () => {
         createPerson({
           Age: 30,
           Id: 0,
-          Name: "Mike",
           Sex: "male",
           Addresses: []
         })
