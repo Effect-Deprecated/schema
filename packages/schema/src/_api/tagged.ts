@@ -1,6 +1,7 @@
 // tracing: off
 
 import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
+import type { Lazy } from "@effect-ts/core/Function"
 import { pipe } from "@effect-ts/system/Function"
 
 import type { ApiSelfType, UnionE } from "../_schema"
@@ -549,5 +550,47 @@ export function withTag<Key extends string, Value extends string>(
         fields: { [key]: { value }, ...(self.Api["fields"] ? self.Api["fields"] : {}) }
       }))
     ) as any
+  }
+}
+
+export function withDefaultConstructorField<Key extends string, Value>(
+  key: Key,
+  value: Lazy<Value>
+): <
+  ParserInput,
+  ParserError,
+  ParsedShape,
+  ConstructorInput extends { [k in Key]: Value },
+  ConstructorError,
+  ConstructedShape extends ParsedShape,
+  Encoded,
+  Api
+>(
+  self: S.Schema<
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    ConstructedShape,
+    Encoded,
+    Api
+  >
+) => S.Schema<
+  ParserInput,
+  ParserError,
+  ParsedShape,
+  Omit<ConstructorInput, Key> & Partial<Pick<ConstructorInput, Key>>,
+  ConstructorError,
+  ConstructedShape,
+  Encoded,
+  Api
+> {
+  return (self) => {
+    const constructSelf = Constructor.for(self)
+    return pipe(
+      self,
+      S.constructor((u: any) => constructSelf(key in u ? u : { ...u, [key]: value() }))
+    )
   }
 }
