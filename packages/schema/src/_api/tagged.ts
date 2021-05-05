@@ -557,7 +557,6 @@ export function withDefaultConstructorField<Key extends string, Value>(
   key: Key,
   value: Lazy<Value>
 ): <
-  A extends { [k in Key]: Value },
   ParserError,
   ParsedShape,
   ConstructorInput extends { [k in Key]: Value },
@@ -567,7 +566,7 @@ export function withDefaultConstructorField<Key extends string, Value>(
   Api
 >(
   self: S.Schema<
-    A,
+    unknown,
     ParserError,
     ParsedShape,
     ConstructorInput,
@@ -578,7 +577,7 @@ export function withDefaultConstructorField<Key extends string, Value>(
   >
 ) => S.Schema<
   unknown,
-  S.CompositionE<S.PrevE<S.LeafE<S.ExtractKeyE>> | S.NextE<ParserError>>,
+  ParserError,
   ParsedShape,
   Omit<ConstructorInput, Key> & Partial<Pick<ConstructorInput, Key>>,
   ConstructorError,
@@ -590,9 +589,9 @@ export function withDefaultConstructorField<Key extends string, Value>(
     const constructSelf = Constructor.for(self)
     return pipe(
       self,
-      S.constructor((u: any): any => {
+      S.constructor((u: any) => {
         return constructSelf(key in u ? u : { ...u, [key]: value() })
       })
-    ) as any
+    )
   }
 }
