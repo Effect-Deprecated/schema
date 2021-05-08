@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.16](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.15...@effect-ts/schema@0.1.16) (2021-05-08)
+
+
+### Bug Fixes
+
+* **schema:** array was missing encoder. ([7e8b17c](https://github.com/Effect-TS/schema/commit/7e8b17ccf9afc60096e42435fe56a275cb53bbe3))
+
+
+
+
+
 ## [0.1.15](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.14...@effect-ts/schema@0.1.15) (2021-05-05)
 
 
