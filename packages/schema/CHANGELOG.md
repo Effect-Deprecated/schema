@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.17](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.16...@effect-ts/schema@0.1.17) (2021-05-08)
+
+
+### Features
+
+* **schema:** add bool, nullable and uuid. ([cf6c864](https://github.com/Effect-TS/schema/commit/cf6c8644cadb36b30b4ddba757d3847abac71fe7))
+
+
+
+
+
 ## [0.1.16](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.15...@effect-ts/schema@0.1.16) (2021-05-08)
 
 
