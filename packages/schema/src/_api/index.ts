@@ -2,6 +2,7 @@
 
 // codegen:start {preset: barrel, include: ./*.ts}
 export * from "./array"
+export * from "./bool"
 export * from "./brand"
 export * from "./chunk"
 export * from "./composeParser"
@@ -12,6 +13,7 @@ export * from "./intersect"
 export * from "./literal"
 export * from "./nonEmpty"
 export * from "./nonEmptyString"
+export * from "./nullable"
 export * from "./number"
 export * from "./object"
 export * from "./partial"
@@ -24,4 +26,5 @@ export * from "./struct"
 export * from "./tagged"
 export * from "./unknown"
 export * from "./unknownArray"
+export * from "./uuid"
 // codegen:end

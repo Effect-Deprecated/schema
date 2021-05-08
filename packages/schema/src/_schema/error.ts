@@ -41,6 +41,8 @@ export interface LeafErrors {
   ParseObjectE: ParseObjectE
   ParseDateE: ParseDateE
   ParseDateMsE: ParseDateMsE
+  ParseBoolE: ParseBoolE
+  ParseUuidE: ParseUuidE
   InvalidIntegerE: InvalidIntegerE
   PositiveE: PositiveE
   UnknownRecordE: UnknownRecordE
@@ -444,6 +446,38 @@ export class ParseStringE
 
 export function parseStringE(actual: unknown): ParseStringE {
   return new ParseStringE({ actual })
+}
+
+export class ParseBoolE
+  extends DefaultLeafE<{
+    readonly actual: unknown
+  }>
+  implements Actual<unknown> {
+  readonly _tag = "NotBool"
+
+  get [toTreeSymbol]() {
+    return tree(`cannot process ${JSON.stringify(this.actual)}, expected an string`)
+  }
+}
+
+export function parseBoolE(actual: unknown): ParseBoolE {
+  return new ParseBoolE({ actual })
+}
+
+export class ParseUuidE
+  extends DefaultLeafE<{
+    readonly actual: unknown
+  }>
+  implements Actual<unknown> {
+  readonly _tag = "NotUUID"
+
+  get [toTreeSymbol]() {
+    return tree(`cannot process ${JSON.stringify(this.actual)}, expected an UUID`)
+  }
+}
+
+export function parseUuidE(actual: unknown): ParseUuidE {
+  return new ParseUuidE({ actual })
 }
 
 //
