@@ -5,6 +5,7 @@ import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
 import * as Arbitrary from "../Arbitrary"
+import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Th from "../These"
 import { chunk } from "./chunk"
@@ -28,6 +29,7 @@ export function array<Self extends S.SchemaAny>(
 > {
   const guardSelf = Guard.for(self)
   const arbitrarySelf = Arbitrary.for(self)
+  const encodeSelf = Encoder.for(self)
 
   const fromChunk = pipe(
     S.identity(
@@ -35,6 +37,7 @@ export function array<Self extends S.SchemaAny>(
         Array.isArray(u) && u.every(guardSelf)
     ),
     S.parser((u: Chunk.Chunk<S.ParsedShapeOf<Self>>) => Th.succeed(Chunk.toArray(u))),
+    S.encoder((u) => u.map(encodeSelf)),
     S.constructor((u: Chunk.Chunk<S.ConstructedShapeOf<Self>>) =>
       Th.succeed(Chunk.toArray(u))
     ),
