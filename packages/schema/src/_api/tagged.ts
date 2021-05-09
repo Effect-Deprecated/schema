@@ -590,7 +590,66 @@ export function withDefaultConstructorField<Key extends string, Value>(
     const constructSelf = Constructor.for(self)
     return pipe(
       self,
-      S.constructor((u: any) => constructSelf(key in u ? u : { ...u, [key]: value() }))
+      S.constructor((u: any) =>
+        constructSelf(typeof u[key] !== "undefined" ? u : { ...u, [key]: value() })
+      )
+    )
+  }
+}
+
+type LazyPartial<T> = {
+  [P in keyof T]?: Lazy<T[P]>
+}
+
+export function withDefaultConstructorFields<
+  ParserInput,
+  ParserError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError,
+  ConstructedShape extends ParsedShape,
+  Encoded,
+  Api
+>(
+  self: S.Schema<
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    ConstructedShape,
+    Encoded,
+    Api
+  >
+) {
+  return <Changes extends LazyPartial<ConstructorInput>>(
+    kvs: Changes
+  ): S.Schema<
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    Omit<ConstructorInput, keyof Changes> &
+      // @ts-expect-error
+      Partial<Pick<ConstructorInput, keyof Changes>>,
+    ConstructorError,
+    ConstructedShape,
+    Encoded,
+    Api
+  > => {
+    const constructSelf = Constructor.for(self)
+    return pipe(
+      self,
+      S.constructor((u: any) =>
+        constructSelf({
+          ...u,
+          ...Object.keys(kvs).reduce((prev, cur) => {
+            if (typeof u[cur] === "undefined") {
+              prev[cur] = kvs[cur]()
+            }
+            return prev
+          }, {} as any)
+        } as any)
+      )
     )
   }
 }
