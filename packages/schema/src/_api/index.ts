@@ -27,4 +27,5 @@ export * from "./tagged"
 export * from "./unknown"
 export * from "./unknownArray"
 export * from "./uuid"
+export * from "./withDefaultConstructorField"
 // codegen:end
