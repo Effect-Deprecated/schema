@@ -14,7 +14,7 @@ export class Person extends MO.Schemed(
       lastName: MO.string
     }),
     MO.tag("Person"),
-    MO.withDefaultConstructorField("firstName", constant("Mike"))
+    (s) => MO.withDefaultConstructorFields(s)({ firstName: constant("Mike") })
   )
 ) {
   static Model = MO.schema(Person)
