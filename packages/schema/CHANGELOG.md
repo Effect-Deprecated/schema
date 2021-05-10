@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.17...@effect-ts/schema@0.2.0) (2021-05-10)
+
+
+### Bug Fixes
+
+* **schema:** avoid going to the moon and back ([117a7c6](https://github.com/Effect-TS/schema/commit/117a7c63e71f8a3a0eef43168f527a768c7c91d7))
+* **schema:** fix encoder of stringNumber ([fd19422](https://github.com/Effect-TS/schema/commit/fd1942213b18b88d246f834752ef7bd1022777fa))
+* **schema:** remove unstable api ([a1ccd44](https://github.com/Effect-TS/schema/commit/a1ccd4404e31234e937bbfa2e48a94fc385c1f55))
+
+
+### Features
+
+* **schema:** add withDefaultConstructorFields ([f04d6cb](https://github.com/Effect-TS/schema/commit/f04d6cb0a4f0a245d691c501f84e94ecc826fdf4))
+* **schema:** improve naming ([dff6323](https://github.com/Effect-TS/schema/commit/dff63233ec81f42c25fe8975e381bc5711314e44))
+
+
+
+
+
 ## [0.1.17](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.16...@effect-ts/schema@0.1.17) (2021-05-08)
 
 
