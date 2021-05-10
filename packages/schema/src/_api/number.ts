@@ -63,7 +63,7 @@ export const stringNumber: S.Schema<
 > = fromString[">>>"](
   pipe(
     number,
-    S.encoder((_) => String()),
+    S.encoder((_) => String(_)),
     S.parser((s) =>
       pipe(Number.parseFloat(s), (n) =>
         Number.isNaN(n) ? Th.fail(S.leafE(S.parseNumberE(s))) : Th.succeed(n)
