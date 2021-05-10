@@ -24,30 +24,28 @@ export type PartialConstructorInput<Props extends Record<PropertyKey, S.SchemaUP
   readonly [K in keyof Props]?: S.ConstructorInputOf<Props[K]>
 }
 
-export type PartialConstructorError<
-  Props extends Record<PropertyKey, S.SchemaUPI>
-> = S.StructE<
-  {
-    [K in keyof Props]: S.OptionalKeyE<K, S.ConstructorErrorOf<Props[K]>>
-  }[keyof Props]
->
+export type PartialConstructorError<Props extends Record<PropertyKey, S.SchemaUPI>> =
+  S.StructE<
+    {
+      [K in keyof Props]: S.OptionalKeyE<K, S.ConstructorErrorOf<Props[K]>>
+    }[keyof Props]
+  >
 
 export type PartialConstructedShape<Props extends Record<PropertyKey, S.SchemaUPI>> = {
   readonly [K in keyof Props]?: S.ConstructedShapeOf<Props[K]>
 }
 
-export type PartialParserError<
-  Props extends Record<PropertyKey, S.SchemaUPI>
-> = S.CompositionE<
-  | S.PrevE<S.LeafE<S.UnknownRecordE>>
-  | S.NextE<
-      S.StructE<
-        {
-          [K in keyof Props]: S.OptionalKeyE<K, S.ParserErrorOf<Props[K]>>
-        }[keyof Props]
+export type PartialParserError<Props extends Record<PropertyKey, S.SchemaUPI>> =
+  S.CompositionE<
+    | S.PrevE<S.LeafE<S.UnknownRecordE>>
+    | S.NextE<
+        S.StructE<
+          {
+            [K in keyof Props]: S.OptionalKeyE<K, S.ParserErrorOf<Props[K]>>
+          }[keyof Props]
+        >
       >
-    >
->
+  >
 
 export type PartialEncoded<Props extends Record<PropertyKey, S.SchemaUPI>> = {
   readonly [K in keyof Props]?: S.EncodedOf<Props[K]>
@@ -118,103 +116,99 @@ export function partial<Props extends Record<PropertyKey, S.SchemaUPI>>(
 
       return _.record(arbsFC, { withDeletedKeys: true })
     }),
-    S.parser(
-      (u): Th.These<PartialParserError<Props>, PartialParsedShape<Props>> => {
-        if (typeof u !== "object" || u == null) {
-          return Th.fail(
-            S.compositionE(Chunk.single(S.prevE(S.leafE(S.unknownRecordE(u)))))
-          )
-        }
+    S.parser((u): Th.These<PartialParserError<Props>, PartialParsedShape<Props>> => {
+      if (typeof u !== "object" || u == null) {
+        return Th.fail(
+          S.compositionE(Chunk.single(S.prevE(S.leafE(S.unknownRecordE(u)))))
+        )
+      }
 
-        const val = {}
+      const val = {}
 
-        const errorsBuilder = Chunk.builder<
+      const errorsBuilder =
+        Chunk.builder<
           {
             [K in keyof Props]: S.OptionalKeyE<K, S.ParserErrorOf<Props[K]>>
           }[keyof Props]
         >()
 
-        let errored = false
-        let warned = false
+      let errored = false
+      let warned = false
 
-        for (let i = 0; i < keys.length; i++) {
-          if (keys[i]! in u && typeof u[keys[i]!] !== "undefined") {
-            const result = Th.result(parsers[i]!(u[keys[i]!]))
-            if (result._tag === "Left") {
-              errorsBuilder.append(S.optionalKeyE(keys[i]!, result.left))
-              errored = true
-            } else {
-              val[keys[i]!] = result.right.get(0)
-              const w = result.right.get(1)
-              if (w._tag === "Some") {
-                errorsBuilder.append(S.optionalKeyE(keys[i]!, w.value))
-                warned = true
-              }
+      for (let i = 0; i < keys.length; i++) {
+        if (keys[i]! in u && typeof u[keys[i]!] !== "undefined") {
+          const result = Th.result(parsers[i]!(u[keys[i]!]))
+          if (result._tag === "Left") {
+            errorsBuilder.append(S.optionalKeyE(keys[i]!, result.left))
+            errored = true
+          } else {
+            val[keys[i]!] = result.right.get(0)
+            const w = result.right.get(1)
+            if (w._tag === "Some") {
+              errorsBuilder.append(S.optionalKeyE(keys[i]!, w.value))
+              warned = true
             }
           }
         }
-
-        const errors = errorsBuilder.build()
-
-        if (!errored) {
-          augmentRecord(val)
-          if (warned) {
-            return Th.warn(
-              val,
-              S.compositionE(Chunk.single(S.nextE(S.structE(errors))))
-            )
-          }
-          return Th.succeed(val as PartialParsedShape<Props>)
-        }
-
-        return Th.fail(S.compositionE(Chunk.single(S.nextE(S.structE(errors)))))
       }
-    ),
-    S.constructor(
-      (
-        u: PartialConstructorInput<Props>
-      ): Th.These<PartialConstructorError<Props>, PartialConstructedShape<Props>> => {
-        const val = {}
 
-        const errorsBuilder = Chunk.builder<
+      const errors = errorsBuilder.build()
+
+      if (!errored) {
+        augmentRecord(val)
+        if (warned) {
+          return Th.warn(val, S.compositionE(Chunk.single(S.nextE(S.structE(errors)))))
+        }
+        return Th.succeed(val as PartialParsedShape<Props>)
+      }
+
+      return Th.fail(S.compositionE(Chunk.single(S.nextE(S.structE(errors)))))
+    }),
+    S.constructor((u: PartialConstructorInput<Props>): Th.These<
+      PartialConstructorError<Props>,
+      PartialConstructedShape<Props>
+    > => {
+      const val = {}
+
+      const errorsBuilder =
+        Chunk.builder<
           {
             [K in keyof Props]: S.OptionalKeyE<K, S.ConstructorErrorOf<Props[K]>>
           }[keyof Props]
         >()
 
-        let errored = false
-        let warned = false
+      let errored = false
+      let warned = false
 
-        for (let i = 0; i < keys.length; i++) {
-          if (keys[i]! in u && typeof u[keys[i]!] !== "undefined") {
-            const result = Th.result(constructors[i]!(u[keys[i]!]))
-            if (result._tag === "Left") {
-              errorsBuilder.append(S.optionalKeyE(keys[i]!, result.left))
-              errored = true
-            } else {
-              val[keys[i]!] = result.right.get(0)
-              const w = result.right.get(1)
-              if (w._tag === "Some") {
-                errorsBuilder.append(S.optionalKeyE(keys[i]!, w.value))
-                warned = true
-              }
+      for (let i = 0; i < keys.length; i++) {
+        if (keys[i]! in u && typeof u[keys[i]!] !== "undefined") {
+          const result = Th.result(constructors[i]!(u[keys[i]!]))
+          if (result._tag === "Left") {
+            errorsBuilder.append(S.optionalKeyE(keys[i]!, result.left))
+            errored = true
+          } else {
+            val[keys[i]!] = result.right.get(0)
+            const w = result.right.get(1)
+            if (w._tag === "Some") {
+              errorsBuilder.append(S.optionalKeyE(keys[i]!, w.value))
+              warned = true
             }
           }
         }
-
-        const errors = errorsBuilder.build()
-
-        if (!errored) {
-          augmentRecord(val)
-          if (warned) {
-            return Th.warn(val as PartialConstructedShape<Props>, S.structE(errors))
-          }
-          return Th.succeed(val as PartialConstructedShape<Props>)
-        }
-
-        return Th.fail(S.structE(errors))
       }
-    ),
+
+      const errors = errorsBuilder.build()
+
+      if (!errored) {
+        augmentRecord(val)
+        if (warned) {
+          return Th.warn(val as PartialConstructedShape<Props>, S.structE(errors))
+        }
+        return Th.succeed(val as PartialConstructedShape<Props>)
+      }
+
+      return Th.fail(S.structE(errors))
+    }),
     S.encoder((u) => {
       const res = {}
       for (let i = 0; i < encoders.length; i++) {

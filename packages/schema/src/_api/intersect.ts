@@ -110,14 +110,13 @@ export function intersect_<
       const left = Th.result(parseSelf(u))
       const right = Th.result(parseThat(u))
 
-      let errors = Chunk.empty<
-        S.MemberE<0, SelfParserError> | S.MemberE<1, ThatParserError>
-      >()
+      let errors =
+        Chunk.empty<S.MemberE<0, SelfParserError> | S.MemberE<1, ThatParserError>>()
 
       let errored = false
       let warned = false
 
-      const intersection = ({} as unknown) as SelfParsedShape & ThatParsedShape
+      const intersection = {} as unknown as SelfParsedShape & ThatParsedShape
 
       if (left._tag === "Left") {
         errors = Chunk.append_(errors, S.memberE(0, left.left))
@@ -162,15 +161,15 @@ export function intersect_<
       const left = Th.result(constructSelf(u))
       const right = Th.result(constructThat(u))
 
-      let errors = Chunk.empty<
-        S.MemberE<0, SelfConstructorError> | S.MemberE<1, ThatConstructorError>
-      >()
+      let errors =
+        Chunk.empty<
+          S.MemberE<0, SelfConstructorError> | S.MemberE<1, ThatConstructorError>
+        >()
 
       let errored = false
       let warned = false
 
-      const intersection = ({} as unknown) as SelfConstructedShape &
-        ThatConstructedShape
+      const intersection = {} as unknown as SelfConstructedShape & ThatConstructedShape
 
       if (left._tag === "Left") {
         errors = Chunk.append_(errors, S.memberE(0, left.left))

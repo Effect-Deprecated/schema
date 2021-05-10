@@ -148,13 +148,11 @@ export function hasContinuation<
   return SchemaContinuationSymbol in schema
 }
 
-export type ParserInputOf<
-  X extends Schema<any, any, any, any, any, any, any, any>
-> = Parameters<X["_ParserInput"]>[0]
+export type ParserInputOf<X extends Schema<any, any, any, any, any, any, any, any>> =
+  Parameters<X["_ParserInput"]>[0]
 
-export type ParserErrorOf<
-  X extends Schema<any, any, any, any, any, any, any, any>
-> = ReturnType<X["_ParserError"]>
+export type ParserErrorOf<X extends Schema<any, any, any, any, any, any, any, any>> =
+  ReturnType<X["_ParserError"]>
 
 export type ConstructorInputOf<
   X extends Schema<any, any, any, any, any, any, any, any>
@@ -164,13 +162,11 @@ export type ConstructorErrorOf<
   X extends Schema<any, any, any, any, any, any, any, any>
 > = ReturnType<X["_ConstructorError"]>
 
-export type EncodedOf<
-  X extends Schema<any, any, any, any, any, any, any, any>
-> = ReturnType<X["_Encoded"]>
+export type EncodedOf<X extends Schema<any, any, any, any, any, any, any, any>> =
+  ReturnType<X["_Encoded"]>
 
-export type ParsedShapeOf<
-  X extends Schema<any, any, any, any, any, any, any, any>
-> = ReturnType<X["_ParsedShape"]>
+export type ParsedShapeOf<X extends Schema<any, any, any, any, any, any, any, any>> =
+  ReturnType<X["_ParsedShape"]>
 
 export type ConstructedShapeOf<
   X extends Schema<any, any, any, any, any, any, any, any>
@@ -209,7 +205,8 @@ export class SchemaConstructor<
     Encoded,
     Api
   >
-  implements HasContinuation {
+  implements HasContinuation
+{
   readonly Api = this.self.Api;
   readonly [SchemaContinuationSymbol]: SchemaAny
   constructor(
@@ -254,7 +251,8 @@ export class SchemaParser<
     Encoded,
     Api
   >
-  implements HasContinuation {
+  implements HasContinuation
+{
   readonly Api = this.self.Api;
   readonly [SchemaContinuationSymbol]: SchemaAny
   constructor(
@@ -295,7 +293,8 @@ export class SchemaArbitrary<
     Encoded,
     Api
   >
-  implements HasContinuation {
+  implements HasContinuation
+{
   readonly Api = this.self.Api;
   readonly [SchemaContinuationSymbol]: SchemaAny
   constructor(
@@ -337,7 +336,8 @@ export class SchemaEncoder<
     Encoded2,
     Api
   >
-  implements HasContinuation {
+  implements HasContinuation
+{
   readonly Api = this.self.Api;
   readonly [SchemaContinuationSymbol]: SchemaAny
   constructor(
@@ -476,7 +476,8 @@ export class SchemaPipe<
     Encoded,
     ThatApi
   >
-  implements HasContinuation {
+  implements HasContinuation
+{
   readonly [SchemaContinuationSymbol]: SchemaAny = this.that
   readonly Api = this.that.Api
   constructor(
@@ -526,7 +527,8 @@ export class SchemaMapParserError<
     Encoded,
     Api
   >
-  implements HasContinuation {
+  implements HasContinuation
+{
   readonly Api = this.self.Api;
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
@@ -569,7 +571,8 @@ export class SchemaMapConstructorError<
     Encoded,
     Api
   >
-  implements HasContinuation {
+  implements HasContinuation
+{
   readonly Api = this.self.Api;
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
@@ -612,7 +615,8 @@ export class SchemaMapApi<
     Encoded,
     Api2
   >
-  implements HasContinuation {
+  implements HasContinuation
+{
   readonly Api = this.mapApi(this.self.Api);
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
@@ -655,7 +659,8 @@ export class SchemaNamed<
     Encoded,
     Api
   >
-  implements HasContinuation {
+  implements HasContinuation
+{
   readonly Api = this.self.Api;
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
@@ -745,7 +750,8 @@ export class SchemaIdentified<
     Encoded,
     Api
   >
-  implements HasContinuation {
+  implements HasContinuation
+{
   readonly Api = this.self.Api;
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
@@ -788,7 +794,8 @@ export class SchemaGuard<
     Encoded,
     Api
   >
-  implements HasContinuation {
+  implements HasContinuation
+{
   readonly Api = this.self.Api;
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self

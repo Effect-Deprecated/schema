@@ -229,45 +229,63 @@ export function makeTagged<Key extends string>(key: Key) {
       S.encoder((_): {
         [K in keyof Props]: Props[K] extends S.SchemaAny ? S.EncodedOf<Props[K]> : never
       }[number] => (encoders as any)[_[key]](_)),
-      S.parser(
-        (
-          u: unknown
-        ): Th.These<
-          S.CompositionE<
-            | S.PrevE<S.LeafE<S.ExtractKeyE>>
-            | S.NextE<
-                UnionE<
-                  {
-                    [K in keyof Props]: Props[K] extends S.SchemaAny
-                      ? S.MemberE<
-                          S.ParsedShapeOf<Props[K]>[Key],
-                          S.ParserErrorOf<Props[K]>
-                        >
-                      : never
-                  }[number]
-                >
+      S.parser((u: unknown): Th.These<
+        S.CompositionE<
+          | S.PrevE<S.LeafE<S.ExtractKeyE>>
+          | S.NextE<
+              UnionE<
+                {
+                  [K in keyof Props]: Props[K] extends S.SchemaAny
+                    ? S.MemberE<
+                        S.ParsedShapeOf<Props[K]>[Key],
+                        S.ParserErrorOf<Props[K]>
+                      >
+                    : never
+                }[number]
               >
-          >,
-          {
-            [K in keyof Props]: Props[K] extends S.SchemaAny
-              ? S.ParsedShapeOf<Props[K]>
-              : never
-          }[number]
-        > => {
-          if (typeof u === "object" && u != null && key in u) {
-            const tag = u[key as string]
-
-            const memberParser = parsers[tag] as Parser.Parser<
-              unknown,
-              unknown,
-              unknown
             >
+        >,
+        {
+          [K in keyof Props]: Props[K] extends S.SchemaAny
+            ? S.ParsedShapeOf<Props[K]>
+            : never
+        }[number]
+      > => {
+        if (typeof u === "object" && u != null && key in u) {
+          const tag = u[key as string]
 
-            if (memberParser) {
-              const result = memberParser(u)
+          const memberParser = parsers[tag] as Parser.Parser<unknown, unknown, unknown>
 
-              if (result.effect._tag === "Left") {
-                return Th.fail(
+          if (memberParser) {
+            const result = memberParser(u)
+
+            if (result.effect._tag === "Left") {
+              return Th.fail(
+                S.compositionE(
+                  Chunk.single(
+                    S.nextE(
+                      S.unionE(
+                        Chunk.single(
+                          S.memberE(
+                            tag,
+                            result.effect.left
+                          ) as Props[number] extends S.SchemaAny
+                            ? S.MemberE<
+                                S.ParsedShapeOf<Props[number]>[Key],
+                                S.ParserErrorOf<Props[number]>
+                              >
+                            : never
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            } else {
+              const warnings = result.effect.right.get(1)
+              if (warnings._tag === "Some") {
+                return Th.warn(
+                  result.effect.right.get(0) as any,
                   S.compositionE(
                     Chunk.single(
                       S.nextE(
@@ -275,7 +293,7 @@ export function makeTagged<Key extends string>(key: Key) {
                           Chunk.single(
                             S.memberE(
                               tag,
-                              result.effect.left
+                              warnings.value
                             ) as Props[number] extends S.SchemaAny
                               ? S.MemberE<
                                   S.ParsedShapeOf<Props[number]>[Key],
@@ -288,42 +306,16 @@ export function makeTagged<Key extends string>(key: Key) {
                     )
                   )
                 )
-              } else {
-                const warnings = result.effect.right.get(1)
-                if (warnings._tag === "Some") {
-                  return Th.warn(
-                    result.effect.right.get(0) as any,
-                    S.compositionE(
-                      Chunk.single(
-                        S.nextE(
-                          S.unionE(
-                            Chunk.single(
-                              S.memberE(
-                                tag,
-                                warnings.value
-                              ) as Props[number] extends S.SchemaAny
-                                ? S.MemberE<
-                                    S.ParsedShapeOf<Props[number]>[Key],
-                                    S.ParserErrorOf<Props[number]>
-                                  >
-                                : never
-                            )
-                          )
-                        )
-                      )
-                    )
-                  )
-                }
-
-                return Th.succeed(result.effect.right.get(0) as any)
               }
+
+              return Th.succeed(result.effect.right.get(0) as any)
             }
           }
-          return Th.fail(
-            S.compositionE(Chunk.single(S.prevE(S.leafE(S.extractKeyE(key, keys, u)))))
-          )
         }
-      ),
+        return Th.fail(
+          S.compositionE(Chunk.single(S.prevE(S.leafE(S.extractKeyE(key, keys, u)))))
+        )
+      }),
       S.constructor(
         (
           u: {

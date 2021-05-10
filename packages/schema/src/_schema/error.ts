@@ -64,7 +64,8 @@ export interface HasDefaultLeafE {
 // @ts-expect-error
 export abstract class DefaultLeafE<T extends object>
   extends Case<T>
-  implements HasDefaultLeafE {
+  implements HasDefaultLeafE
+{
   readonly [defaultLeafSymbol] = defaultLeafSymbol
 
   abstract get [toTreeSymbol](): Tree<string>
@@ -82,7 +83,8 @@ export type AnyError = SchemaError<LeafError>
 
 export class UnionE<E>
   extends Case<{ readonly errors: Chunk.Chunk<E> }>
-  implements CompoundE<E> {
+  implements CompoundE<E>
+{
   readonly _tag = "Union"
 }
 
@@ -96,7 +98,8 @@ export class ExtractKeyE
     readonly keys: readonly string[]
     readonly actual: unknown
   }>
-  implements Actual<unknown> {
+  implements Actual<unknown>
+{
   readonly _tag = "ExtractKey"
 
   get [toTreeSymbol](): Tree<string> {
@@ -149,7 +152,8 @@ export class NamedE<Name extends string, E>
     readonly name: Name
     readonly error: E
   }>
-  implements SingleE<E> {
+  implements SingleE<E>
+{
   readonly _tag = "Named"
 }
 
@@ -159,7 +163,8 @@ export function namedE<N extends string, E>(name: N, error: E): NamedE<N, E> {
 
 export class StructE<E>
   extends Case<{ readonly errors: Chunk.Chunk<E> }>
-  implements CompoundE<E> {
+  implements CompoundE<E>
+{
   readonly _tag = "Struct"
 }
 
@@ -169,7 +174,8 @@ export function structE<E>(errors: Chunk.Chunk<E>): StructE<E> {
 
 export class CollectionE<E>
   extends Case<{ readonly errors: Chunk.Chunk<E> }>
-  implements CompoundE<E> {
+  implements CompoundE<E>
+{
   readonly _tag = "Collection"
 }
 
@@ -179,7 +185,8 @@ export function chunkE<E>(errors: Chunk.Chunk<E>): CollectionE<E> {
 
 export class UnknownArrayE
   extends DefaultLeafE<{ readonly actual: unknown }>
-  implements Actual<unknown> {
+  implements Actual<unknown>
+{
   readonly _tag = "NotArray"
 
   get [toTreeSymbol]() {
@@ -196,7 +203,8 @@ export class RequiredKeyE<K, E>
     readonly error: E
     readonly key: K
   }>
-  implements SingleE<E> {
+  implements SingleE<E>
+{
   readonly _tag = "RequiredKey"
 }
 
@@ -209,7 +217,8 @@ export class OptionalKeyE<K, E>
     readonly error: E
     readonly key: K
   }>
-  implements SingleE<E> {
+  implements SingleE<E>
+{
   readonly _tag = "OptionalKey"
 }
 
@@ -222,7 +231,8 @@ export class OptionalIndexE<I, E>
     readonly index: I
     readonly error: E
   }>
-  implements SingleE<E> {
+  implements SingleE<E>
+{
   readonly _tag = "OptionalIndex"
 }
 
@@ -242,7 +252,8 @@ export class CompositionE<E>
   extends Case<{
     readonly errors: Chunk.Chunk<E>
   }>
-  implements CompoundE<E> {
+  implements CompoundE<E>
+{
   readonly _tag = "Composition"
 }
 
@@ -252,7 +263,8 @@ export function compositionE<E>(errors: Chunk.Chunk<E>): CompositionE<E> {
 
 export class UnknownRecordE
   extends DefaultLeafE<{ readonly actual: unknown }>
-  implements Actual<unknown> {
+  implements Actual<unknown>
+{
   readonly _tag = "NotRecord"
 
   get [toTreeSymbol]() {
@@ -269,7 +281,8 @@ export class MemberE<M, E>
     readonly member: M
     readonly error: E
   }>
-  implements SingleE<E> {
+  implements SingleE<E>
+{
   readonly _tag = "Member"
 }
 
@@ -281,7 +294,8 @@ export class IntersectionE<E>
   extends Case<{
     readonly errors: Chunk.Chunk<E>
   }>
-  implements CompoundE<E> {
+  implements CompoundE<E>
+{
   readonly _tag = "Intersection"
 }
 
@@ -297,7 +311,8 @@ export class ParseDateE
   extends DefaultLeafE<{
     readonly actual: unknown
   }>
-  implements Actual<unknown> {
+  implements Actual<unknown>
+{
   readonly _tag = "NotDateString"
 
   get [toTreeSymbol]() {
@@ -313,7 +328,8 @@ export class ParseDateMsE
   extends DefaultLeafE<{
     readonly actual: unknown
   }>
-  implements Actual<unknown> {
+  implements Actual<unknown>
+{
   readonly _tag = "NotDateMs"
 
   get [toTreeSymbol]() {
@@ -330,7 +346,8 @@ export class LiteralE<KS extends readonly string[]>
     readonly actual: unknown
     readonly literals: KS
   }>
-  implements Actual<unknown> {
+  implements Actual<unknown>
+{
   readonly _tag = "Literal"
 
   get [toTreeSymbol]() {
@@ -352,7 +369,8 @@ export class InvalidIntegerE
   extends DefaultLeafE<{
     readonly actual: number
   }>
-  implements Actual<number> {
+  implements Actual<number>
+{
   readonly _tag = "NotInteger"
 
   get [toTreeSymbol]() {
@@ -368,7 +386,8 @@ export class PositiveE
   extends DefaultLeafE<{
     readonly actual: number
   }>
-  implements Actual<number> {
+  implements Actual<number>
+{
   readonly _tag = "NotPositive"
 
   get [toTreeSymbol]() {
@@ -386,7 +405,8 @@ export class NonEmptyE<A>
   extends DefaultLeafE<{
     readonly actual: A
   }>
-  implements Actual<A> {
+  implements Actual<A>
+{
   readonly _tag = "NonEmpty"
 
   get [toTreeSymbol]() {
@@ -404,7 +424,8 @@ export class ParseNumberE
   extends DefaultLeafE<{
     readonly actual: unknown
   }>
-  implements Actual<unknown> {
+  implements Actual<unknown>
+{
   readonly _tag = "NotNumber"
 
   get [toTreeSymbol]() {
@@ -420,7 +441,8 @@ export class ParseObjectE
   extends DefaultLeafE<{
     readonly actual: unknown
   }>
-  implements Actual<unknown> {
+  implements Actual<unknown>
+{
   readonly _tag = "NotObject"
 
   get [toTreeSymbol]() {
@@ -436,7 +458,8 @@ export class ParseStringE
   extends DefaultLeafE<{
     readonly actual: unknown
   }>
-  implements Actual<unknown> {
+  implements Actual<unknown>
+{
   readonly _tag = "NotString"
 
   get [toTreeSymbol]() {
@@ -452,7 +475,8 @@ export class ParseBoolE
   extends DefaultLeafE<{
     readonly actual: unknown
   }>
-  implements Actual<unknown> {
+  implements Actual<unknown>
+{
   readonly _tag = "NotBool"
 
   get [toTreeSymbol]() {
@@ -468,7 +492,8 @@ export class ParseUuidE
   extends DefaultLeafE<{
     readonly actual: unknown
   }>
-  implements Actual<unknown> {
+  implements Actual<unknown>
+{
   readonly _tag = "NotUUID"
 
   get [toTreeSymbol]() {

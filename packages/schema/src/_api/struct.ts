@@ -36,35 +36,33 @@ export type RequiredConstructorInput<Props extends Record<PropertyKey, S.SchemaU
   readonly [K in keyof Props]: S.ConstructorInputOf<Props[K]>
 }
 
-export type RequiredConstructorError<
-  Props extends Record<PropertyKey, S.SchemaUPI>
-> = S.StructE<
-  {
-    [K in keyof Props]: S.RequiredKeyE<K, S.ConstructorErrorOf<Props[K]>>
-  }[keyof Props]
->
+export type RequiredConstructorError<Props extends Record<PropertyKey, S.SchemaUPI>> =
+  S.StructE<
+    {
+      [K in keyof Props]: S.RequiredKeyE<K, S.ConstructorErrorOf<Props[K]>>
+    }[keyof Props]
+  >
 
 export type RequiredConstructedShape<Props extends Record<PropertyKey, S.SchemaUPI>> = {
   readonly [K in keyof Props]: S.ConstructedShapeOf<Props[K]>
 }
 
-export type RequiredParserError<
-  Props extends Record<PropertyKey, S.SchemaUPI>
-> = S.CompositionE<
-  | S.PrevE<S.LeafE<S.UnknownRecordE>>
-  | S.NextE<
-      S.CompositionE<
-        | S.PrevE<S.MissingKeysE<keyof Props>>
-        | S.NextE<
-            S.StructE<
-              {
-                [K in keyof Props]: S.RequiredKeyE<K, S.ParserErrorOf<Props[K]>>
-              }[keyof Props]
+export type RequiredParserError<Props extends Record<PropertyKey, S.SchemaUPI>> =
+  S.CompositionE<
+    | S.PrevE<S.LeafE<S.UnknownRecordE>>
+    | S.NextE<
+        S.CompositionE<
+          | S.PrevE<S.MissingKeysE<keyof Props>>
+          | S.NextE<
+              S.StructE<
+                {
+                  [K in keyof Props]: S.RequiredKeyE<K, S.ParserErrorOf<Props[K]>>
+                }[keyof Props]
+              >
             >
-          >
+        >
       >
-    >
->
+  >
 
 export type RequiredEncoded<Props extends Record<PropertyKey, S.SchemaUPI>> = {
   readonly [K in keyof Props]: S.EncodedOf<Props[K]>
@@ -136,130 +134,129 @@ export function required<Props extends Record<PropertyKey, S.SchemaUPI>>(
 
       return _.record(arbsFC as any) as Arbitrary.Arbitrary<RequiredParsedShape<Props>>
     }),
-    S.parser(
-      (u): Th.These<RequiredParserError<Props>, RequiredParsedShape<Props>> => {
-        if (typeof u !== "object" || u == null) {
-          return Th.fail(
-            S.compositionE(Chunk.single(S.prevE(S.leafE(S.unknownRecordE(u)))))
-          )
-        }
-        const missingKeys = []
+    S.parser((u): Th.These<RequiredParserError<Props>, RequiredParsedShape<Props>> => {
+      if (typeof u !== "object" || u == null) {
+        return Th.fail(
+          S.compositionE(Chunk.single(S.prevE(S.leafE(S.unknownRecordE(u)))))
+        )
+      }
+      const missingKeys = []
 
-        for (const k of keys) {
-          if (!(k in u)) {
-            missingKeys.push(k)
-          }
+      for (const k of keys) {
+        if (!(k in u)) {
+          missingKeys.push(k)
         }
+      }
 
-        if (missingKeys.length > 0) {
-          return Th.fail(
-            S.compositionE(
-              Chunk.single(
-                S.nextE(
-                  S.compositionE(
-                    Chunk.single(S.prevE(S.missingKeysE(Chunk.from(missingKeys))))
-                  )
+      if (missingKeys.length > 0) {
+        return Th.fail(
+          S.compositionE(
+            Chunk.single(
+              S.nextE(
+                S.compositionE(
+                  Chunk.single(S.prevE(S.missingKeysE(Chunk.from(missingKeys))))
                 )
               )
             )
           )
-        }
+        )
+      }
 
-        const val = {}
+      const val = {}
 
-        const errorsBuilder = Chunk.builder<
+      const errorsBuilder =
+        Chunk.builder<
           {
             [K in keyof Props]: S.RequiredKeyE<K, S.ParserErrorOf<Props[K]>>
           }[keyof Props]
         >()
 
-        let errored = false
-        let warned = false
+      let errored = false
+      let warned = false
 
-        for (let i = 0; i < keys.length; i++) {
-          const result = Th.result(parsers[i]!(u[keys[i]!]))
-          if (result._tag === "Left") {
-            errorsBuilder.append(S.requiredKeyE(keys[i]!, result.left))
-            errored = true
-          } else {
-            val[keys[i]!] = result.right.get(0)
-            const w = result.right.get(1)
-            if (w._tag === "Some") {
-              errorsBuilder.append(S.requiredKeyE(keys[i]!, w.value))
-              warned = true
-            }
+      for (let i = 0; i < keys.length; i++) {
+        const result = Th.result(parsers[i]!(u[keys[i]!]))
+        if (result._tag === "Left") {
+          errorsBuilder.append(S.requiredKeyE(keys[i]!, result.left))
+          errored = true
+        } else {
+          val[keys[i]!] = result.right.get(0)
+          const w = result.right.get(1)
+          if (w._tag === "Some") {
+            errorsBuilder.append(S.requiredKeyE(keys[i]!, w.value))
+            warned = true
           }
         }
+      }
 
-        const errors = errorsBuilder.build()
+      const errors = errorsBuilder.build()
 
-        if (!errored) {
-          augmentRecord(val)
-          if (warned) {
-            return Th.warn(
-              val as RequiredParsedShape<Props>,
-              S.compositionE(
-                Chunk.single(
-                  S.nextE(S.compositionE(Chunk.single(S.nextE(S.structE(errors)))))
-                )
+      if (!errored) {
+        augmentRecord(val)
+        if (warned) {
+          return Th.warn(
+            val as RequiredParsedShape<Props>,
+            S.compositionE(
+              Chunk.single(
+                S.nextE(S.compositionE(Chunk.single(S.nextE(S.structE(errors)))))
               )
             )
-          }
-          return Th.succeed(val as RequiredParsedShape<Props>)
+          )
         }
+        return Th.succeed(val as RequiredParsedShape<Props>)
+      }
 
-        return Th.fail(
-          S.compositionE(
-            Chunk.single(
-              S.nextE(S.compositionE(Chunk.single(S.nextE(S.structE(errors)))))
-            )
+      return Th.fail(
+        S.compositionE(
+          Chunk.single(
+            S.nextE(S.compositionE(Chunk.single(S.nextE(S.structE(errors)))))
           )
         )
-      }
-    ),
-    S.constructor(
-      (
-        u: RequiredConstructorInput<Props>
-      ): Th.These<RequiredConstructorError<Props>, RequiredConstructedShape<Props>> => {
-        const val = {}
+      )
+    }),
+    S.constructor((u: RequiredConstructorInput<Props>): Th.These<
+      RequiredConstructorError<Props>,
+      RequiredConstructedShape<Props>
+    > => {
+      const val = {}
 
-        const errorsBuilder = Chunk.builder<
+      const errorsBuilder =
+        Chunk.builder<
           {
             [K in keyof Props]: S.RequiredKeyE<K, S.ConstructorErrorOf<Props[K]>>
           }[keyof Props]
         >()
 
-        let errored = false
-        let warned = false
+      let errored = false
+      let warned = false
 
-        for (let i = 0; i < keys.length; i++) {
-          const result = Th.result(constructors[i]!(u[keys[i]!]))
-          if (result._tag === "Left") {
-            errorsBuilder.append(S.requiredKeyE(keys[i]!, result.left))
-            errored = true
-          } else {
-            val[keys[i]!] = result.right.get(0)
-            const w = result.right.get(1)
-            if (w._tag === "Some") {
-              errorsBuilder.append(S.requiredKeyE(keys[i]!, w.value))
-              warned = true
-            }
+      for (let i = 0; i < keys.length; i++) {
+        const result = Th.result(constructors[i]!(u[keys[i]!]))
+        if (result._tag === "Left") {
+          errorsBuilder.append(S.requiredKeyE(keys[i]!, result.left))
+          errored = true
+        } else {
+          val[keys[i]!] = result.right.get(0)
+          const w = result.right.get(1)
+          if (w._tag === "Some") {
+            errorsBuilder.append(S.requiredKeyE(keys[i]!, w.value))
+            warned = true
           }
         }
-
-        const errors = errorsBuilder.build()
-
-        if (!errored) {
-          augmentRecord(val)
-          if (warned) {
-            return Th.warn(val as RequiredConstructedShape<Props>, S.structE(errors))
-          }
-          return Th.succeed(val as RequiredConstructedShape<Props>)
-        }
-
-        return Th.fail(S.structE(errors))
       }
-    ),
+
+      const errors = errorsBuilder.build()
+
+      if (!errored) {
+        augmentRecord(val)
+        if (warned) {
+          return Th.warn(val as RequiredConstructedShape<Props>, S.structE(errors))
+        }
+        return Th.succeed(val as RequiredConstructedShape<Props>)
+      }
+
+      return Th.fail(S.structE(errors))
+    }),
     S.encoder((u) => {
       const res = {}
       for (let i = 0; i < encoders.length; i++) {

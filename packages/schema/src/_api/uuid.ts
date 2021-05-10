@@ -13,7 +13,9 @@ export interface UUIDBrand {
   readonly UUID: unique symbol
 }
 
-export const regexUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+export const regexUUID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 export type UUID = NonEmptyString & UUIDBrand
 
 export const UUIDFromStringIdentifier = Symbol.for("@effect-ts/schema/ids/UUID")

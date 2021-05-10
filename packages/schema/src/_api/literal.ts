@@ -19,9 +19,7 @@ export interface LiteralApi<KS extends readonly string[]> extends ApiSelfType {
     }
   >(
     _: M
-  ) => (
-    ks: S.GetApiSelfType<this, KS[number]>
-  ) => {
+  ) => (ks: S.GetApiSelfType<this, KS[number]>) => {
     [K in keyof M]: ReturnType<M[K]>
   }[keyof M]
 }
