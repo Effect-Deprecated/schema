@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.2.0...@effect-ts/schema@0.2.1) (2021-05-10)
+
+**Note:** Version bump only for package @effect-ts/schema
+
+
+
+
+
 # [0.2.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.1.17...@effect-ts/schema@0.2.0) (2021-05-10)
 
 
