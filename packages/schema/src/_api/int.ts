@@ -4,7 +4,8 @@ import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
-import { fromNumber, number, stringNumber } from "./number"
+import { fromNumber, number, stringNumberFromString } from "./number"
+import { string } from "./string"
 
 export interface IntBrand {
   readonly Int: unique symbol
@@ -17,10 +18,10 @@ export const intFromNumberIdentifier = Symbol.for("@effect-ts/schema/ids/intFrom
 export const intFromNumber: S.Schema<
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
-  number & IntBrand,
+  Int,
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
-  number & IntBrand,
+  Int,
   number,
   {}
 > = pipe(
@@ -39,19 +40,38 @@ export const intFromNumber: S.Schema<
 
 export const stringIntIdentifier = Symbol.for("@effect-ts/schema/ids/stringInt")
 
-export const stringInt: S.Schema<
+export const stringIntFromString: S.Schema<
   string,
   S.CompositionE<
     | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
     | S.PrevE<S.LeafE<S.ParseNumberE>>
   >,
-  number & IntBrand,
+  Int,
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
-  number & IntBrand,
+  Int,
   string,
   {}
-> = stringNumber[">>>"](intFromNumber).id(stringIntIdentifier, {})
+> = stringNumberFromString[">>>"](intFromNumber).id(stringIntIdentifier, {})
+
+export const stringInt: S.Schema<
+  unknown,
+  S.CompositionE<
+    | S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>>
+    | S.NextE<
+        S.CompositionE<
+          | S.PrevE<S.LeafE<S.ParseNumberE>>
+          | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
+        >
+      >
+  >,
+  Int,
+  number,
+  S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
+  Int,
+  string,
+  {}
+> = string[">>>"](stringIntFromString)
 
 export const intIdentifier = Symbol.for("@effect-ts/schema/ids/int")
 
@@ -61,10 +81,10 @@ export const int: S.Schema<
     | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
     | S.PrevE<S.RefinementE<S.LeafE<S.ParseNumberE>>>
   >,
-  number & IntBrand,
+  Int,
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
-  number & IntBrand,
+  Int,
   number,
   {}
 > = number[">>>"](intFromNumber).id(intIdentifier, {})

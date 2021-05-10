@@ -6,7 +6,7 @@ import { pipe } from "@effect-ts/core/Function"
 import * as S from "../_schema"
 import * as Th from "../These"
 import { refinement } from "./refinement"
-import { fromString } from "./string"
+import { fromString, string } from "./string"
 
 export const fromNumberIdentifier = Symbol.for("@effect-ts/schema/ids/fromNumber")
 
@@ -51,7 +51,7 @@ export const number: S.Schema<
 
 export const stringNumberIdentifier = Symbol.for("@effect-ts/schema/ids/stringNumber")
 
-export const stringNumber: S.Schema<
+export const stringNumberFromString: S.Schema<
   string,
   S.LeafE<S.ParseNumberE>,
   number,
@@ -71,3 +71,16 @@ export const stringNumber: S.Schema<
     )
   )
 )["|>"](S.mapParserError((e) => Chunk.unsafeHead(e.errors).error))
+
+export const stringNumber: S.Schema<
+  unknown,
+  S.CompositionE<
+    S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>> | S.NextE<S.LeafE<S.ParseNumberE>>
+  >,
+  number,
+  number,
+  never,
+  number,
+  string,
+  {}
+> = string[">>>"](stringNumberFromString)
