@@ -58,35 +58,15 @@ export interface Model<M, Self extends MO.SchemaAny>
     > {
   [S.schemaField]: Self
 
-  readonly Parser: ParserFor<
-    M extends MO.ParsedShapeOf<Self>
-      ? SchemaForModel<M, Self>
-      : SchemaForModel<MO.ParsedShapeOf<Self>, Self>
-  >
+  readonly Parser: ParserFor<SchemaForModel<M, Self>>
 
-  readonly Constructor: ConstructorFor<
-    M extends MO.ParsedShapeOf<Self>
-      ? SchemaForModel<M, Self>
-      : SchemaForModel<MO.ParsedShapeOf<Self>, Self>
-  >
+  readonly Constructor: ConstructorFor<SchemaForModel<M, Self>>
 
-  readonly Encoder: EncoderFor<
-    M extends MO.ParsedShapeOf<Self>
-      ? SchemaForModel<M, Self>
-      : SchemaForModel<MO.ParsedShapeOf<Self>, Self>
-  >
+  readonly Encoder: EncoderFor<SchemaForModel<M, Self>>
 
-  readonly Guard: GuardFor<
-    M extends MO.ParsedShapeOf<Self>
-      ? SchemaForModel<M, Self>
-      : SchemaForModel<MO.ParsedShapeOf<Self>, Self>
-  >
+  readonly Guard: GuardFor<SchemaForModel<M, Self>>
 
-  readonly Arbitrary: ArbitraryFor<
-    M extends MO.ParsedShapeOf<Self>
-      ? SchemaForModel<M, Self>
-      : SchemaForModel<MO.ParsedShapeOf<Self>, Self>
-  >
+  readonly Arbitrary: ArbitraryFor<SchemaForModel<M, Self>>
 }
 
 export function Model<M>() {
