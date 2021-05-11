@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.2.1...@effect-ts/schema@0.3.0) (2021-05-11)
+
+
+### Bug Fixes
+
+* **schema:** relax constraints ([3af843e](https://github.com/Effect-TS/schema/commit/3af843e3735f7806aeaf8f82542e639c1ee4c566))
+
+
+### Features
+
+* **schema:** constructors should not compose ([7baa95d](https://github.com/Effect-TS/schema/commit/7baa95d3bae0de7e130dced8d01a70d8151273a7))
+* **schema:** introduce Model ([b3ef688](https://github.com/Effect-TS/schema/commit/b3ef688991a47b56f0c04da4853169997344e87f))
+* **schema:** remove constructed shape ([541c807](https://github.com/Effect-TS/schema/commit/541c807e4b5bc2f3d117fe5800be194e44688119))
+* **schema:** remove old composition, begin cleanup ([19e3b3e](https://github.com/Effect-TS/schema/commit/19e3b3e005f5f439dd1e947e1228dda7dadd4fab))
+
+
+
+
+
 ## [0.2.1](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.2.0...@effect-ts/schema@0.2.1) (2021-05-10)
 
 **Note:** Version bump only for package @effect-ts/schema
