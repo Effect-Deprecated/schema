@@ -109,7 +109,7 @@ export function fromChunk<Self extends S.SchemaAny>(
 
 export const chunkIdentifier = Symbol.for("@effect-ts/schema/ids/chunk")
 
-export function chunk<Self extends S.SchemaAny>(
+export function chunk<Self extends S.SchemaUPI>(
   self: Self
 ): S.Schema<
   unknown,
@@ -124,14 +124,10 @@ export function chunk<Self extends S.SchemaAny>(
   readonly S.EncodedOf<Self>[],
   S.ApiOf<Self>
 > {
+  const encodeSelf = Encoder.for(self)
   return pipe(
-    unknownArray,
-    S.constructor((i: Iterable<S.ConstructorInputOf<Self>>) =>
-      Th.succeed(Array.from(i))
-    ),
-    S.compose(fromChunk(self)),
-    S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
-    S.mapApi(() => self.Api as S.ApiOf<Self>),
+    unknownArray[">>>"](fromChunk(self)),
+    S.encoder((_) => Chunk.toArray(Chunk.map_(_, encodeSelf))),
     S.identified(chunkIdentifier, { self })
   )
 }

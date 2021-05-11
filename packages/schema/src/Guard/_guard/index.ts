@@ -33,9 +33,6 @@ export const interpreters: ((schema: S.SchemaAny) => O.Option<Guard<unknown>>)[]
     if (schema instanceof S.SchemaIdentity) {
       return schema.guard
     }
-    if (schema instanceof S.SchemaCompose) {
-      return guardFor(schema.that)
-    }
     if (schema instanceof S.SchemaRefinement) {
       const self = guardFor(schema.self)
       return (u): u is unknown => self(u) && schema.refinement(u)

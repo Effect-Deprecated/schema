@@ -8,7 +8,6 @@ import type { AnyError, CompositionE, NamedE, NextE, PrevE, RefinementE } from "
 import type { ApiSelfType, Schema } from "./schema"
 import {
   SchemaArbitrary,
-  SchemaCompose,
   SchemaConstructor,
   SchemaEncoder,
   SchemaGuard,
@@ -442,100 +441,6 @@ export function refine<E, NewParsedShape extends ParsedShape, ParsedShape>(
   Api
 > {
   return (self) => new SchemaRefinement(self, refinement, error)
-}
-
-export function compose_<
-  ParserInput,
-  ParserError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError,
-  ConstructedShape extends ParsedShape,
-  Encoded,
-  Api,
-  ThatParserError,
-  ThatParsedShape,
-  ThatConstructorError,
-  ThatConstructedShape extends ThatParsedShape,
-  ThatEncoded,
-  ThatApi
->(
-  self: Schema<
-    ParserInput,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    ConstructedShape,
-    Encoded,
-    Api
-  >,
-  that: Schema<
-    ParsedShape,
-    ThatParserError,
-    ThatParsedShape,
-    ConstructedShape,
-    ThatConstructorError,
-    ThatConstructedShape,
-    ThatEncoded,
-    ThatApi
-  >
-): Schema<
-  ParserInput,
-  CompositionE<PrevE<ParserError> | NextE<ThatParserError>>,
-  ThatParsedShape,
-  ConstructorInput,
-  CompositionE<PrevE<ConstructorError> | NextE<ThatConstructorError>>,
-  ThatConstructedShape,
-  ThatEncoded,
-  { Self: Api; That: ThatApi }
-> {
-  return new SchemaCompose(self, that)
-}
-
-export function compose<
-  ParsedShape,
-  ConstructedShape extends ParsedShape & ThatConstructorInput,
-  ThatParserError,
-  ThatParsedShape,
-  ThatConstructorInput,
-  ThatConstructorError,
-  ThatConstructedShape extends ThatParsedShape,
-  ThatEncoded,
-  ThatApi
->(
-  that: Schema<
-    ParsedShape,
-    ThatParserError,
-    ThatParsedShape,
-    ThatConstructorInput,
-    ThatConstructorError,
-    ThatConstructedShape,
-    ThatEncoded,
-    ThatApi
-  >
-) {
-  return <ParserInput, ParserError, ConstructorInput, ConstructorError, Encoded, Api>(
-    self: Schema<
-      ParserInput,
-      ParserError,
-      ParsedShape,
-      ConstructorInput,
-      ConstructorError,
-      ConstructedShape,
-      Encoded,
-      Api
-    >
-  ): Schema<
-    ParserInput,
-    CompositionE<PrevE<ParserError> | NextE<ThatParserError>>,
-    ThatParsedShape,
-    ConstructorInput,
-    CompositionE<PrevE<ConstructorError> | NextE<ThatConstructorError>>,
-    ThatConstructedShape,
-    ThatEncoded,
-    { Self: Api; That: ThatApi }
-  > => new SchemaCompose(self, that)
 }
 
 export function mapParserError<E, E1>(f: (e: E) => E1) {

@@ -12,7 +12,7 @@ import { chunk } from "./chunk"
 
 export const arrayIdentifier = Symbol.for("@effect-ts/schema/ids/array")
 
-export function array<Self extends S.SchemaAny>(
+export function array<Self extends S.SchemaUPI>(
   self: Self
 ): S.Schema<
   unknown,
@@ -21,11 +21,11 @@ export function array<Self extends S.SchemaAny>(
     | S.NextE<S.CollectionE<S.OptionalIndexE<number, S.ParserErrorOf<Self>>>>
   >,
   readonly S.ParsedShapeOf<Self>[],
-  Iterable<S.ConstructorInputOf<Self>>,
-  S.CollectionE<S.OptionalIndexE<number, S.ConstructorErrorOf<Self>>>,
+  readonly S.ParsedShapeOf<Self>[],
+  never,
   readonly S.ConstructedShapeOf<Self>[],
   readonly S.EncodedOf<Self>[],
-  S.ApiOf<Self>
+  {}
 > {
   const guardSelf = Guard.for(self)
   const arbitrarySelf = Arbitrary.for(self)
@@ -37,19 +37,15 @@ export function array<Self extends S.SchemaAny>(
         Array.isArray(u) && u.every(guardSelf)
     ),
     S.parser((u: Chunk.Chunk<S.ParsedShapeOf<Self>>) => Th.succeed(Chunk.toArray(u))),
-    S.encoder((u) => u.map(encodeSelf)),
-    S.constructor((u: Chunk.Chunk<S.ConstructedShapeOf<Self>>) =>
-      Th.succeed(Chunk.toArray(u))
-    ),
+    S.encoder((u): Chunk.Chunk<S.ParsedShapeOf<Self>> => Chunk.from(u)),
     S.arbitrary((_) => _.array(arbitrarySelf(_)))
   )
 
   return pipe(
-    chunk(self),
-    S.compose(fromChunk),
+    chunk(self)[">>>"](fromChunk),
     S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
-    S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
-    S.mapApi((_) => _.Self),
+    S.constructor((_: readonly S.ParsedShapeOf<Self>[]) => Th.succeed(_)),
+    S.encoder((u) => u.map(encodeSelf)),
     S.identified(arrayIdentifier, { self })
   )
 }

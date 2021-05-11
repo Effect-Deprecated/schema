@@ -33,9 +33,6 @@ export const interpreters: ((
     if (schema instanceof S.SchemaIdentity) {
       return (_) => _
     }
-    if (schema instanceof S.SchemaCompose) {
-      return encoderFor(schema.that)
-    }
     if (schema instanceof S.SchemaPipe) {
       const encodeSelf = encoderFor(schema.that)
       const encodeThat = encoderFor(schema.self)

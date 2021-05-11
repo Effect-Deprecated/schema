@@ -31,9 +31,6 @@ export const interpreters: ((schema: S.SchemaAny) => O.Option<Gen<unknown>>)[] =
     if (schema instanceof S.SchemaIdentity) {
       return (_) => _.anything().filter(schema.guard)
     }
-    if (schema instanceof S.SchemaCompose) {
-      return for_(schema.that)
-    }
     if (schema instanceof S.SchemaArbitrary) {
       return schema.arbitrary
     }
