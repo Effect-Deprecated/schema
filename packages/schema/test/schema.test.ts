@@ -1,3 +1,4 @@
+import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import * as T from "@effect-ts/core/Effect"
 import * as E from "@effect-ts/core/Either"
 import * as FC from "fast-check"
@@ -14,28 +15,31 @@ interface IdBrand {
 }
 type Id = S.Int & S.Positive & IdBrand
 
-const idS = S.positiveInt["|>"](S.brand((_) => _ as Id))
+const Id = S.positiveInt["|>"](S.brand((_) => _ as Id))
+const id = Constructor.for(Id)["|>"](S.unsafe)
 
 interface NameBrand {
   readonly NameBrand: unique symbol
 }
 type Name = S.NonEmptyString & NameBrand
 
-const nameS = S.nonEmptyString["|>"](S.brand((_) => _ as Name))
+const Name = S.nonEmptyString["|>"](S.brand((_) => _ as Name))
+const name = Constructor.for(Name)["|>"](S.unsafe)
 
 interface AddressBrand {
   readonly AddressBrand: unique symbol
 }
 type Address = S.NonEmptyString & AddressBrand
 
-const addressS = S.nonEmptyString["|>"](S.brand((_) => _ as Address))
+const Address = S.nonEmptyString["|>"](S.brand((_) => _ as Address))
 
 interface AgeBrand {
   readonly AgeBrand: unique symbol
 }
 type Age = S.Int & S.Positive & AgeBrand
 
-const ageS = S.positiveInt["|>"](S.brand((_) => _ as Age))
+const Age = S.positiveInt["|>"](S.brand((_) => _ as Age))
+const age = Constructor.for(Age)["|>"](S.unsafe)
 
 interface SexBrand {
   readonly SexBrand: unique symbol
@@ -43,42 +47,45 @@ interface SexBrand {
 
 const Sex_ = S.literal("male", "female", "else")
 type Sex = S.ParsedShapeOf<typeof Sex_> & SexBrand
-const sexS = Sex_["|>"](S.brand((_) => _ as Sex))
+const Sex = Sex_["|>"](S.brand((_) => _ as Sex))
+const sex = Constructor.for(Sex)["|>"](S.unsafe)
 
 const Person_ = S.struct({
   required: {
-    Id: idS,
-    Name: nameS,
-    Age: ageS,
-    Sex: sexS
+    Id,
+    Name,
+    Age,
+    Sex
   },
   optional: {
-    Addresses: S.chunk(addressS)
+    Addresses: S.chunk(Address)
   }
 })["|>"](S.named("Person"))
 
 interface Person extends S.ParsedShapeOf<typeof Person_> {}
 
-const personS = S.opaque<Person>()(Person_)
+const Person = S.opaque<Person>()(Person_)
 
-const parsePerson = Parser.for(personS)["|>"](S.condemnFail)
-const guardPerson = Guard.for(personS)
-const createPerson = Constructor.for(personS)["|>"](S.condemnFail)
-const arbitraryPerson = Arbitrary.for(personS)(FC)
+const parsePerson = Parser.for(Person)["|>"](S.condemnFail)
+const guardPerson = Guard.for(Person)
+const createPerson = Constructor.for(Person)["|>"](S.condemnFail)
+const unsafeCreatePerson = Constructor.for(Person)["|>"](S.unsafe)
+const arbitraryPerson = Arbitrary.for(Person)(FC)
 
-const personArrayS = S.chunk(personS)
+const personArrayS = S.chunk(Person)
 
 const parsePersonArray = Parser.for(personArrayS)["|>"](S.condemnFail)
 const createPersonArray = Constructor.for(personArrayS)["|>"](S.condemnFail)
 const guardPersonArray = Guard.for(personArrayS)
 
-const personNoAddressS = personS.Api.omit("Addresses")
+const personNoAddressS = Person.Api.omit("Addresses")
 
 const createPersonNoAddresses = Constructor.for(personNoAddressS)["|>"](S.condemnFail)
 
 const partialAddressS = S.partial({
   streetName: S.string["|>"](S.nonEmpty)
 })
+const streetName = Constructor.for(partialAddressS.Api.props.streetName)["|>"](S.unsafe)
 
 const parsePartialAddress = Parser.for(partialAddressS)["|>"](S.condemnFail)
 const createPartialAddress = Constructor.for(partialAddressS)["|>"](S.condemnFail)
@@ -128,41 +135,14 @@ describe("Schema", () => {
     }
   })
   it("should create person", async () => {
-    const result = await T.runPromise(
-      T.either(
-        createPerson({
-          Age: 30,
-          Id: 0,
-          Name: "",
-          Sex: "male",
-          Addresses: []
-        })
-      )
-    )
-    expect(result._tag).equals("Left")
-    if (result._tag === "Left") {
-      expect(result.left).equals(
-        new S.CondemnException({
-          message:
-            "1 error(s) found while processing Person\n" +
-            "└─ 1 error(s) found while processing an intersection\n" +
-            "   └─ 1 error(s) found while processing member 0\n" +
-            "      └─ 1 error(s) found while processing a struct\n" +
-            '         └─ 1 error(s) found while processing required key "Name"\n' +
-            "            └─ 1 error(s) found while processing a refinement\n" +
-            '               └─ cannot process "", expected to be not empty'
-        })
-      )
-    }
-
     const result_ok = await T.runPromise(
       T.either(
         createPerson({
-          Age: 30,
-          Id: 0,
-          Name: "Mike",
-          Sex: "male",
-          Addresses: []
+          Age: 30 as Age,
+          Id: 0 as Id,
+          Name: "Mike" as Name,
+          Sex: "male" as Sex,
+          Addresses: Chunk.empty<Address>()
         })
       )
     )
@@ -222,13 +202,13 @@ describe("Schema", () => {
     const result_ok_2 = await T.runPromise(
       T.either(
         createPersonArray([
-          {
-            Age: 30,
-            Id: 0,
-            Name: "Mike",
-            Sex: "male",
-            Addresses: []
-          }
+          unsafeCreatePerson({
+            Age: age(30),
+            Id: id(0),
+            Name: name("Mike"),
+            Sex: sex("male"),
+            Addresses: Chunk.empty()
+          })
         ])
       )
     )
@@ -246,14 +226,14 @@ describe("Schema", () => {
     FC.assert(
       FC.property(arbitraryPerson, (p) => {
         expect(["E", "F", "M"]).toContain(
-          sexS.Api.matchW({
+          Sex.Api.matchW({
             else: () => "E" as const,
             female: () => "F" as const,
             male: () => "M" as const
           })(p.Sex)
         )
         expect(["E", "F", "M"]).toContain(
-          sexS.Api.matchS({
+          Sex.Api.matchS({
             else: () => "E",
             female: () => "F",
             male: () => "M"
@@ -267,10 +247,10 @@ describe("Schema", () => {
     const result = await T.runPromise(
       T.either(
         createPersonNoAddresses({
-          Age: 30,
-          Id: 0,
-          Name: "Mike",
-          Sex: "male"
+          Age: age(30),
+          Id: id(0),
+          Name: name("Mike"),
+          Sex: sex("male")
         })
       )
     )
@@ -339,32 +319,12 @@ describe("Schema", () => {
       const create_ok_2 = yield* _(
         T.either(
           createPartialAddress({
-            streetName: "ok"
+            streetName: streetName("ok")
           })
         )
       )
 
       expect(create_ok_2._tag).toEqual("Right")
-
-      const create_not_ok = yield* _(
-        T.either(
-          createPartialAddress({
-            streetName: ""
-          })
-        )
-      )
-
-      expect(create_not_ok).toEqual(
-        E.left(
-          new S.CondemnException({
-            message:
-              "1 error(s) found while processing a struct\n" +
-              '└─ 1 error(s) found while processing optional key "streetName"\n' +
-              "   └─ 1 error(s) found while processing a refinement\n" +
-              '      └─ cannot process "", expected to be not empty'
-          })
-        )
-      )
     })["|>"](T.runPromise))
 
   it("arbitrary partial", () => {

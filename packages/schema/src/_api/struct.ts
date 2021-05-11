@@ -6,15 +6,13 @@ import { pipe } from "@effect-ts/core/Function"
 import * as S from "../_schema"
 import { augmentRecord } from "../_utils"
 import * as Arbitrary from "../Arbitrary"
-import * as Constructor from "../Constructor"
 import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
 import { intersect_ } from "./intersect"
 import type {
-  PartialApi,
-  PartialConstructorError,
+  PartialApiFields,
   PartialConstructorInput,
   PartialEncoded,
   PartialParsedShape,
@@ -32,15 +30,8 @@ export type RequiredParsedShape<Props extends Record<PropertyKey, S.SchemaUPI>> 
 }
 
 export type RequiredConstructorInput<Props extends Record<PropertyKey, S.SchemaUPI>> = {
-  readonly [K in keyof Props]: S.ConstructorInputOf<Props[K]>
+  readonly [K in keyof Props]: S.ParsedShapeOf<Props[K]>
 }
-
-export type RequiredConstructorError<Props extends Record<PropertyKey, S.SchemaUPI>> =
-  S.StructE<
-    {
-      [K in keyof Props]: S.RequiredKeyE<K, S.ConstructorErrorOf<Props[K]>>
-    }[keyof Props]
-  >
 
 export type RequiredParserError<Props extends Record<PropertyKey, S.SchemaUPI>> =
   S.CompositionE<
@@ -68,7 +59,7 @@ export type RequiredSchema<Props extends Record<PropertyKey, S.SchemaUPI>> = S.S
   RequiredParserError<Props>,
   RequiredParsedShape<Props>,
   RequiredConstructorInput<Props>,
-  RequiredConstructorError<Props>,
+  never,
   RequiredEncoded<Props>,
   {
     omit: <KS extends readonly (keyof Props)[]>(
@@ -78,6 +69,7 @@ export type RequiredSchema<Props extends Record<PropertyKey, S.SchemaUPI>> = S.S
       ...ks: KS
     ) => RequiredSchema<{ [k in KS[number]]: Props[k] }>
     fields: RequiredApi<Props>
+    props: Props
   }
 >
 
@@ -89,7 +81,6 @@ export function required<Props extends Record<PropertyKey, S.SchemaUPI>>(
   const keys = Object.keys(props)
   const guards = keys.map((k) => Guard.for(props[k]!))
   const parsers = keys.map((k) => Parser.for(props[k]!))
-  const constructors = keys.map((k) => Constructor.for(props[k]!))
   const encoders = keys.map((k) => Encoder.for(props[k]!))
 
   const guard = (
@@ -208,49 +199,11 @@ export function required<Props extends Record<PropertyKey, S.SchemaUPI>>(
         )
       )
     }),
-    S.constructor((u: RequiredConstructorInput<Props>): Th.These<
-      RequiredConstructorError<Props>,
-      RequiredParsedShape<Props>
-    > => {
-      const val = {}
-
-      const errorsBuilder =
-        Chunk.builder<
-          {
-            [K in keyof Props]: S.RequiredKeyE<K, S.ConstructorErrorOf<Props[K]>>
-          }[keyof Props]
-        >()
-
-      let errored = false
-      let warned = false
-
-      for (let i = 0; i < keys.length; i++) {
-        const result = Th.result(constructors[i]!(u[keys[i]!]))
-        if (result._tag === "Left") {
-          errorsBuilder.append(S.requiredKeyE(keys[i]!, result.left))
-          errored = true
-        } else {
-          val[keys[i]!] = result.right.get(0)
-          const w = result.right.get(1)
-          if (w._tag === "Some") {
-            errorsBuilder.append(S.requiredKeyE(keys[i]!, w.value))
-            warned = true
-          }
-        }
-      }
-
-      const errors = errorsBuilder.build()
-
-      if (!errored) {
-        augmentRecord(val)
-        if (warned) {
-          return Th.warn(val as RequiredParsedShape<Props>, S.structE(errors))
-        }
-        return Th.succeed(val as RequiredParsedShape<Props>)
-      }
-
-      return Th.fail(S.structE(errors))
-    }),
+    S.constructor(
+      (
+        u: RequiredConstructorInput<Props>
+      ): Th.These<never, RequiredParsedShape<Props>> => Th.succeed(u)
+    ),
     S.encoder((u) => {
       const res = {}
       for (let i = 0; i < encoders.length; i++) {
@@ -288,7 +241,8 @@ export function required<Props extends Record<PropertyKey, S.SchemaUPI>>(
           }
           return required(np)
         },
-        fields
+        fields,
+        props
       }
     }),
     S.identified(requiredIdentifier, { props })
@@ -312,13 +266,10 @@ export type StructSchema<
   >,
   RequiredParsedShape<Required> & PartialParsedShape<Partial>,
   RequiredConstructorInput<Required> & PartialConstructorInput<Partial>,
-  S.IntersectionE<
-    | S.MemberE<0, RequiredConstructorError<Required>>
-    | S.MemberE<1, PartialConstructorError<Partial>>
-  >,
+  never,
   RequiredEncoded<Required> & PartialEncoded<Partial>,
   {
-    fields: RequiredApi<Required> & PartialApi<Partial>
+    fields: RequiredApi<Required> & PartialApiFields<Partial>
     omit: <KS extends readonly (keyof Required | keyof Partial)[]>(
       ...ks: KS
     ) => StructSchema<
@@ -331,6 +282,7 @@ export type StructSchema<
       { [k in KS[number] & keyof Required]: Required[k] },
       { [k in KS[number] & keyof Partial]: Partial[k] }
     >
+    props: Required & Partial
   }
 >
 
@@ -408,7 +360,8 @@ export function struct<
             }
             return struct({ required: nr, optional: np })
           },
-          fields: { ...l.Api.fields, ...r.Api.fields }
+          fields: { ...l.Api.fields, ...r.Api.fields },
+          props: { ...l.Api.props, ...r.Api.props }
         }))
       )
     )

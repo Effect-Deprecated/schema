@@ -6,13 +6,12 @@ import { pipe } from "@effect-ts/core/Function"
 import * as S from "../_schema"
 import { augmentRecord } from "../_utils"
 import * as Arbitrary from "../Arbitrary"
-import * as Constructor from "../Constructor"
 import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
 
-export type PartialApi<Props extends Record<PropertyKey, S.SchemaUPI>> = {
+export type PartialApiFields<Props extends Record<PropertyKey, S.SchemaUPI>> = {
   readonly [K in keyof Props]: S.ApiOf<Props[K]>
 }
 
@@ -21,15 +20,8 @@ export type PartialParsedShape<Props extends Record<PropertyKey, S.SchemaUPI>> =
 }
 
 export type PartialConstructorInput<Props extends Record<PropertyKey, S.SchemaUPI>> = {
-  readonly [K in keyof Props]?: S.ConstructorInputOf<Props[K]>
+  readonly [K in keyof Props]?: S.ParsedShapeOf<Props[K]>
 }
-
-export type PartialConstructorError<Props extends Record<PropertyKey, S.SchemaUPI>> =
-  S.StructE<
-    {
-      [K in keyof Props]: S.OptionalKeyE<K, S.ConstructorErrorOf<Props[K]>>
-    }[keyof Props]
-  >
 
 export type PartialParserError<Props extends Record<PropertyKey, S.SchemaUPI>> =
   S.CompositionE<
@@ -47,22 +39,33 @@ export type PartialEncoded<Props extends Record<PropertyKey, S.SchemaUPI>> = {
   readonly [K in keyof Props]?: S.EncodedOf<Props[K]>
 }
 
+export interface PartialApi<Props extends Record<PropertyKey, S.SchemaUPI>> {
+  omit: <KS extends readonly (keyof Props)[]>(
+    ...ks: KS
+  ) => PartialSchema<
+    {
+      [k in Exclude<keyof Props, KS[number]>]: Props[k]
+    }
+  >
+  pick: <KS extends readonly (keyof Props)[]>(
+    ...ks: KS
+  ) => PartialSchema<
+    {
+      [k in KS[number]]: Props[k]
+    }
+  >
+  fields: PartialApiFields<Props>
+  props: Props
+}
+
 export type PartialSchema<Props extends Record<PropertyKey, S.SchemaUPI>> = S.Schema<
   unknown,
   PartialParserError<Props>,
   PartialParsedShape<Props>,
   PartialConstructorInput<Props>,
-  PartialConstructorError<Props>,
+  never,
   PartialEncoded<Props>,
-  {
-    omit: <KS extends readonly (keyof Props)[]>(
-      ...ks: KS
-    ) => PartialSchema<{ [k in Exclude<keyof Props, KS[number]>]: Props[k] }>
-    pick: <KS extends readonly (keyof Props)[]>(
-      ...ks: KS
-    ) => PartialSchema<{ [k in KS[number]]: Props[k] }>
-    fields: PartialApi<Props>
-  }
+  PartialApi<Props>
 >
 
 export const partialIdentifier = Symbol.for("@effect-ts/schema/ids/partial")
@@ -73,7 +76,6 @@ export function partial<Props extends Record<PropertyKey, S.SchemaUPI>>(
   const keys = Object.keys(props)
   const guards = keys.map((k) => Guard.for(props[k]!))
   const parsers = keys.map((k) => Parser.for(props[k]!))
-  const constructors = keys.map((k) => Constructor.for(props[k]!))
   const encoders = keys.map((k) => Encoder.for(props[k]!))
 
   const guard = (
@@ -159,51 +161,10 @@ export function partial<Props extends Record<PropertyKey, S.SchemaUPI>>(
 
       return Th.fail(S.compositionE(Chunk.single(S.nextE(S.structE(errors)))))
     }),
-    S.constructor((u: PartialConstructorInput<Props>): Th.These<
-      PartialConstructorError<Props>,
-      PartialParsedShape<Props>
-    > => {
-      const val = {}
-
-      const errorsBuilder =
-        Chunk.builder<
-          {
-            [K in keyof Props]: S.OptionalKeyE<K, S.ConstructorErrorOf<Props[K]>>
-          }[keyof Props]
-        >()
-
-      let errored = false
-      let warned = false
-
-      for (let i = 0; i < keys.length; i++) {
-        if (keys[i]! in u && typeof u[keys[i]!] !== "undefined") {
-          const result = Th.result(constructors[i]!(u[keys[i]!]))
-          if (result._tag === "Left") {
-            errorsBuilder.append(S.optionalKeyE(keys[i]!, result.left))
-            errored = true
-          } else {
-            val[keys[i]!] = result.right.get(0)
-            const w = result.right.get(1)
-            if (w._tag === "Some") {
-              errorsBuilder.append(S.optionalKeyE(keys[i]!, w.value))
-              warned = true
-            }
-          }
-        }
-      }
-
-      const errors = errorsBuilder.build()
-
-      if (!errored) {
-        augmentRecord(val)
-        if (warned) {
-          return Th.warn(val as PartialParsedShape<Props>, S.structE(errors))
-        }
-        return Th.succeed(val as PartialParsedShape<Props>)
-      }
-
-      return Th.fail(S.structE(errors))
-    }),
+    S.constructor(
+      (u: PartialConstructorInput<Props>): Th.These<never, PartialParsedShape<Props>> =>
+        Th.succeed(u)
+    ),
     S.encoder((u) => {
       const res = {}
       for (let i = 0; i < encoders.length; i++) {
@@ -243,7 +204,8 @@ export function partial<Props extends Record<PropertyKey, S.SchemaUPI>>(
           }
           return partial(np)
         },
-        fields
+        fields,
+        props
       }
     }),
     S.identified(partialIdentifier, { props })

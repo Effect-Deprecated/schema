@@ -5,7 +5,6 @@ import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
 import * as Arbitrary from "../Arbitrary"
-import * as Constructor from "../Constructor"
 import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
@@ -20,14 +19,13 @@ export function fromChunk<Self extends S.SchemaAny>(
   readonly S.ParserInputOf<Self>[],
   S.CollectionE<S.OptionalIndexE<number, ReturnType<Self["_ParserError"]>>>,
   Chunk.Chunk<ReturnType<Self["_ParsedShape"]>>,
-  Iterable<S.ConstructorInputOf<Self>>,
-  S.CollectionE<S.OptionalIndexE<number, ReturnType<Self["_ConstructorError"]>>>,
+  Iterable<S.ParsedShapeOf<Self>>,
+  never,
   readonly S.EncodedOf<Self>[],
   S.ApiOf<Self>
 > {
   const guard = Guard.for(self)
   const arb = Arbitrary.for(self)
-  const create = Constructor.for(self)
   const parse = Parser.for(self)
   const refinement = (_: unknown): _ is Chunk.Chunk<S.ParsedShapeOf<Self>> =>
     Chunk.isChunk(_) && Chunk.every_(_, guard)
@@ -67,37 +65,7 @@ export function fromChunk<Self extends S.SchemaAny>(
       }
       return Th.succeed(b.build())
     }),
-    S.constructor((i: Iterable<S.ConstructorInputOf<Self>>) => {
-      const b = Chunk.builder<S.ParsedShapeOf<Self>>()
-      const e = Chunk.builder<S.OptionalIndexE<number, S.ConstructorErrorOf<Self>>>()
-      let err = false
-      let j = 0
-      let war = false
-      for (const a of i) {
-        const res = Th.result(create(a))
-        if (res._tag === "Right") {
-          if (!err) {
-            b.append(res.right.get(0))
-            const w = res.right.get(1)
-            if (w._tag === "Some") {
-              e.append(S.optionalIndexE(j, w.value))
-              war = true
-            }
-          }
-        } else {
-          err = true
-          e.append(S.optionalIndexE(j, res.left))
-        }
-        j++
-      }
-      if (err) {
-        return Th.fail(S.chunkE(e.build()))
-      }
-      if (war) {
-        return Th.warn(b.build(), S.chunkE(e.build()))
-      }
-      return Th.succeed(b.build())
-    }),
+    S.constructor((i: Iterable<S.ParsedShapeOf<Self>>) => Th.succeed(Chunk.from(i))),
     S.encoder(
       (_) => Chunk.toArray(Chunk.map_(_, encode)) as readonly S.EncodedOf<Self>[]
     ),
@@ -117,8 +85,8 @@ export function chunk<Self extends S.SchemaUPI>(
     | S.NextE<S.CollectionE<S.OptionalIndexE<number, S.ParserErrorOf<Self>>>>
   >,
   Chunk.Chunk<S.ParsedShapeOf<Self>>,
-  Iterable<S.ConstructorInputOf<Self>>,
-  S.CollectionE<S.OptionalIndexE<number, S.ConstructorErrorOf<Self>>>,
+  Iterable<S.ParsedShapeOf<Self>>,
+  never,
   readonly S.EncodedOf<Self>[],
   S.ApiOf<Self>
 > {

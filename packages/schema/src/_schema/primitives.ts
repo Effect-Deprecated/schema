@@ -48,8 +48,8 @@ export function opaque<Shape>() {
 export function recursive<
   ParserInput,
   ParsedShape,
-  ConstructorInput,
   Encoded,
+  ConstructorInput = ParsedShape,
   ParserError = AnyError,
   ConstructorError = AnyError
 >(

@@ -21,5 +21,7 @@ export function brand<ParsedShape, B extends ParsedShape>(_: (_: ParsedShape) =>
     ConstructorError,
     Encoded,
     Api & ApiSelfType<B>
-  > => self as any
+  > => {
+    return self as any
+  }
 }

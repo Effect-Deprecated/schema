@@ -11,17 +11,12 @@ export interface Person {
   readonly friends: Chunk.Chunk<Person>
 }
 
-export interface PersonInput {
-  readonly id: string
-  readonly friends: Iterable<PersonInput>
-}
-
 export interface PersonEncoded {
   readonly id: string
   readonly friends: readonly PersonEncoded[]
 }
 
-const personS = S.recursive<unknown, Person, PersonInput, PersonEncoded>((F) =>
+const personS = S.recursive<unknown, Person, PersonEncoded>((F) =>
   S.struct({
     required: {
       id: S.string,
