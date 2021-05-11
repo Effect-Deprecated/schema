@@ -138,10 +138,10 @@ describe("Schema", () => {
     const result_ok = await T.runPromise(
       T.either(
         createPerson({
-          Age: 30 as Age,
-          Id: 0 as Id,
-          Name: "Mike" as Name,
-          Sex: "male" as Sex,
+          Age: age(30),
+          Id: id(0),
+          Name: name("Mike"),
+          Sex: sex("male"),
           Addresses: Chunk.empty<Address>()
         })
       )
