@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.3.0...@effect-ts/schema@0.4.0) (2021-05-11)
+
+
+### Features
+
+* **schema:** automatic name via compiler plugin ([696e40a](https://github.com/Effect-TS/schema/commit/696e40a25f8c52cf202123d732fd752e9d7b7a58))
+
+
+
+
+
 # [0.3.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.2.1...@effect-ts/schema@0.3.0) (2021-05-11)
 
 
