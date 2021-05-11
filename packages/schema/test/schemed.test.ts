@@ -3,11 +3,10 @@ import { pipe } from "@effect-ts/core/Function"
 import * as FC from "fast-check"
 
 import * as MO from "../src"
-import * as Arbitrary from "../src/Arbitrary"
-import * as Guard from "../src/Guard"
+import { Model } from "../src/_api/model"
 import * as Parser from "../src/Parser"
 
-export class Person extends MO.Schemed(
+export class Person extends Model<Person>()(
   pipe(
     MO.required({
       firstName: MO.string,
@@ -16,33 +15,28 @@ export class Person extends MO.Schemed(
     MO.tag("Person"),
     MO.withDefaultConstructorField("firstName", () => "Mike")
   )
-) {
-  static Model = MO.schema(Person)
-}
+) {}
 
-export class Animal extends MO.Schemed(
+export class Animal extends Model<Animal>()(
   pipe(
     MO.required({
       size: MO.literal("small", "mid")
     }),
     MO.tag("Animal")
   )
-) {
-  static Model = MO.schema(Animal)
-}
+) {}
 
-const PersonOrAnimal = MO.tagged(Person.Model, Animal.Model)
+const PersonOrAnimal = MO.tagged(Person, Animal)
 
-const parsePerson = Parser.for(Person.Model)["|>"](MO.condemnFail)
+const parsePerson = Person.Parser["|>"](MO.condemnFail)
 const parsePersonOrAnimal = Parser.for(PersonOrAnimal)["|>"](MO.condemnFail)
-const isPerson = Guard.for(Person.Model)
 
 describe("Schemed", () => {
   it("construct objects", () => {
     const person = new Person({ lastName: "Arnaldi" })
     expect(person.firstName).toEqual("Mike")
     expect(person._tag).toEqual("Person")
-    expect(isPerson(person)).toEqual(true)
+    expect(Person.Guard(person)).toEqual(true)
     const newPerson = person.copy({ firstName: "Michael" })
     expect(newPerson).equals(new Person({ firstName: "Michael", lastName: "Arnaldi" }))
   })
@@ -56,7 +50,7 @@ describe("Schemed", () => {
     )
     const person2 = new Person({ firstName: "Mike", lastName: "Arnaldi" })
 
-    expect(isPerson(person)).toEqual(true)
+    expect(Person.Guard(person)).toEqual(true)
     expect(person).equals(person2)
   })
   it("parse tagged", async () => {
@@ -69,10 +63,10 @@ describe("Schemed", () => {
     )
     const person2 = new Person({ firstName: "Mike", lastName: "Arnaldi" })
 
-    expect(isPerson(person)).toEqual(true)
+    expect(Person.Guard(person)).toEqual(true)
     expect(person).equals(person2)
   })
   it("arbitrary", () => {
-    FC.check(FC.property(Arbitrary.for(Person.Model)(FC), isPerson))
+    FC.check(FC.property(Person.Arbitrary(FC), Person.Guard))
   })
 })
