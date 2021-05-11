@@ -13,7 +13,8 @@ export default function augmentName(_program: ts.Program) {
             ts.isCallExpression(node) &&
             ts.isCallExpression(node.expression) &&
             node.expression.typeArguments &&
-            node.expression.typeArguments.length === 1
+            node.expression.typeArguments.length === 1 &&
+            node.expression.arguments.length === 0
           ) {
             const signature = checker.getResolvedSignature(node.expression)
 
