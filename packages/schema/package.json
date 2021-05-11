@@ -38,7 +38,8 @@
       "Encoder",
       "Guard",
       "Parser",
-      "These"
+      "These",
+      "TS"
     ]
   }
 }

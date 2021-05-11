@@ -8,8 +8,9 @@
     "removeComments": false,
     "plugins": [
       { "transform": "@effect-ts/tracing-plugin" },
-      { "transform": "typescript-transform-paths" }
+      { "transform": "./src/TS/index.ts" }
+      //{ "transform": "typescript-transform-paths" }
     ]
   },
-  "include": ["./src/collections.ts"]
+  "include": ["./test/schemed.test.ts"]
 }

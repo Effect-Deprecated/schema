@@ -1,4 +1,5 @@
 import * as MO from "../_schema"
+import { named } from "../_schema"
 import * as Arbitrary from "../Arbitrary"
 import * as Constructor from "../Constructor"
 import * as Encoder from "../Encoder"
@@ -67,11 +68,14 @@ export interface Model<M, Self extends MO.SchemaAny>
   readonly Arbitrary: ArbitraryFor<SchemaForModel<M, Self>>
 }
 
-export function Model<M>() {
+/**
+ * @inject genericName
+ */
+export function Model<M>(__name?: string) {
   return <Self extends MO.Schema<any, any, any, any, any, any, any>>(
     self: Self
   ): Model<M, Self> => {
-    const schemed = S.Schemed(self)
+    const schemed = S.Schemed(__name ? named(__name)(self) : self)
     const schema = S.schema(schemed)
 
     Object.defineProperty(schemed, MO.SchemaContinuationSymbol, {

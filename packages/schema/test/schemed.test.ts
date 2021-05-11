@@ -1,4 +1,5 @@
 import * as T from "@effect-ts/core/Effect"
+import * as Ex from "@effect-ts/core/Effect/Exit"
 import { pipe } from "@effect-ts/core/Function"
 import * as FC from "fast-check"
 
@@ -32,6 +33,24 @@ const parsePerson = Person.Parser["|>"](MO.condemnFail)
 const parsePersonOrAnimal = Parser.for(PersonOrAnimal)["|>"](MO.condemnFail)
 
 describe("Schemed", () => {
+  it("parse fail", async () => {
+    const res = await T.runPromiseExit(
+      parsePerson({
+        _tag: "Person",
+        firstName: "Mike"
+      })
+    )
+    expect(res).toEqual(
+      Ex.fail(
+        new MO.CondemnException({
+          message:
+            "1 error(s) found while processing Person\n" +
+            "└─ 1 error(s) found while checking keys\n" +
+            '   └─ missing required key "lastName"'
+        })
+      )
+    )
+  })
   it("construct objects", () => {
     const person = new Person({ lastName: "Arnaldi" })
     expect(person.firstName).toEqual("Mike")
