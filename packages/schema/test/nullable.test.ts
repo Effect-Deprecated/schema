@@ -45,7 +45,6 @@ it("decodes", async () => {
 
   expect(p0).toEqual(O.some(dO))
   expect(pnull).toEqual(O.none)
-  console.log(pfail)
   expect(pfail._tag).toEqual("Failure")
   expect(p1[0]).not.toBe(d)
   expect(p1[0]).toEqual(dO)
