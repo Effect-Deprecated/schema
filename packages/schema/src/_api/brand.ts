@@ -2,12 +2,7 @@
 
 import type { ApiSelfType, Schema } from "../_schema/schema"
 
-export function brand<
-  ParsedShape,
-  ConstructedShape extends ParsedShape,
-  A extends ConstructedShape,
-  B extends A
->(_: (_: A) => B) {
+export function brand<ParsedShape, B extends ParsedShape>(_: (_: ParsedShape) => B) {
   return <ParserInput, ParserError, ConstructorInput, ConstructorError, Encoded, Api>(
     self: Schema<
       ParserInput,
@@ -15,7 +10,6 @@ export function brand<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >
@@ -25,7 +19,6 @@ export function brand<
     B,
     ConstructorInput,
     ConstructorError,
-    B,
     Encoded,
     Api & ApiSelfType<B>
   > => self as any

@@ -22,7 +22,6 @@ export function fromChunk<Self extends S.SchemaAny>(
   Chunk.Chunk<ReturnType<Self["_ParsedShape"]>>,
   Iterable<S.ConstructorInputOf<Self>>,
   S.CollectionE<S.OptionalIndexE<number, ReturnType<Self["_ConstructorError"]>>>,
-  Chunk.Chunk<ReturnType<Self["_ConstructedShape"]>>,
   readonly S.EncodedOf<Self>[],
   S.ApiOf<Self>
 > {
@@ -69,7 +68,7 @@ export function fromChunk<Self extends S.SchemaAny>(
       return Th.succeed(b.build())
     }),
     S.constructor((i: Iterable<S.ConstructorInputOf<Self>>) => {
-      const b = Chunk.builder<S.ConstructedShapeOf<Self>>()
+      const b = Chunk.builder<S.ParsedShapeOf<Self>>()
       const e = Chunk.builder<S.OptionalIndexE<number, S.ConstructorErrorOf<Self>>>()
       let err = false
       let j = 0
@@ -120,7 +119,6 @@ export function chunk<Self extends S.SchemaUPI>(
   Chunk.Chunk<S.ParsedShapeOf<Self>>,
   Iterable<S.ConstructorInputOf<Self>>,
   S.CollectionE<S.OptionalIndexE<number, S.ConstructorErrorOf<Self>>>,
-  Chunk.Chunk<S.ConstructedShapeOf<Self>>,
   readonly S.EncodedOf<Self>[],
   S.ApiOf<Self>
 > {

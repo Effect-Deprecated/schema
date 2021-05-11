@@ -18,7 +18,6 @@ export function positive<
   ParsedShape extends number,
   ConstructorInput,
   ConstructorError,
-  ConstructedShape extends ParsedShape,
   Encoded,
   Api
 >(
@@ -28,7 +27,6 @@ export function positive<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape & number,
     Encoded,
     Api
   >
@@ -40,7 +38,6 @@ export function positive<
   S.CompositionE<
     S.PrevE<ConstructorError> | S.NextE<S.RefinementE<S.LeafE<S.PositiveE>>>
   >,
-  ConstructedShape & PositiveBrand,
   Encoded,
   Api
 > {

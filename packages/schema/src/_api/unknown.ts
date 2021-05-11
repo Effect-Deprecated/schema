@@ -5,13 +5,5 @@ import { identified, identity } from "../_schema"
 
 export const unknownIdentifier = Symbol.for("@effect-ts/schema/ids/unknown")
 
-export const unknown: Schema<
-  unknown,
-  never,
-  unknown,
-  unknown,
-  never,
-  unknown,
-  unknown,
-  {}
-> = identity((_): _ is unknown => true)["|>"](identified(unknownIdentifier, {}))
+export const unknown: Schema<unknown, never, unknown, unknown, never, unknown, {}> =
+  identity((_): _ is unknown => true)["|>"](identified(unknownIdentifier, {}))

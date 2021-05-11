@@ -15,7 +15,6 @@ export const object: S.Schema<
   {},
   never,
   {},
-  {},
   {}
 > = pipe(
   refinement(

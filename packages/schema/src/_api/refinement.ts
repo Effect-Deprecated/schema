@@ -20,7 +20,6 @@ export function refinement<E, NewParsedShape>(
   NewParsedShape,
   unknown,
   RefinementE<E>,
-  NewParsedShape,
   unknown,
   {}
 > {

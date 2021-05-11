@@ -21,7 +21,7 @@ export interface PersonEncoded {
   readonly friends: readonly PersonEncoded[]
 }
 
-const personS = S.recursive<unknown, Person, PersonInput, Person, PersonEncoded>((F) =>
+const personS = S.recursive<unknown, Person, PersonInput, PersonEncoded>((F) =>
   S.struct({
     required: {
       id: S.string,

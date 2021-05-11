@@ -57,7 +57,6 @@ function encoderFor<
   ParsedShape,
   ConstructorInput,
   ConstructorError,
-  ConstructedShape extends ParsedShape,
   Encoded,
   Api
 >(
@@ -67,7 +66,6 @@ function encoderFor<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   >

@@ -34,7 +34,6 @@ export function literal<KS extends readonly string[]>(
   KS[number],
   KS[number],
   never,
-  KS[number],
   string,
   LiteralApi<KS>
 > {

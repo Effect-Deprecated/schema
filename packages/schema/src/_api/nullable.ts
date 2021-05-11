@@ -19,7 +19,6 @@ export function nullable<Self extends S.SchemaAny>(
   O.Option<ReturnType<Self["_ParsedShape"]>>,
   O.Option<S.ConstructorInputOf<Self>>,
   S.LeafE<ReturnType<Self["_ConstructorError"]>>,
-  O.Option<ReturnType<Self["_ConstructedShape"]>>,
   S.EncodedOf<Self> | null,
   S.ApiOf<Self>
 > {

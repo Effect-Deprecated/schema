@@ -31,10 +31,6 @@ export type PartialConstructorError<Props extends Record<PropertyKey, S.SchemaUP
     }[keyof Props]
   >
 
-export type PartialConstructedShape<Props extends Record<PropertyKey, S.SchemaUPI>> = {
-  readonly [K in keyof Props]?: S.ConstructedShapeOf<Props[K]>
-}
-
 export type PartialParserError<Props extends Record<PropertyKey, S.SchemaUPI>> =
   S.CompositionE<
     | S.PrevE<S.LeafE<S.UnknownRecordE>>
@@ -57,7 +53,6 @@ export type PartialSchema<Props extends Record<PropertyKey, S.SchemaUPI>> = S.Sc
   PartialParsedShape<Props>,
   PartialConstructorInput<Props>,
   PartialConstructorError<Props>,
-  PartialConstructedShape<Props>,
   PartialEncoded<Props>,
   {
     omit: <KS extends readonly (keyof Props)[]>(
@@ -166,7 +161,7 @@ export function partial<Props extends Record<PropertyKey, S.SchemaUPI>>(
     }),
     S.constructor((u: PartialConstructorInput<Props>): Th.These<
       PartialConstructorError<Props>,
-      PartialConstructedShape<Props>
+      PartialParsedShape<Props>
     > => {
       const val = {}
 
@@ -202,9 +197,9 @@ export function partial<Props extends Record<PropertyKey, S.SchemaUPI>>(
       if (!errored) {
         augmentRecord(val)
         if (warned) {
-          return Th.warn(val as PartialConstructedShape<Props>, S.structE(errors))
+          return Th.warn(val as PartialParsedShape<Props>, S.structE(errors))
         }
-        return Th.succeed(val as PartialConstructedShape<Props>)
+        return Th.succeed(val as PartialParsedShape<Props>)
       }
 
       return Th.fail(S.structE(errors))

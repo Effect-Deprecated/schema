@@ -12,7 +12,6 @@ export type SchemaForModel<M, Self extends MO.SchemaAny> = MO.Schema<
   M,
   MO.ConstructorInputOf<Self>,
   MO.ConstructorErrorOf<Self>,
-  M,
   MO.EncodedOf<Self>,
   MO.ApiOf<Self> & MO.ApiSelfType<M>
 >
@@ -25,7 +24,7 @@ export type ParserFor<Self extends MO.SchemaAny> = Parser.Parser<
 
 export type ConstructorFor<Self extends MO.SchemaAny> = Constructor.Constructor<
   MO.ConstructorInputOf<Self>,
-  MO.ConstructedShapeOf<Self>,
+  MO.ParsedShapeOf<Self>,
   MO.ConstructorErrorOf<Self>
 >
 
@@ -52,7 +51,6 @@ export interface Model<M, Self extends MO.SchemaAny>
       M,
       MO.ConstructorInputOf<Self>,
       MO.ConstructorErrorOf<Self>,
-      M,
       MO.EncodedOf<Self>,
       MO.ApiOf<Self>
     > {
@@ -70,7 +68,7 @@ export interface Model<M, Self extends MO.SchemaAny>
 }
 
 export function Model<M>() {
-  return <Self extends MO.Schema<any, any, any, any, any, any, any, any>>(
+  return <Self extends MO.Schema<any, any, any, any, any, any, any>>(
     self: Self
   ): Model<M, Self> => {
     const schemed = S.Schemed(self)

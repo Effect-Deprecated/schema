@@ -15,7 +15,6 @@ export const string: S.Schema<
   string,
   never,
   string,
-  string,
   {}
 > = pipe(
   refinement(
@@ -31,18 +30,10 @@ export const string: S.Schema<
 
 export const fromStringIdentifier = Symbol.for("@effect-ts/schema/ids/fromString")
 
-export const fromString: S.Schema<
-  string,
-  never,
-  string,
-  string,
-  never,
-  string,
-  string,
-  {}
-> = pipe(
-  S.identity((u): u is string => typeof u === "string"),
-  S.arbitrary((_) => _.string()),
-  S.mapApi(() => ({})),
-  S.identified(fromStringIdentifier, {})
-)
+export const fromString: S.Schema<string, never, string, string, never, string, {}> =
+  pipe(
+    S.identity((u): u is string => typeof u === "string"),
+    S.arbitrary((_) => _.string()),
+    S.mapApi(() => ({})),
+    S.identified(fromStringIdentifier, {})
+  )

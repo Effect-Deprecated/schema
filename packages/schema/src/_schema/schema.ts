@@ -16,8 +16,7 @@ export type SchemaSym = typeof SchemaSym
  * 1) parsed from a `ParsedShape` starting from an input of type `ParserInput`
  *    maybe failing for a reason `ParserError`
  *
- * 2) constructed smartly as `ConstructedShape` that extends `ParsedShape`
- *    starting from an input of type `ConstructorInput`
+ * 2) constructed smartly starting from an input of type `ConstructorInput`
  *
  * 3) encoded into an `Encoded` value
  *
@@ -29,7 +28,6 @@ export abstract class Schema<
   ParsedShape,
   ConstructorInput,
   ConstructorError,
-  ConstructedShape extends ParsedShape,
   Encoded,
   Api
 > {
@@ -39,7 +37,6 @@ export abstract class Schema<
   readonly _ParsedShape!: () => ParsedShape
   readonly _ConstructorInput!: (_: ConstructorInput) => void
   readonly _ConstructorError!: () => ConstructorError
-  readonly _ConstructedShape!: () => ConstructedShape
   readonly _Encoded!: () => Encoded
   abstract readonly Api: Api
 
@@ -48,7 +45,6 @@ export abstract class Schema<
     ThatParsedShape,
     ThatConstructorInput,
     ThatConstructorError,
-    ThatConstructedShape extends ThatParsedShape,
     ThatApi
   >(
     that: Schema<
@@ -57,7 +53,6 @@ export abstract class Schema<
       ThatParsedShape,
       ThatConstructorInput,
       ThatConstructorError,
-      ThatConstructedShape,
       ParsedShape,
       ThatApi
     >
@@ -67,7 +62,6 @@ export abstract class Schema<
     ThatParsedShape,
     ThatConstructorInput,
     ThatConstructorError,
-    ThatConstructedShape,
     Encoded,
     ThatApi
   > => new SchemaPipe(this, that)
@@ -81,14 +75,13 @@ export abstract class Schema<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   > => new SchemaIdentified(this, identifier, meta)
 }
 
-export type SchemaAny = Schema<any, any, any, any, any, any, any, any>
-export type SchemaUPI = Schema<unknown, any, any, any, any, any, any, any>
+export type SchemaAny = Schema<any, any, any, any, any, any, any>
+export type SchemaUPI = Schema<unknown, any, any, any, any, any, any>
 
 export interface ApiSelfType<AS = unknown> {
   _AS: AS
@@ -109,7 +102,6 @@ export interface HasContinuation {
     unknown,
     unknown,
     unknown,
-    unknown,
     unknown
   >
 }
@@ -120,7 +112,6 @@ export function hasContinuation<
   ParsedShape,
   ConstructorInput,
   ConstructorError,
-  ConstructedShape extends ParsedShape,
   Encoded,
   Api
 >(
@@ -130,7 +121,6 @@ export function hasContinuation<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   >
@@ -140,7 +130,6 @@ export function hasContinuation<
   ParsedShape,
   ConstructorInput,
   ConstructorError,
-  ConstructedShape,
   Encoded,
   Api
 > &
@@ -148,33 +137,28 @@ export function hasContinuation<
   return SchemaContinuationSymbol in schema
 }
 
-export type ParserInputOf<X extends Schema<any, any, any, any, any, any, any, any>> =
+export type ParserInputOf<X extends Schema<any, any, any, any, any, any, any>> =
   Parameters<X["_ParserInput"]>[0]
 
-export type ParserErrorOf<X extends Schema<any, any, any, any, any, any, any, any>> =
+export type ParserErrorOf<X extends Schema<any, any, any, any, any, any, any>> =
   ReturnType<X["_ParserError"]>
 
-export type ConstructorInputOf<
-  X extends Schema<any, any, any, any, any, any, any, any>
-> = Parameters<X["_ConstructorInput"]>[0]
+export type ConstructorInputOf<X extends Schema<any, any, any, any, any, any, any>> =
+  Parameters<X["_ConstructorInput"]>[0]
 
-export type ConstructorErrorOf<
-  X extends Schema<any, any, any, any, any, any, any, any>
-> = ReturnType<X["_ConstructorError"]>
+export type ConstructorErrorOf<X extends Schema<any, any, any, any, any, any, any>> =
+  ReturnType<X["_ConstructorError"]>
 
-export type EncodedOf<X extends Schema<any, any, any, any, any, any, any, any>> =
-  ReturnType<X["_Encoded"]>
+export type EncodedOf<X extends Schema<any, any, any, any, any, any, any>> = ReturnType<
+  X["_Encoded"]
+>
 
-export type ParsedShapeOf<X extends Schema<any, any, any, any, any, any, any, any>> =
+export type ParsedShapeOf<X extends Schema<any, any, any, any, any, any, any>> =
   ReturnType<X["_ParsedShape"]>
 
-export type ConstructedShapeOf<
-  X extends Schema<any, any, any, any, any, any, any, any>
-> = ReturnType<X["_ConstructedShape"]>
+export type ApiOf<X extends Schema<any, any, any, any, any, any, any>> = X["Api"]
 
-export type ApiOf<X extends Schema<any, any, any, any, any, any, any, any>> = X["Api"]
-
-export class SchemaIdentity<A> extends Schema<A, never, A, A, never, A, A, {}> {
+export class SchemaIdentity<A> extends Schema<A, never, A, A, never, A, {}> {
   readonly Api = {}
 
   constructor(readonly guard: (_: unknown) => _ is A) {
@@ -185,13 +169,11 @@ export class SchemaIdentity<A> extends Schema<A, never, A, A, never, A, A, {}> {
 export class SchemaConstructor<
     NewConstructorInput,
     NewConstructorError,
-    NewConstructedShape extends ConstructedShape,
     ParserInput,
     ParserError,
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape extends ParsedShape,
     Encoded,
     Api
   >
@@ -201,7 +183,6 @@ export class SchemaConstructor<
     ParsedShape,
     NewConstructorInput,
     NewConstructorError,
-    NewConstructedShape,
     Encoded,
     Api
   >
@@ -216,13 +197,10 @@ export class SchemaConstructor<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >,
-    readonly of: (
-      i: NewConstructorInput
-    ) => Th.These<NewConstructorError, NewConstructedShape>
+    readonly of: (i: NewConstructorInput) => Th.These<NewConstructorError, ParsedShape>
   ) {
     super()
     this[SchemaContinuationSymbol] = self
@@ -237,7 +215,6 @@ export class SchemaParser<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape extends ParsedShape,
     Encoded,
     Api
   >
@@ -247,7 +224,6 @@ export class SchemaParser<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   >
@@ -262,7 +238,6 @@ export class SchemaParser<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >,
@@ -279,7 +254,6 @@ export class SchemaArbitrary<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape extends ParsedShape,
     Encoded,
     Api
   >
@@ -289,7 +263,6 @@ export class SchemaArbitrary<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   >
@@ -304,7 +277,6 @@ export class SchemaArbitrary<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >,
@@ -321,7 +293,6 @@ export class SchemaEncoder<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape extends ParsedShape,
     Encoded,
     Api,
     Encoded2
@@ -332,7 +303,6 @@ export class SchemaEncoder<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded2,
     Api
   >
@@ -347,7 +317,6 @@ export class SchemaEncoder<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >,
@@ -366,7 +335,6 @@ export class SchemaRefinement<
   ParsedShape,
   ConstructorInput,
   ConstructorError,
-  ConstructedShape extends ParsedShape,
   Encoded,
   Api
 > extends Schema<
@@ -375,7 +343,6 @@ export class SchemaRefinement<
   NewParsedShape,
   ConstructorInput,
   CompositionE<PrevE<ConstructorError> | NextE<RefinementE<E>>>,
-  ConstructedShape & NewParsedShape,
   Encoded,
   Api
 > {
@@ -387,7 +354,6 @@ export class SchemaRefinement<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >,
@@ -404,14 +370,12 @@ export class SchemaPipe<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape extends ParsedShape,
     Encoded,
     Api,
     ThatParserError,
     ThatParsedShape,
     ThatConstructorInput,
     ThatConstructorError,
-    ThatConstructedShape extends ThatParsedShape,
     ThatApi
   >
   extends Schema<
@@ -420,7 +384,6 @@ export class SchemaPipe<
     ThatParsedShape,
     ThatConstructorInput,
     ThatConstructorError,
-    ThatConstructedShape,
     Encoded,
     ThatApi
   >
@@ -435,7 +398,6 @@ export class SchemaPipe<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >,
@@ -445,7 +407,6 @@ export class SchemaPipe<
       ThatParsedShape,
       ThatConstructorInput,
       ThatConstructorError,
-      ThatConstructedShape,
       ParsedShape,
       ThatApi
     >
@@ -461,7 +422,6 @@ export class SchemaMapParserError<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape extends ParsedShape,
     Encoded,
     Api
   >
@@ -471,7 +431,6 @@ export class SchemaMapParserError<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   >
@@ -488,7 +447,6 @@ export class SchemaMapParserError<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >,
@@ -505,7 +463,6 @@ export class SchemaMapConstructorError<
     ConstructorInput,
     ConstructorError,
     ConstructorError2,
-    ConstructedShape extends ParsedShape,
     Encoded,
     Api
   >
@@ -515,7 +472,6 @@ export class SchemaMapConstructorError<
     ParsedShape,
     ConstructorInput,
     ConstructorError2,
-    ConstructedShape,
     Encoded,
     Api
   >
@@ -532,7 +488,6 @@ export class SchemaMapConstructorError<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >,
@@ -548,7 +503,6 @@ export class SchemaMapApi<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape extends ParsedShape,
     Encoded,
     Api,
     Api2
@@ -559,7 +513,6 @@ export class SchemaMapApi<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api2
   >
@@ -576,7 +529,6 @@ export class SchemaMapApi<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >,
@@ -592,7 +544,6 @@ export class SchemaNamed<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape extends ParsedShape,
     Encoded,
     Api,
     Name extends string
@@ -603,7 +554,6 @@ export class SchemaNamed<
     ParsedShape,
     ConstructorInput,
     NamedE<Name, ConstructorError>,
-    ConstructedShape,
     Encoded,
     Api
   >
@@ -620,7 +570,6 @@ export class SchemaNamed<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >,
@@ -636,7 +585,6 @@ export class SchemaRecursive<
   ParsedShape,
   ConstructorInput,
   ConstructorError,
-  ConstructedShape extends ParsedShape,
   Encoded
 > extends Schema<
   ParserInput,
@@ -644,7 +592,6 @@ export class SchemaRecursive<
   ParsedShape,
   ConstructorInput,
   ConstructorError,
-  ConstructedShape,
   Encoded,
   {}
 > {
@@ -658,7 +605,6 @@ export class SchemaRecursive<
         ParsedShape,
         ConstructorInput,
         ConstructorError,
-        ConstructedShape,
         Encoded,
         {}
       >
@@ -668,7 +614,6 @@ export class SchemaRecursive<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       {}
     >
@@ -683,7 +628,6 @@ export class SchemaIdentified<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape extends ParsedShape,
     Encoded,
     Api,
     Meta
@@ -694,7 +638,6 @@ export class SchemaIdentified<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   >
@@ -711,7 +654,6 @@ export class SchemaIdentified<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >,
@@ -728,7 +670,6 @@ export class SchemaGuard<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape extends ParsedShape,
     Encoded,
     Api
   >
@@ -738,7 +679,6 @@ export class SchemaGuard<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   >
@@ -755,7 +695,6 @@ export class SchemaGuard<
       ParsedShape,
       ConstructorInput,
       ConstructorError,
-      ConstructedShape,
       Encoded,
       Api
     >,

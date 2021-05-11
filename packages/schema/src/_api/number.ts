@@ -10,21 +10,13 @@ import { fromString, string } from "./string"
 
 export const fromNumberIdentifier = Symbol.for("@effect-ts/schema/ids/fromNumber")
 
-export const fromNumber: S.Schema<
-  number,
-  never,
-  number,
-  number,
-  never,
-  number,
-  number,
-  {}
-> = pipe(
-  S.identity((u): u is number => typeof u === "number"),
-  S.arbitrary((_) => _.double()),
-  S.mapApi(() => ({})),
-  S.identified(fromNumberIdentifier, {})
-)
+export const fromNumber: S.Schema<number, never, number, number, never, number, {}> =
+  pipe(
+    S.identity((u): u is number => typeof u === "number"),
+    S.arbitrary((_) => _.double()),
+    S.mapApi(() => ({})),
+    S.identified(fromNumberIdentifier, {})
+  )
 
 export const numberIdentifier = Symbol.for("@effect-ts/schema/ids/number")
 
@@ -34,7 +26,6 @@ export const number: S.Schema<
   number,
   number,
   never,
-  number,
   number,
   {}
 > = pipe(
@@ -57,7 +48,6 @@ export const stringNumberFromString: S.Schema<
   number,
   number,
   never,
-  number,
   string,
   {}
 > = fromString[">>>"](
@@ -80,7 +70,6 @@ export const stringNumber: S.Schema<
   number,
   number,
   never,
-  number,
   string,
   {}
 > = string[">>>"](stringNumberFromString)

@@ -23,7 +23,6 @@ export function array<Self extends S.SchemaUPI>(
   readonly S.ParsedShapeOf<Self>[],
   readonly S.ParsedShapeOf<Self>[],
   never,
-  readonly S.ConstructedShapeOf<Self>[],
   readonly S.EncodedOf<Self>[],
   {}
 > {

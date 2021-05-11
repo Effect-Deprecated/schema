@@ -16,7 +16,6 @@ export function nonEmpty<
   ParsedShape extends { length: number },
   ConstructorInput,
   ConstructorError,
-  ConstructedShape extends ParsedShape,
   Encoded,
   Api
 >(
@@ -26,7 +25,6 @@ export function nonEmpty<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   >
@@ -41,7 +39,6 @@ export function nonEmpty<
     | S.NextE<S.RefinementE<S.LeafE<S.NonEmptyE<ParsedShape>>>>
     | S.PrevE<ConstructorError>
   >,
-  ConstructedShape & ParsedShape & NonEmptyBrand,
   Encoded,
   Api
 > {

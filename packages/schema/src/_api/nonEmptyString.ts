@@ -21,7 +21,6 @@ export const nonEmptyStringFromString: S.Schema<
   NonEmptyString,
   string,
   S.RefinementE<S.LeafE<S.NonEmptyE<string>>>,
-  NonEmptyString,
   string,
   S.ApiSelfType<NonEmptyString>
 > = pipe(
@@ -43,7 +42,6 @@ export const nonEmptyString: S.Schema<
   NonEmptyString,
   string,
   S.RefinementE<S.LeafE<S.NonEmptyE<string>>>,
-  NonEmptyString,
   string,
   S.ApiSelfType<NonEmptyString>
 > = string[">>>"](nonEmptyStringFromString)

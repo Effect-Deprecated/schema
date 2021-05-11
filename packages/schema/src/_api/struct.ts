@@ -14,7 +14,6 @@ import * as Th from "../These"
 import { intersect_ } from "./intersect"
 import type {
   PartialApi,
-  PartialConstructedShape,
   PartialConstructorError,
   PartialConstructorInput,
   PartialEncoded,
@@ -43,10 +42,6 @@ export type RequiredConstructorError<Props extends Record<PropertyKey, S.SchemaU
     }[keyof Props]
   >
 
-export type RequiredConstructedShape<Props extends Record<PropertyKey, S.SchemaUPI>> = {
-  readonly [K in keyof Props]: S.ConstructedShapeOf<Props[K]>
-}
-
 export type RequiredParserError<Props extends Record<PropertyKey, S.SchemaUPI>> =
   S.CompositionE<
     | S.PrevE<S.LeafE<S.UnknownRecordE>>
@@ -74,7 +69,6 @@ export type RequiredSchema<Props extends Record<PropertyKey, S.SchemaUPI>> = S.S
   RequiredParsedShape<Props>,
   RequiredConstructorInput<Props>,
   RequiredConstructorError<Props>,
-  RequiredConstructedShape<Props>,
   RequiredEncoded<Props>,
   {
     omit: <KS extends readonly (keyof Props)[]>(
@@ -216,7 +210,7 @@ export function required<Props extends Record<PropertyKey, S.SchemaUPI>>(
     }),
     S.constructor((u: RequiredConstructorInput<Props>): Th.These<
       RequiredConstructorError<Props>,
-      RequiredConstructedShape<Props>
+      RequiredParsedShape<Props>
     > => {
       const val = {}
 
@@ -250,9 +244,9 @@ export function required<Props extends Record<PropertyKey, S.SchemaUPI>>(
       if (!errored) {
         augmentRecord(val)
         if (warned) {
-          return Th.warn(val as RequiredConstructedShape<Props>, S.structE(errors))
+          return Th.warn(val as RequiredParsedShape<Props>, S.structE(errors))
         }
-        return Th.succeed(val as RequiredConstructedShape<Props>)
+        return Th.succeed(val as RequiredParsedShape<Props>)
       }
 
       return Th.fail(S.structE(errors))
@@ -304,11 +298,11 @@ export function required<Props extends Record<PropertyKey, S.SchemaUPI>>(
 export type StructSchema<
   Required extends Record<
     string,
-    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any, any>
+    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any>
   >,
   Partial extends Record<
     string,
-    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any, any>
+    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any>
   >
 > = S.Schema<
   unknown,
@@ -322,7 +316,6 @@ export type StructSchema<
     | S.MemberE<0, RequiredConstructorError<Required>>
     | S.MemberE<1, PartialConstructorError<Partial>>
   >,
-  RequiredConstructedShape<Required> & PartialConstructedShape<Partial>,
   RequiredEncoded<Required> & PartialEncoded<Partial>,
   {
     fields: RequiredApi<Required> & PartialApi<Partial>
@@ -346,33 +339,33 @@ export const structIdentifier = Symbol.for("@effect-ts/schema/ids/struct")
 export function struct<
   Required extends Record<
     string,
-    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any, any>
+    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any>
   >,
   Partial extends Record<
     string,
-    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any, any>
+    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any>
   >
 >(_: { required: Required; optional: Partial }): StructSchema<Required, Partial>
 export function struct<
   Required extends Record<
     string,
-    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any, any>
+    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any>
   >
 >(_: { required: Required }): RequiredSchema<Required>
 export function struct<
   Partial extends Record<
     string,
-    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any, any>
+    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any>
   >
 >(_: { optional: Partial }): PartialSchema<Partial>
 export function struct<
   Required extends Record<
     string,
-    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any, any>
+    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any>
   >,
   Partial extends Record<
     string,
-    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any, any>
+    S.Schema<unknown, S.SchemaError<any>, any, any, S.SchemaError<any>, any, any>
   >
 >(_: { required?: Required; optional?: Partial }): unknown {
   const { optional: propsPartial, required: props } = _

@@ -21,8 +21,6 @@ export type IntersectionSchema<
   ThatConstructorInput,
   SelfConstructorError extends S.SchemaError<any>,
   ThatConstructorError extends S.SchemaError<any>,
-  SelfConstructedShape extends SelfParsedShape,
-  ThatConstructedShape extends ThatParsedShape,
   SelfEncoded extends Record<string, any>,
   ThatEncoded extends Record<string, any>
 > = S.Schema<
@@ -33,7 +31,6 @@ export type IntersectionSchema<
   S.IntersectionE<
     S.MemberE<0, SelfConstructorError> | S.MemberE<1, ThatConstructorError>
   >,
-  SelfConstructedShape & ThatConstructedShape,
   SelfEncoded & ThatEncoded,
   {}
 >
@@ -45,14 +42,12 @@ export function intersect_<
   SelfParsedShape extends Record<string, any>,
   SelfConstructorInput,
   SelfConstructorError extends S.SchemaError<any>,
-  SelfConstructedShape extends SelfParsedShape,
   SelfEncoded extends Record<string, any>,
   SelfApi,
   ThatParserError extends S.SchemaError<any>,
   ThatParsedShape extends Record<string, any>,
   ThatConstructorInput,
   ThatConstructorError extends S.SchemaError<any>,
-  ThatConstructedShape extends ThatParsedShape,
   ThatEncoded extends Record<string, any>,
   ThatApi
 >(
@@ -62,7 +57,6 @@ export function intersect_<
     SelfParsedShape,
     SelfConstructorInput,
     SelfConstructorError,
-    SelfConstructedShape,
     SelfEncoded,
     SelfApi
   >,
@@ -72,7 +66,6 @@ export function intersect_<
     ThatParsedShape,
     ThatConstructorInput,
     ThatConstructorError,
-    ThatConstructedShape,
     ThatEncoded,
     ThatApi
   >
@@ -85,8 +78,6 @@ export function intersect_<
   ThatConstructorInput,
   SelfConstructorError,
   ThatConstructorError,
-  SelfConstructedShape,
-  ThatConstructedShape,
   SelfEncoded,
   ThatEncoded
 > {
@@ -169,7 +160,7 @@ export function intersect_<
       let errored = false
       let warned = false
 
-      const intersection = {} as unknown as SelfConstructedShape & ThatConstructedShape
+      const intersection = {} as unknown as SelfParsedShape & ThatParsedShape
 
       if (left._tag === "Left") {
         errors = Chunk.append_(errors, S.memberE(0, left.left))
@@ -228,7 +219,6 @@ export function intersect<
   ThatParsedShape extends Record<string, any>,
   ThatConstructorInput,
   ThatConstructorError extends S.SchemaError<any>,
-  ThatConstructedShape extends ThatParsedShape,
   ThatEncoded extends Record<string, any>,
   ThatApi
 >(
@@ -238,7 +228,6 @@ export function intersect<
     ThatParsedShape,
     ThatConstructorInput,
     ThatConstructorError,
-    ThatConstructedShape,
     ThatEncoded,
     ThatApi
   >
@@ -247,7 +236,6 @@ export function intersect<
   SelfParsedShape extends Record<string, any>,
   SelfConstructorInput,
   SelfConstructorError extends S.SchemaError<any>,
-  SelfConstructedShape extends SelfParsedShape,
   SelfEncoded extends Record<string, any>,
   SelfApi
 >(
@@ -257,7 +245,6 @@ export function intersect<
     SelfParsedShape,
     SelfConstructorInput,
     SelfConstructorError,
-    SelfConstructedShape,
     SelfEncoded,
     SelfApi
   >
@@ -269,7 +256,6 @@ export function intersect<
   S.IntersectionE<
     S.MemberE<0, SelfConstructorError> | S.MemberE<1, ThatConstructorError>
   >,
-  SelfConstructedShape & ThatConstructedShape,
   SelfEncoded & ThatEncoded,
   {}
 > {

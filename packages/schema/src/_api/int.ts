@@ -21,7 +21,6 @@ export const intFromNumber: S.Schema<
   Int,
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
-  Int,
   number,
   {}
 > = pipe(
@@ -49,7 +48,6 @@ export const stringIntFromString: S.Schema<
   Int,
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
-  Int,
   string,
   {}
 > = stringNumberFromString[">>>"](intFromNumber).id(stringIntIdentifier, {})
@@ -68,7 +66,6 @@ export const stringInt: S.Schema<
   Int,
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
-  Int,
   string,
   {}
 > = string[">>>"](stringIntFromString)
@@ -84,7 +81,6 @@ export const int: S.Schema<
   Int,
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
-  Int,
   number,
   {}
 > = number[">>>"](intFromNumber).id(intIdentifier, {})

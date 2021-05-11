@@ -24,7 +24,6 @@ type SchemaK<Key extends string, N extends string> = S.Schema<
   any,
   any,
   any,
-  { readonly [K in Key]: N },
   any,
   {
     fields: {
@@ -50,10 +49,7 @@ export interface TaggedApi<
       UnionE<
         {
           [K in keyof Props]: Props[K] extends S.SchemaAny
-            ? S.MemberE<
-                S.ConstructedShapeOf<Props[K]>[Key],
-                S.ConstructorErrorOf<Props[K]>
-              >
+            ? S.MemberE<S.ParsedShapeOf<Props[K]>[Key], S.ConstructorErrorOf<Props[K]>>
             : never
         }[number]
       >,
@@ -156,18 +152,10 @@ export function makeTagged<Key extends string>(key: Key) {
     UnionE<
       {
         [K in keyof Props]: Props[K] extends S.SchemaAny
-          ? S.MemberE<
-              S.ConstructedShapeOf<Props[K]>[Key],
-              S.ConstructorErrorOf<Props[K]>
-            >
+          ? S.MemberE<S.ParsedShapeOf<Props[K]>[Key], S.ConstructorErrorOf<Props[K]>>
           : never
       }[number]
     >,
-    {
-      [K in keyof Props]: Props[K] extends S.SchemaAny
-        ? S.ConstructedShapeOf<Props[K]>
-        : never
-    }[number],
     {
       [K in keyof Props]: Props[K] extends S.SchemaAny ? S.EncodedOf<Props[K]> : never
     }[number],
@@ -328,7 +316,7 @@ export function makeTagged<Key extends string>(key: Key) {
             {
               [K in keyof Props]: Props[K] extends S.SchemaAny
                 ? S.MemberE<
-                    S.ConstructedShapeOf<Props[K]>[Key],
+                    S.ParsedShapeOf<Props[K]>[Key],
                     S.ConstructorErrorOf<Props[K]>
                   >
                 : never
@@ -336,7 +324,7 @@ export function makeTagged<Key extends string>(key: Key) {
           >,
           {
             [K in keyof Props]: Props[K] extends S.SchemaAny
-              ? S.ConstructedShapeOf<Props[K]>
+              ? S.ParsedShapeOf<Props[K]>
               : never
           }[number]
         > => {
@@ -359,7 +347,7 @@ export function makeTagged<Key extends string>(key: Key) {
                     result.effect.left
                   ) as Props[number] extends S.SchemaAny
                     ? S.MemberE<
-                        S.ConstructedShapeOf<Props[number]>[Key],
+                        S.ParsedShapeOf<Props[number]>[Key],
                         S.ConstructorErrorOf<Props[number]>
                       >
                     : never
@@ -377,7 +365,7 @@ export function makeTagged<Key extends string>(key: Key) {
                 Chunk.single(
                   S.memberE(tag, warnings.value) as Props[number] extends S.SchemaAny
                     ? S.MemberE<
-                        S.ConstructedShapeOf<Props[number]>[Key],
+                        S.ParsedShapeOf<Props[number]>[Key],
                         S.ConstructorErrorOf<Props[number]>
                       >
                     : never
@@ -406,22 +394,13 @@ export const tagged = makeTagged("_tag")
 
 export function tag<Value extends string>(
   value: Value
-): <
-  ParserError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError,
-  ConstructedShape extends ParsedShape,
-  Encoded,
-  Api
->(
+): <ParserError, ParsedShape, ConstructorInput, ConstructorError, Encoded, Api>(
   self: S.Schema<
     unknown,
     ParserError,
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   >
@@ -431,7 +410,6 @@ export function tag<Value extends string>(
   ParsedShape & { readonly _tag: Value },
   ConstructorInput,
   ConstructorError,
-  ConstructedShape & { readonly _tag: Value },
   Encoded & { readonly _tag: Value },
   Api & { fields: { _tag: TagApi<Value> } }
 > {
@@ -441,22 +419,13 @@ export function tag<Value extends string>(
 export function withTag<Key extends string, Value extends string>(
   key: Key,
   value: Value
-): <
-  ParserError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError,
-  ConstructedShape extends ParsedShape,
-  Encoded,
-  Api
->(
+): <ParserError, ParsedShape, ConstructorInput, ConstructorError, Encoded, Api>(
   self: S.Schema<
     unknown,
     ParserError,
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   >
@@ -466,7 +435,6 @@ export function withTag<Key extends string, Value extends string>(
   ParsedShape & { readonly [k in Key]: Value },
   ConstructorInput,
   ConstructorError,
-  ConstructedShape & { readonly [k in Key]: Value },
   Encoded & { readonly [k in Key]: Value },
   Api & { fields: { [k in Key]: TagApi<Value> } }
 > {

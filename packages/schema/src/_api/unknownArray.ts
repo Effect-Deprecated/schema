@@ -15,7 +15,6 @@ export const unknownArray: S.Schema<
   unknown,
   S.RefinementE<S.LeafE<S.UnknownArrayE>>,
   readonly unknown[],
-  readonly unknown[],
   {}
 > = pipe(
   unknown,

@@ -23,7 +23,6 @@ export const positiveIntFromNumber: S.Schema<
     | S.PrevE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
     | S.NextE<S.RefinementE<S.LeafE<S.PositiveE>>>
   >,
-  Int & PositiveBrand,
   number,
   {}
 > = pipe(
@@ -50,7 +49,6 @@ export const positiveInt: S.Schema<
     | S.PrevE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
     | S.NextE<S.RefinementE<S.LeafE<S.PositiveE>>>
   >,
-  Int & PositiveBrand,
   number,
   {}
 > = number[">>>"](positiveIntFromNumber)

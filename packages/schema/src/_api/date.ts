@@ -13,7 +13,6 @@ export const date: S.Schema<
   Date,
   Date,
   never,
-  Date,
   string,
   {}
 > = pipe(
@@ -36,21 +35,13 @@ export const date: S.Schema<
 
 export const dateMsIdentifier = Symbol.for("@effect-ts/schema/ids/dateMs")
 
-export const dateMs: S.Schema<
-  unknown,
-  S.ParseDateMsE,
-  Date,
-  Date,
-  never,
-  Date,
-  number,
-  {}
-> = pipe(
-  date,
-  S.parser((u) =>
-    typeof u === "number" ? Th.succeed(new Date(u)) : Th.fail(S.parseDateMsE(u))
-  ),
-  S.encoder((_) => _.getTime()),
-  S.mapApi((_) => ({})),
-  S.identified(dateMsIdentifier, {})
-)
+export const dateMs: S.Schema<unknown, S.ParseDateMsE, Date, Date, never, number, {}> =
+  pipe(
+    date,
+    S.parser((u) =>
+      typeof u === "number" ? Th.succeed(new Date(u)) : Th.fail(S.parseDateMsE(u))
+    ),
+    S.encoder((_) => _.getTime()),
+    S.mapApi((_) => ({})),
+    S.identified(dateMsIdentifier, {})
+  )

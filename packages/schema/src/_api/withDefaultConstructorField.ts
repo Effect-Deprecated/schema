@@ -16,22 +16,13 @@ export function withDefaultConstructorField<
 >(
   key: Key,
   value: Lazy<ConstructorInput[Key]>
-): <
-  ParserInput,
-  ParserError,
-  ParsedShape,
-  ConstructorError,
-  ConstructedShape extends ParsedShape,
-  Encoded,
-  Api
->(
+): <ParserInput, ParserError, ParsedShape, ConstructorError, Encoded, Api>(
   self: S.Schema<
     ParserInput,
     ParserError,
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   >
@@ -41,7 +32,6 @@ export function withDefaultConstructorField<
   ParsedShape,
   OptionalKey<ConstructorInput, Key>,
   ConstructorError,
-  ConstructedShape,
   Encoded,
   Api
 > {

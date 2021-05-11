@@ -87,7 +87,6 @@ function constructorFor<
   ParsedShape,
   ConstructorInput,
   ConstructorError,
-  ConstructedShape extends ParsedShape,
   Encoded,
   Api
 >(
@@ -97,11 +96,10 @@ function constructorFor<
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    ConstructedShape,
     Encoded,
     Api
   >
-): Constructor<ConstructorInput, ConstructedShape, ConstructorError> {
+): Constructor<ConstructorInput, ParsedShape, ConstructorError> {
   if (cache.has(schema)) {
     return cache.get(schema)
   }
@@ -109,17 +107,13 @@ function constructorFor<
     const _ = interpreter(schema)
     if (_._tag === "Some") {
       cache.set(schema, _.value)
-      return _.value as Constructor<
-        ConstructorInput,
-        ConstructedShape,
-        ConstructorError
-      >
+      return _.value as Constructor<ConstructorInput, ParsedShape, ConstructorError>
     }
   }
   if (hasContinuation(schema)) {
     const of_ = constructorFor(schema[SchemaContinuationSymbol])
     cache.set(schema, of_)
-    return of_ as Constructor<ConstructorInput, ConstructedShape, ConstructorError>
+    return of_ as Constructor<ConstructorInput, ParsedShape, ConstructorError>
   }
   throw new Error(`Missing guard integration for: ${JSON.stringify(schema)}`)
 }

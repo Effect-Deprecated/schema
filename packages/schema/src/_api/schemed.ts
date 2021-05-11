@@ -38,7 +38,6 @@ export type SchemaForSchemed<Self extends SchemedOut<any>> = S.Schema<
   ShapeFromSchemedOut<Self>,
   S.ConstructorInputOf<Self[schemaField]>,
   S.ConstructorErrorOf<Self[schemaField]>,
-  ShapeFromSchemedOut<Self>,
   S.EncodedOf<Self[schemaField]>,
   S.ApiOf<Self[schemaField]> & S.ApiSelfType<ShapeFromSchemedOut<Self>>
 >
@@ -64,7 +63,7 @@ type ShapeFromClass<
 
 export const fromFields = Symbol()
 
-export function Schemed<Self extends S.Schema<any, any, any, any, any, any, any, any>>(
+export function Schemed<Self extends S.Schema<any, any, any, any, any, any, any>>(
   self: Self
 ): Schemed<Self> {
   const of_ = Constructor.for(self)["|>"](unsafe)
