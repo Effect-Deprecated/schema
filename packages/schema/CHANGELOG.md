@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.4.0...@effect-ts/schema@0.4.1) (2021-05-11)
+
+
+### Bug Fixes
+
+* **schema:** don't overwrite ([46a0104](https://github.com/Effect-TS/schema/commit/46a01042f181cea392eda11ed5360d14eda31c37))
+
+
+
+
+
 # [0.4.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.3.0...@effect-ts/schema@0.4.0) (2021-05-11)
 
 
