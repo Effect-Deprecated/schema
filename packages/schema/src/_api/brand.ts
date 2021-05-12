@@ -1,6 +1,7 @@
 // tracing: off
 import * as MO from "../_schema"
 import type { ApiSelfType, Schema } from "../_schema/schema"
+import { SchemaIdentified } from "../_schema/schema"
 import * as Arbitrary from "../Arbitrary"
 import * as Constructor from "../Constructor"
 import * as Encoder from "../Encoder"
@@ -101,6 +102,11 @@ export function brand<ParsedShape, B extends ParsedShape>(_: (_: ParsedShape) =>
 
     Object.defineProperty(schemed, "Arbitrary", {
       value: Arbitrary.for(self)
+    })
+
+    Object.defineProperty(schemed, "id", {
+      value: <Meta>(identifier: symbol, meta: Meta) =>
+        new SchemaIdentified(self, identifier, meta)
     })
 
     // @ts-expect-error

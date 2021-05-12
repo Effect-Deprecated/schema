@@ -110,6 +110,11 @@ export function Model<M>(__name?: string) {
       value: Arbitrary.for(schema)
     })
 
+    Object.defineProperty(schemed, "id", {
+      value: <Meta>(identifier: symbol, meta: Meta) =>
+        new MO.SchemaIdentified(schema, identifier, meta)
+    })
+
     // @ts-expect-error the following is correct
     return schemed
   }
