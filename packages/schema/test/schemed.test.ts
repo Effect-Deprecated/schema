@@ -5,6 +5,7 @@ import * as FC from "fast-check"
 
 import * as MO from "../src"
 import { Model } from "../src/_api/model"
+import * as Encoder from "../src/Encoder"
 import * as Parser from "../src/Parser"
 
 export class Person extends Model<Person>()(
@@ -29,16 +30,20 @@ export class Animal extends Model<Animal>()(
 
 const PersonOrAnimal = MO.tagged(Person, Animal)
 
-const parsePerson = Person.Parser["|>"](MO.condemnFail)
+const parsePerson = MO.jsonString[">>>"](Person)["|>"](Parser.for)["|>"](MO.condemnFail)
+const encodePerson = MO.jsonString[">>>"](Person)["|>"](Encoder.for)
+
 const parsePersonOrAnimal = Parser.for(PersonOrAnimal)["|>"](MO.condemnFail)
 
 describe("Schemed", () => {
   it("parse fail", async () => {
     const res = await T.runPromiseExit(
-      parsePerson({
-        _tag: "Person",
-        firstName: "Mike"
-      })
+      parsePerson(
+        JSON.stringify({
+          _tag: "Person",
+          firstName: "Mike"
+        })
+      )
     )
     expect(res).toEqual(
       Ex.fail(
@@ -61,16 +66,23 @@ describe("Schemed", () => {
   })
   it("parse person", async () => {
     const person = await T.runPromise(
-      parsePerson({
-        _tag: "Person",
-        firstName: "Mike",
-        lastName: "Arnaldi"
-      })
+      parsePerson(
+        JSON.stringify({
+          _tag: "Person",
+          firstName: "Mike",
+          lastName: "Arnaldi"
+        })
+      )
     )
     const person2 = new Person({ firstName: "Mike", lastName: "Arnaldi" })
 
     expect(Person.Guard(person)).toEqual(true)
     expect(person).equals(person2)
+    expect(JSON.parse(encodePerson(person))).toEqual({
+      _tag: "Person",
+      firstName: "Mike",
+      lastName: "Arnaldi"
+    })
   })
   it("parse tagged", async () => {
     const person = await T.runPromise(

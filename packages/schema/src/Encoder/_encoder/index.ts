@@ -37,7 +37,7 @@ export const interpreters: ((
       const encodeSelf = encoderFor(schema.that)
       const encodeThat = encoderFor(schema.self)
 
-      return (_) => encodeSelf(encodeThat(_))
+      return (_) => encodeThat(encodeSelf(_))
     }
     if (schema instanceof S.SchemaRefinement) {
       return encoderFor(schema.self)

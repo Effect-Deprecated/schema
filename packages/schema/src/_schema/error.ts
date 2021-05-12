@@ -517,7 +517,7 @@ export interface Tree<A> {
 
 const empty = Chunk.empty<never>()
 
-function tree<A>(value: A, forest: Forest<A> = empty): Tree<A> {
+export function tree<A>(value: A, forest: Forest<A> = empty): Tree<A> {
   return {
     value,
     forest
