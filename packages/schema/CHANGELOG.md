@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.4.1...@effect-ts/schema@0.5.0) (2021-05-12)
+
+
+### Bug Fixes
+
+* **schema:** fix default leaf error ([a206fa7](https://github.com/Effect-TS/schema/commit/a206fa76d92aa1b50b20f83fb80e848decf707f8))
+* **schema:** make sure all api is defined ([b5a5095](https://github.com/Effect-TS/schema/commit/b5a509551e0c5ca3cf71d481fdff75370e3d86d8))
+* **schema:** tagged constructor is an identity ([d9285ac](https://github.com/Effect-TS/schema/commit/d9285ac8cc1afc01772c687a8ba53cf2b1590e3f))
+
+
+### Features
+
+* **schema:** improve branded ([c671ce4](https://github.com/Effect-TS/schema/commit/c671ce46dd562d1f30bee6f8728ad16d79ca7269))
+* **schema:** keep brand around, change identifiable ([a30d096](https://github.com/Effect-TS/schema/commit/a30d09638d98bbb9bfa8bf98ebbb373cd0a20596))
+
+
+
+
+
 ## [0.4.1](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.4.0...@effect-ts/schema@0.4.1) (2021-05-11)
 
 
