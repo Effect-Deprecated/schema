@@ -4,10 +4,11 @@ import type { ApiSelfType, Schema } from "../_schema/schema"
 import type { SchemaWithDefaults } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
 
-export function brand<ParsedShape, B extends ParsedShape>(_: (_: ParsedShape) => B) {
+export function brand<B>() {
   return <
     ParserInput,
     ParserError,
+    ParsedShape,
     ConstructorInput,
     ConstructorError extends MO.AnyError,
     Encoded,

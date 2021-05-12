@@ -13,7 +13,7 @@ const Add_ = S.struct({
 })["|>"](S.tag("Add"))
 
 interface Add extends S.ParsedShapeOf<typeof Add_> {}
-const Add = Add_["|>"](S.brand((_) => _ as Add))
+const Add = Add_["|>"](S.brand<Add>())
 
 const Mul_ = S.struct({
   required: {
@@ -23,13 +23,13 @@ const Mul_ = S.struct({
 })["|>"](S.tag("Mul"))
 
 interface Mul extends S.ParsedShapeOf<typeof Mul_> {}
-const Mul = Mul_["|>"](S.brand((_) => _ as Mul))
+const Mul = Mul_["|>"](S.brand<Mul>())
 
 interface OperationBrand {
   readonly Operation: unique symbol
 }
 type Operation = (Add | Mul) & OperationBrand
-const Operation = S.tagged(Add, Mul)["|>"](S.brand((u) => u as Operation))
+const Operation = S.tagged(Add, Mul)["|>"](S.brand<Operation>())
 
 const parseOperation = Parser.for(Operation)["|>"](S.condemnFail)
 const constructOperation = Constructor.for(Operation)["|>"](S.condemnFail)

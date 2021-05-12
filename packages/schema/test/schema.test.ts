@@ -15,28 +15,28 @@ interface IdBrand {
 }
 type Id = S.Int & S.Positive & IdBrand
 
-const Id = S.positiveInt["|>"](S.brand((_) => _ as Id))
+const Id = S.positiveInt["|>"](S.brand<Id>())
 
 interface NameBrand {
   readonly NameBrand: unique symbol
 }
 type Name = S.NonEmptyString & NameBrand
 
-const Name = S.nonEmptyString["|>"](S.brand((_) => _ as Name))
+const Name = S.nonEmptyString["|>"](S.brand<Name>())
 
 interface AddressBrand {
   readonly AddressBrand: unique symbol
 }
 type Address = S.NonEmptyString & AddressBrand
 
-const Address = S.nonEmptyString["|>"](S.brand((_) => _ as Address))
+const Address = S.nonEmptyString["|>"](S.brand<Address>())
 
 interface AgeBrand {
   readonly AgeBrand: unique symbol
 }
 type Age = S.Int & S.Positive & AgeBrand
 
-const Age = S.positiveInt["|>"](S.brand((_) => _ as Age))
+const Age = S.positiveInt["|>"](S.brand<Age>())
 
 interface SexBrand {
   readonly SexBrand: unique symbol
@@ -44,7 +44,7 @@ interface SexBrand {
 type Sex = S.ParsedShapeOf<typeof Sex_> & SexBrand
 
 const Sex_ = S.literal("male", "female", "else")
-const Sex = Sex_["|>"](S.brand((_) => _ as Sex))
+const Sex = Sex_["|>"](S.brand<Sex>())
 
 interface Person extends S.ParsedShapeOf<typeof Person_> {}
 
@@ -60,7 +60,7 @@ const Person_ = S.struct({
   }
 })["|>"](S.named("Person"))
 
-const Person = Person_["|>"](S.brand((_) => _ as Person))
+const Person = Person_["|>"](S.brand<Person>())
 
 const parsePerson = Parser.for(Person)["|>"](S.condemnFail)
 const guardPerson = Guard.for(Person)
