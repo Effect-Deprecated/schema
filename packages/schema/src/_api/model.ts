@@ -72,7 +72,7 @@ export interface Model<M, Self extends MO.SchemaAny>
  * @inject genericName
  */
 export function Model<M>(__name?: string) {
-  return <Self extends MO.Schema<any, any, any, any, any, any, any>>(
+  return <Self extends MO.Schema<any, any, any, any, MO.AnyError, any, any>>(
     self: Self
   ): Model<M, Self> => {
     const schemed = S.Schemed(__name ? named(__name)(self) : self)
@@ -84,6 +84,10 @@ export function Model<M>(__name?: string) {
 
     Object.defineProperty(schemed, "Api", {
       value: self.Api
+    })
+
+    Object.defineProperty(schemed, ">>>", {
+      value: self[">>>"]
     })
 
     Object.defineProperty(schemed, "Parser", {

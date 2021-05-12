@@ -63,9 +63,9 @@ type ShapeFromClass<
 
 export const fromFields = Symbol()
 
-export function Schemed<Self extends S.Schema<any, any, any, any, any, any, any>>(
-  self: Self
-): Schemed<Self> {
+export function Schemed<
+  Self extends S.Schema<any, any, any, any, S.AnyError, any, any>
+>(self: Self): Schemed<Self> {
   const of_ = Constructor.for(self)["|>"](unsafe)
   // @ts-expect-error
   return class {

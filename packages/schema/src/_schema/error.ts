@@ -75,7 +75,7 @@ export function isDefaultLeaf<T extends object>(t: T): t is DefaultLeafE<T> & T 
   return typeof t === "object" && t != null && defaultLeafSymbol in t
 }
 
-export type AnyError = SchemaError<LeafError>
+export type AnyError = SchemaError<HasDefaultLeafE>
 
 //
 // Schema Errors

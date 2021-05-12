@@ -16,7 +16,6 @@ interface IdBrand {
 type Id = S.Int & S.Positive & IdBrand
 
 const Id = S.positiveInt["|>"](S.brand((_) => _ as Id))
-const id = Constructor.for(Id)["|>"](S.unsafe)
 
 interface NameBrand {
   readonly NameBrand: unique symbol
@@ -24,7 +23,6 @@ interface NameBrand {
 type Name = S.NonEmptyString & NameBrand
 
 const Name = S.nonEmptyString["|>"](S.brand((_) => _ as Name))
-const name = Constructor.for(Name)["|>"](S.unsafe)
 
 interface AddressBrand {
   readonly AddressBrand: unique symbol
@@ -39,16 +37,16 @@ interface AgeBrand {
 type Age = S.Int & S.Positive & AgeBrand
 
 const Age = S.positiveInt["|>"](S.brand((_) => _ as Age))
-const age = Constructor.for(Age)["|>"](S.unsafe)
 
 interface SexBrand {
   readonly SexBrand: unique symbol
 }
+type Sex = S.ParsedShapeOf<typeof Sex_> & SexBrand
 
 const Sex_ = S.literal("male", "female", "else")
-type Sex = S.ParsedShapeOf<typeof Sex_> & SexBrand
 const Sex = Sex_["|>"](S.brand((_) => _ as Sex))
-const sex = Constructor.for(Sex)["|>"](S.unsafe)
+
+interface Person extends S.ParsedShapeOf<typeof Person_> {}
 
 const Person_ = S.struct({
   required: {
@@ -61,8 +59,6 @@ const Person_ = S.struct({
     Addresses: S.chunk(Address)
   }
 })["|>"](S.named("Person"))
-
-interface Person extends S.ParsedShapeOf<typeof Person_> {}
 
 const Person = S.opaque<Person>()(Person_)
 
@@ -138,10 +134,10 @@ describe("Schema", () => {
     const result_ok = await T.runPromise(
       T.either(
         createPerson({
-          Age: age(30),
-          Id: id(0),
-          Name: name("Mike"),
-          Sex: sex("male"),
+          Age: Age(30),
+          Id: Id(0),
+          Name: Name("Mike"),
+          Sex: Sex("male"),
           Addresses: Chunk.empty<Address>()
         })
       )
@@ -203,10 +199,10 @@ describe("Schema", () => {
       T.either(
         createPersonArray([
           unsafeCreatePerson({
-            Age: age(30),
-            Id: id(0),
-            Name: name("Mike"),
-            Sex: sex("male"),
+            Age: Age(30),
+            Id: Id(0),
+            Name: Name("Mike"),
+            Sex: Sex("male"),
             Addresses: Chunk.empty()
           })
         ])
@@ -247,10 +243,10 @@ describe("Schema", () => {
     const result = await T.runPromise(
       T.either(
         createPersonNoAddresses({
-          Age: age(30),
-          Id: id(0),
-          Name: name("Mike"),
-          Sex: sex("male")
+          Age: Age(30),
+          Id: Id(0),
+          Name: Name("Mike"),
+          Sex: Sex("male")
         })
       )
     )
