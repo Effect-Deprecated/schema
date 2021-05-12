@@ -28,4 +28,5 @@ export * from "./unknown"
 export * from "./unknownArray"
 export * from "./uuid"
 export * from "./withDefaultConstructorField"
+export * from "./withDefaults"
 // codegen:end

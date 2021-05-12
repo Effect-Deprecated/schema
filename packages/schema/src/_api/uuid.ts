@@ -4,11 +4,11 @@ import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
 import { parseUuidE } from "../_schema"
-import type { Branded } from "./brand"
 import { brand } from "./brand"
 import { nonEmpty } from "./nonEmpty"
 import type { NonEmptyString } from "./nonEmptyString"
 import { fromString, string } from "./string"
+import type { SchemaWithDefaults } from "./withDefaults"
 
 export interface UUIDBrand {
   readonly UUID: unique symbol
@@ -27,20 +27,20 @@ const isUUID: Refinement<string, UUID> = (s: string): s is UUID => {
   return regexUUID.test(s)
 }
 
-export const UUIDFromString: Branded<
+export const UUIDFromString: SchemaWithDefaults<
+  string,
+  S.CompositionE<
+    | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
+    | S.PrevE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
+  >,
+  UUID,
   string,
   S.CompositionE<
     | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
     | S.PrevE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
   >,
   string,
-  S.CompositionE<
-    | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
-    | S.PrevE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
-  >,
-  string,
-  {},
-  UUID
+  {}
 > = pipe(
   fromString,
   S.arbitrary((FC) => FC.uuid()),
@@ -54,7 +54,7 @@ export const UUIDFromString: Branded<
 
 export const UUIDIdentifier = Symbol.for("@effect-ts/schema/ids/UUID")
 
-export const UUID: Branded<
+export const UUID: SchemaWithDefaults<
   unknown,
   S.CompositionE<
     | S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>>
@@ -65,14 +65,14 @@ export const UUID: Branded<
         >
       >
   >,
+  UUID,
   string,
   S.CompositionE<
     | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
     | S.PrevE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
   >,
   string,
-  S.ApiSelfType<UUID>,
-  UUID
+  S.ApiSelfType<UUID>
 > = pipe(
   string[">>>"](UUIDFromString),
   brand((_) => _ as UUID),
