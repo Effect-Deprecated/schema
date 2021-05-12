@@ -5,38 +5,35 @@ import * as Constructor from "../src/Constructor"
 import * as Encoder from "../src/Encoder"
 import * as Parser from "../src/Parser"
 
-const addS_ = S.struct({
+const Add_ = S.struct({
   required: {
     x: S.number,
     y: S.number
   }
 })["|>"](S.tag("Add"))
 
-interface Add extends S.ParsedShapeOf<typeof addS_> {}
-const addS = S.opaque<Add>()(addS_)
+interface Add extends S.ParsedShapeOf<typeof Add_> {}
+const Add = Add_["|>"](S.brand((_) => _ as Add))
 
-const mulS_ = S.struct({
+const Mul_ = S.struct({
   required: {
     x: S.number,
     y: S.number
   }
 })["|>"](S.tag("Mul"))
 
-interface Mul extends S.ParsedShapeOf<typeof mulS_> {}
-const mulS = S.opaque<Mul>()(mulS_)
+interface Mul extends S.ParsedShapeOf<typeof Mul_> {}
+const Mul = Mul_["|>"](S.brand((_) => _ as Mul))
 
 interface OperationBrand {
   readonly Operation: unique symbol
 }
 type Operation = (Add | Mul) & OperationBrand
-const operationS = S.tagged(addS, mulS)["|>"](S.brand((u) => u as Operation))
+const Operation = S.tagged(Add, Mul)["|>"](S.brand((u) => u as Operation))
 
-const mul = operationS.Api.of.Mul["|>"](S.unsafe)
-const add = operationS.Api.of.Add["|>"](S.unsafe)
-
-const parseOperation = Parser.for(operationS)["|>"](S.condemnFail)
-const constructOperation = Constructor.for(operationS)["|>"](S.condemnFail)
-const encodeOperation = Encoder.for(operationS)
+const parseOperation = Parser.for(Operation)["|>"](S.condemnFail)
+const constructOperation = Constructor.for(Operation)["|>"](S.condemnFail)
+const encodeOperation = Encoder.for(Operation)
 
 describe("Tagged Union", () => {
   it("parse", async () => {
@@ -96,9 +93,9 @@ describe("Tagged Union", () => {
 
       expect(
         result_construct.right["|>"](
-          operationS.Api.matchS({
-            Add: (_) => mul({ x: _.x, y: _.y }),
-            Mul: (_) => add({ x: _.x, y: _.y })
+          Operation.Api.matchS({
+            Add: (_) => Operation(Mul({ x: _.x, y: _.y })),
+            Mul: (_) => Operation(Add({ x: _.x, y: _.y }))
           })
         )._tag
       ).toEqual("Mul")

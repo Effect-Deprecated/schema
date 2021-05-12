@@ -145,17 +145,10 @@ export function makeTagged<Key extends string>(key: Key) {
     }[number],
     {
       [K in keyof Props]: Props[K] extends S.SchemaAny
-        ? S.ConstructorInputOf<Props[K]> &
-            { readonly [k in Key]: S.ParsedShapeOf<Props[K]>[Key] }
+        ? S.ParsedShapeOf<Props[K]>
         : never
     }[number],
-    UnionE<
-      {
-        [K in keyof Props]: Props[K] extends S.SchemaAny
-          ? S.MemberE<S.ParsedShapeOf<Props[K]>[Key], S.ConstructorErrorOf<Props[K]>>
-          : never
-      }[number]
-    >,
+    never,
     {
       [K in keyof Props]: Props[K] extends S.SchemaAny ? S.EncodedOf<Props[K]> : never
     }[number],
@@ -308,74 +301,17 @@ export function makeTagged<Key extends string>(key: Key) {
         (
           u: {
             [K in keyof Props]: Props[K] extends S.SchemaAny
-              ? S.ConstructorInputOf<Props[K]>
+              ? S.ParsedShapeOf<Props[K]>
               : never
           }[number]
         ): Th.These<
-          UnionE<
-            {
-              [K in keyof Props]: Props[K] extends S.SchemaAny
-                ? S.MemberE<
-                    S.ParsedShapeOf<Props[K]>[Key],
-                    S.ConstructorErrorOf<Props[K]>
-                  >
-                : never
-            }[number]
-          >,
+          never,
           {
             [K in keyof Props]: Props[K] extends S.SchemaAny
               ? S.ParsedShapeOf<Props[K]>
               : never
           }[number]
-        > => {
-          const tag = u[key as string]
-
-          const memberConstructor = constructors[tag] as Constructor.Constructor<
-            unknown,
-            unknown,
-            unknown
-          >
-
-          const result = memberConstructor(u)
-
-          if (result.effect._tag === "Left") {
-            return Th.fail(
-              S.unionE(
-                Chunk.single(
-                  S.memberE(
-                    tag,
-                    result.effect.left
-                  ) as Props[number] extends S.SchemaAny
-                    ? S.MemberE<
-                        S.ParsedShapeOf<Props[number]>[Key],
-                        S.ConstructorErrorOf<Props[number]>
-                      >
-                    : never
-                )
-              )
-            )
-          }
-
-          const warnings = result.effect.right.get(1)
-
-          if (warnings._tag === "Some") {
-            return Th.warn(
-              result.effect.right.get(0) as any,
-              S.unionE(
-                Chunk.single(
-                  S.memberE(tag, warnings.value) as Props[number] extends S.SchemaAny
-                    ? S.MemberE<
-                        S.ParsedShapeOf<Props[number]>[Key],
-                        S.ConstructorErrorOf<Props[number]>
-                      >
-                    : never
-                )
-              )
-            )
-          }
-
-          return Th.succeed(result.effect.right.get(0) as any)
-        }
+        > => Th.succeed(u)
       ),
       S.mapApi(
         (_) =>
