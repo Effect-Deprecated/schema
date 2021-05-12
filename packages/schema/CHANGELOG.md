@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.4](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.5.3...@effect-ts/schema@0.5.4) (2021-05-12)
+
+
+### Features
+
+* **schema:** add json, fix encoder order ([0c2fcb8](https://github.com/Effect-TS/schema/commit/0c2fcb8f5572953be56837ee3f419f9b60548050))
+
+
+
+
+
 ## [0.5.3](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.5.2...@effect-ts/schema@0.5.3) (2021-05-12)
 
 
