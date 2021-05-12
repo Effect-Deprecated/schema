@@ -1,6 +1,6 @@
 // tracing: off
 import type * as MO from "../_schema"
-import type { Schema } from "../_schema/schema"
+import type { ApiSelfType, Schema } from "../_schema/schema"
 import type { SchemaWithDefaults } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
 
@@ -29,7 +29,7 @@ export function brand<ParsedShape, B extends ParsedShape>(_: (_: ParsedShape) =>
     ConstructorInput,
     ConstructorError,
     Encoded,
-    Api
+    Api & ApiSelfType<B>
   > => {
     // @ts-expect-error
     return withDefaults(self)

@@ -1,5 +1,5 @@
 import * as MO from "../_schema"
-import type { ApiSelfType, Schema } from "../_schema/schema"
+import type { Schema } from "../_schema/schema"
 import * as Arbitrary from "../Arbitrary"
 import * as Constructor from "../Constructor"
 import * as Encoder from "../Encoder"
@@ -22,7 +22,7 @@ export interface SchemaWithDefaults<
     ConstructorInput,
     ConstructorError,
     Encoded,
-    Api & ApiSelfType<ParsedShape>
+    Api
   > {
   (_: ConstructorInput): ParsedShape
 
