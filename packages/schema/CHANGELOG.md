@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.2](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.5.1...@effect-ts/schema@0.5.2) (2021-05-12)
+
+
+### Features
+
+* **schema:** improve brad api ([c94e7ce](https://github.com/Effect-TS/schema/commit/c94e7ce27e5aa9f91f77cf033cf1af012fce393a))
+
+
+
+
+
 ## [0.5.1](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.5.0...@effect-ts/schema@0.5.1) (2021-05-12)
 
 
