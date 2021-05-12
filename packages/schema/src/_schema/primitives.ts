@@ -5,7 +5,7 @@ import type * as fc from "fast-check"
 
 import type * as Th from "../These"
 import type { AnyError, CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
-import type { ApiSelfType, Schema } from "./schema"
+import type { ApiSelfType, Schema, SchemaAny } from "./schema"
 import {
   SchemaArbitrary,
   SchemaConstructor,
@@ -490,29 +490,18 @@ export function identified_<
   return new SchemaIdentified(self, identifier, meta)
 }
 
-export function identified<Api, Meta>(
+export function identified<Meta>(
   identifier: symbol,
   meta: Meta
-): <ParserInput, ParserError, ParsedShape, ConstructorInput, ConstructorError, Encoded>(
-  self: Schema<
-    ParserInput,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
-) => Schema<
-  ParserInput,
-  ParserError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError,
-  Encoded,
-  Api
-> {
-  return (self) => new SchemaIdentified(self, identifier, meta)
+): <
+  Self extends SchemaAny & {
+    readonly id: <Meta>(identifier: symbol, meta: Meta) => SchemaAny
+  }
+>(
+  self: Self
+) => ReturnType<Self["id"]> {
+  // @ts-expect-error
+  return (self) => self.id(identifier, meta)
 }
 
 export function guard_<

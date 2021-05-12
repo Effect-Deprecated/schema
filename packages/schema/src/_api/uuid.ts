@@ -4,6 +4,7 @@ import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
 import { parseUuidE } from "../_schema"
+import type { Branded } from "./brand"
 import { brand } from "./brand"
 import { nonEmpty } from "./nonEmpty"
 import type { NonEmptyString } from "./nonEmptyString"
@@ -18,21 +19,62 @@ export const regexUUID =
 
 export type UUID = NonEmptyString & UUIDBrand
 
-export const UUIDFromStringIdentifier = Symbol.for("@effect-ts/schema/ids/UUID")
+export const UUIDFromStringIdentifier = Symbol.for(
+  "@effect-ts/schema/ids/UUIDFromString"
+)
 
 const isUUID: Refinement<string, UUID> = (s: string): s is UUID => {
   return regexUUID.test(s)
 }
 
-export const UUIDFromString = pipe(
+export const UUIDFromString: Branded<
+  string,
+  S.CompositionE<
+    | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
+    | S.PrevE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
+  >,
+  string,
+  S.CompositionE<
+    | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
+    | S.PrevE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
+  >,
+  string,
+  {},
+  UUID
+> = pipe(
   fromString,
   S.arbitrary((FC) => FC.uuid()),
   nonEmpty,
-  S.refine(isUUID, (n) => S.leafE(parseUuidE(n))),
   S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
+  S.refine(isUUID, (n) => S.leafE(parseUuidE(n))),
   brand((_) => _ as UUID),
   S.identified(UUIDFromStringIdentifier, {})
 )
 
-export const UUID = string[">>>"](UUIDFromString)
+export const UUIDIdentifier = Symbol.for("@effect-ts/schema/ids/UUID")
+
+export const UUID: Branded<
+  unknown,
+  S.CompositionE<
+    | S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>>
+    | S.NextE<
+        S.CompositionE<
+          | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
+          | S.PrevE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
+        >
+      >
+  >,
+  string,
+  S.CompositionE<
+    | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
+    | S.PrevE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
+  >,
+  string,
+  S.ApiSelfType<UUID>,
+  UUID
+> = pipe(
+  string[">>>"](UUIDFromString),
+  brand((_) => _ as UUID),
+  S.identified(UUIDIdentifier, {})
+)

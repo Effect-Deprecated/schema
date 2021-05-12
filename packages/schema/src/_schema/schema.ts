@@ -622,6 +622,20 @@ export class SchemaRecursive<
   }
 }
 
+export const Identifiable = Symbol()
+
+export function isIdentifiable<A extends SchemaAny>(
+  _: A
+): _ is A & {
+  readonly self: SchemaAny
+  readonly identifier: symbol
+  readonly meta: unknown
+} {
+  return (
+    (typeof _ === "object" || typeof _ === "function") && _ != null && Identifiable in _
+  )
+}
+
 export class SchemaIdentified<
     ParserInput,
     ParserError,
@@ -644,6 +658,7 @@ export class SchemaIdentified<
   implements HasContinuation
 {
   readonly Api = this.self.Api;
+  readonly [Identifiable] = Identifiable;
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
 

@@ -4,6 +4,8 @@ import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
+import type { Branded } from "./brand"
+import { brand } from "./brand"
 import { fromNumber, number, stringNumberFromString } from "./number"
 import { string } from "./string"
 
@@ -15,14 +17,14 @@ export type Int = number & IntBrand
 
 export const intFromNumberIdentifier = Symbol.for("@effect-ts/schema/ids/intFromNumber")
 
-export const intFromNumber: S.Schema<
-  number,
-  S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
-  Int,
+export const intFromNumber: Branded<
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
   number,
-  {}
+  S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
+  number,
+  {},
+  Int
 > = pipe(
   fromNumber,
   S.arbitrary((_) => _.integer()),
@@ -34,53 +36,70 @@ export const intFromNumber: S.Schema<
   S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapApi(() => ({})),
+  brand((_) => _ as Int),
   S.identified(intFromNumberIdentifier, {})
 )
 
-export const stringIntIdentifier = Symbol.for("@effect-ts/schema/ids/stringInt")
+export const stringIntFromStringIdentifier = Symbol.for(
+  "@effect-ts/schema/ids/stringIntFromString"
+)
 
-export const stringIntFromString: S.Schema<
+export const stringIntFromString: Branded<
   string,
   S.CompositionE<
     | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
     | S.PrevE<S.LeafE<S.ParseNumberE>>
   >,
-  Int,
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
   string,
-  {}
-> = stringNumberFromString[">>>"](intFromNumber).id(stringIntIdentifier, {})
+  S.ApiSelfType<Int>,
+  Int
+> = pipe(
+  stringNumberFromString[">>>"](intFromNumber),
+  brand((_) => _ as Int),
+  S.identified(stringIntFromStringIdentifier, {})
+)
 
-export const stringInt: S.Schema<
+export const stringIntIdentifier = Symbol.for("@effect-ts/schema/ids/stringInt")
+
+export const stringInt: Branded<
   unknown,
   S.CompositionE<
     | S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>>
     | S.NextE<
         S.CompositionE<
-          | S.PrevE<S.LeafE<S.ParseNumberE>>
           | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
+          | S.PrevE<S.LeafE<S.ParseNumberE>>
         >
       >
   >,
-  Int,
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
   string,
-  {}
-> = string[">>>"](stringIntFromString)
+  S.ApiSelfType<Int>,
+  Int
+> = pipe(
+  string[">>>"](stringIntFromString),
+  brand((_) => _ as Int),
+  S.identified(stringIntIdentifier, {})
+)
 
 export const intIdentifier = Symbol.for("@effect-ts/schema/ids/int")
 
-export const int: S.Schema<
+export const int: Branded<
   unknown,
   S.CompositionE<
     | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
     | S.PrevE<S.RefinementE<S.LeafE<S.ParseNumberE>>>
   >,
-  Int,
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
   number,
-  {}
-> = number[">>>"](intFromNumber).id(intIdentifier, {})
+  S.ApiSelfType<Int>,
+  Int
+> = pipe(
+  number[">>>"](intFromNumber),
+  brand((_) => _ as Int),
+  S.identified(intIdentifier, {})
+)

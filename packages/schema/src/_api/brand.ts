@@ -1,7 +1,6 @@
 // tracing: off
 import * as MO from "../_schema"
 import type { ApiSelfType, Schema } from "../_schema/schema"
-import { SchemaIdentified } from "../_schema/schema"
 import * as Arbitrary from "../Arbitrary"
 import * as Constructor from "../Constructor"
 import * as Encoder from "../Encoder"
@@ -37,6 +36,19 @@ export interface Branded<
   readonly Guard: Guard.Guard<B>
 
   readonly Arbitrary: Arbitrary.Arbitrary<B>
+
+  readonly id: <Meta>(
+    identifier: symbol,
+    meta: Meta
+  ) => Branded<
+    ParserInput,
+    ParserError,
+    ConstructorInput,
+    ConstructorError,
+    Encoded,
+    Api,
+    B
+  >
 }
 
 export function brand<ParsedShape, B extends ParsedShape>(_: (_: ParsedShape) => B) {
@@ -105,8 +117,13 @@ export function brand<ParsedShape, B extends ParsedShape>(_: (_: ParsedShape) =>
     })
 
     Object.defineProperty(schemed, "id", {
-      value: <Meta>(identifier: symbol, meta: Meta) =>
-        new SchemaIdentified(self, identifier, meta)
+      value: <Meta>(identifier: symbol, meta: Meta) => {
+        const x = brand(_)(self)
+        x["identifier"] = identifier
+        x["self"] = self
+        x["meta"] = meta
+        return x
+      }
     })
 
     // @ts-expect-error

@@ -5,6 +5,8 @@ import { pipe } from "@effect-ts/core/Function"
 import type { ApiSelfType } from "../_schema"
 import * as S from "../_schema"
 import * as Th from "../These"
+import type { Branded } from "./brand"
+import { brand } from "./brand"
 import { refinement } from "./refinement"
 
 export interface LiteralApi<KS extends readonly string[]> extends ApiSelfType {
@@ -28,14 +30,14 @@ export const literalIdentifier = Symbol.for("@effect-ts/schema/ids/literal")
 
 export function literal<KS extends readonly string[]>(
   ...literals: KS
-): S.Schema<
+): Branded<
   unknown,
   S.RefinementE<S.LeafE<S.LiteralE<KS>>>,
   KS[number],
-  KS[number],
   never,
   string,
-  LiteralApi<KS>
+  LiteralApi<KS>,
+  KS[number]
 > {
   const ko = {}
   for (const k of literals) {
@@ -56,6 +58,7 @@ export function literal<KS extends readonly string[]>(
         matchW: (m) => (k) => m[k](k)
       })
     ),
+    brand((_) => _ as KS[number]),
     S.identified(literalIdentifier, { literals })
   )
 }
