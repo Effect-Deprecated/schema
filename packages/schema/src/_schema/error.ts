@@ -630,6 +630,6 @@ function drawForest(indentation: string, forest: Chunk.Chunk<Tree<string>>): str
   return r
 }
 
-export const errorToTree = toTreeWith((e: LeafError) => e[toTreeSymbol])
+export const errorToTree = toTreeWith((e: HasDefaultLeafE) => e[toTreeSymbol])
 
 export const drawError = flow(errorToTree, drawTree)
