@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.5.0...@effect-ts/schema@0.5.1) (2021-05-12)
+
+
+### Bug Fixes
+
+* **schema:** fix literal ([1ceecb5](https://github.com/Effect-TS/schema/commit/1ceecb5eac63afbcd5079b987d19416ead2ab210))
+* **schema:** fix withDefaults and branded ([f4cd82c](https://github.com/Effect-TS/schema/commit/f4cd82c65c7ae41ea84e5d6fcd0a4f662a7e499c))
+
+
+### Features
+
+* **schema:** separate brand and withDefaults ([9604705](https://github.com/Effect-TS/schema/commit/96047056e0799b3accb934a76e58f265e4affa67))
+
+
+
+
+
 # [0.5.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.4.1...@effect-ts/schema@0.5.0) (2021-05-12)
 
 
