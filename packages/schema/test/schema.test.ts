@@ -60,7 +60,7 @@ const Person_ = S.struct({
   }
 })["|>"](S.named("Person"))
 
-const Person = S.opaque<Person>()(Person_)
+const Person = Person_["|>"](S.brand((_) => _ as Person))
 
 const parsePerson = Parser.for(Person)["|>"](S.condemnFail)
 const guardPerson = Guard.for(Person)
