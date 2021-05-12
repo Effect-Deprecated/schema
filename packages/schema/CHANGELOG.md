@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.3](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.5.2...@effect-ts/schema@0.5.3) (2021-05-12)
+
+
+### Bug Fixes
+
+* **schema:** fix post refactor ([6e7915a](https://github.com/Effect-TS/schema/commit/6e7915a7b03ea2a8c25726932249f02c376f9c6f))
+
+
+
+
+
 ## [0.5.2](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.5.1...@effect-ts/schema@0.5.2) (2021-05-12)
 
 
