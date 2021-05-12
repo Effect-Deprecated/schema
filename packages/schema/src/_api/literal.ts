@@ -5,9 +5,9 @@ import { pipe } from "@effect-ts/core/Function"
 import type { ApiSelfType } from "../_schema"
 import * as S from "../_schema"
 import * as Th from "../These"
-import { brand } from "./brand"
 import { refinement } from "./refinement"
 import type { SchemaWithDefaults } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export interface LiteralApi<KS extends readonly string[]> extends ApiSelfType {
   readonly matchS: <A>(
@@ -58,7 +58,7 @@ export function literal<KS extends readonly string[]>(
         matchW: (m) => (k) => m[k](k)
       })
     ),
-    brand((_) => _ as KS[number]),
+    withDefaults,
     S.identified(literalIdentifier, { literals })
   )
 }
