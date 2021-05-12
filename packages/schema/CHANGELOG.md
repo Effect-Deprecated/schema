@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.5](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.5.4...@effect-ts/schema@0.5.5) (2021-05-12)
+
+
+### Bug Fixes
+
+* **schema:** tag error ([c6a63b9](https://github.com/Effect-TS/schema/commit/c6a63b965733b59bd25a5a5e6f36f90dd6e0c7a0))
+
+
+
+
+
 ## [0.5.4](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.5.3...@effect-ts/schema@0.5.4) (2021-05-12)
 
 
