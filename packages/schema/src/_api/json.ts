@@ -12,6 +12,8 @@ export class JsonDecodingE
   extends S.DefaultLeafE<{ readonly actual: string; readonly error: unknown }>
   implements S.Actual<string>
 {
+  readonly _tag = "NotJsonString"
+
   get [S.toTreeSymbol](): S.Tree<string> {
     return S.tree(
       `cannot decode JSON from ${this.actual}, expected a valid JSON string`
