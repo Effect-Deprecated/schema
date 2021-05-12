@@ -33,7 +33,7 @@ export const positiveIntFromNumber: SchemaWithDefaults<
   intFromNumber,
   positive,
   S.arbitrary((FC) => FC.integer({ min: 1 }).map((_) => _ as Int & Positive)),
-  brand((_) => _ as Int & Positive),
+  brand<Int & Positive>(),
   S.identified(positiveIntFromNumberIdentifier, {})
 )
 
@@ -60,6 +60,6 @@ export const positiveInt: SchemaWithDefaults<
   S.ApiSelfType<Int & Positive>
 > = pipe(
   number[">>>"](positiveIntFromNumber),
-  brand((_) => _ as Int & Positive),
+  brand<Int & Positive>(),
   S.identified(positiveIntIdentifier, {})
 )

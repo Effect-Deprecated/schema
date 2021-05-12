@@ -36,7 +36,7 @@ export const intFromNumber: SchemaWithDefaults<
   S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapApi(() => ({})),
-  brand((_) => _ as Int),
+  brand<Int>(),
   S.identified(intFromNumberIdentifier, {})
 )
 
@@ -57,7 +57,7 @@ export const stringIntFromString: SchemaWithDefaults<
   S.ApiSelfType<Int>
 > = pipe(
   stringNumberFromString[">>>"](intFromNumber),
-  brand((_) => _ as Int),
+  brand<Int>(),
   S.identified(stringIntFromStringIdentifier, {})
 )
 
@@ -81,7 +81,7 @@ export const stringInt: SchemaWithDefaults<
   S.ApiSelfType<Int>
 > = pipe(
   string[">>>"](stringIntFromString),
-  brand((_) => _ as Int),
+  brand<Int>(),
   S.identified(stringIntIdentifier, {})
 )
 
@@ -98,8 +98,4 @@ export const int: SchemaWithDefaults<
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
   number,
   S.ApiSelfType<Int>
-> = pipe(
-  number[">>>"](intFromNumber),
-  brand((_) => _ as Int),
-  S.identified(intIdentifier, {})
-)
+> = pipe(number[">>>"](intFromNumber), brand<Int>(), S.identified(intIdentifier, {}))

@@ -48,7 +48,7 @@ export const UUIDFromString: SchemaWithDefaults<
   S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
   S.refine(isUUID, (n) => S.leafE(parseUuidE(n))),
-  brand((_) => _ as UUID),
+  brand<UUID>(),
   S.identified(UUIDFromStringIdentifier, {})
 )
 
@@ -73,8 +73,4 @@ export const UUID: SchemaWithDefaults<
   >,
   string,
   S.ApiSelfType<UUID>
-> = pipe(
-  string[">>>"](UUIDFromString),
-  brand((_) => _ as UUID),
-  S.identified(UUIDIdentifier, {})
-)
+> = pipe(string[">>>"](UUIDFromString), brand<UUID>(), S.identified(UUIDIdentifier, {}))

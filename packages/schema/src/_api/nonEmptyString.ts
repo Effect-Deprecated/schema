@@ -30,7 +30,7 @@ export const nonEmptyStringFromString: SchemaWithDefaults<
   nonEmpty,
   S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
-  brand((_) => _ as NonEmptyString),
+  brand<NonEmptyString>(),
   S.identified(nonEmptyStringFromStringIdentifier, {})
 )
 
@@ -51,6 +51,6 @@ export const nonEmptyString: SchemaWithDefaults<
   S.ApiSelfType<NonEmptyString>
 > = pipe(
   string[">>>"](nonEmptyStringFromString),
-  brand((_) => _ as NonEmptyString),
+  brand<NonEmptyString>(),
   S.identified(nonEmptyStringIdentifier, {})
 )
