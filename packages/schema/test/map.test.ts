@@ -24,6 +24,9 @@ export type AnyRecord = Record<string, any>
 type Rename<T, K extends keyof T, N extends string> = Pick<T, Exclude<keyof T, K>> &
   { [P in N]: T[K] }
 
+// TODO: e.g when mapping to openAPI, we should be able to pick up on the changed key names
+// as that's what should be used in the spec.
+// TODO: version with multiple field mappings.
 function mapping<
   ParserInput,
   ParserError,
@@ -44,7 +47,7 @@ function mapping<
     Encoded,
     Api
   >,
-  mappingFrom: Key,
+  mappingFrom: Key, // TODO: From key should be constrained.
   mappingTo: DestKey
 ): S.Schema<
   unknown,
@@ -72,7 +75,6 @@ function mapping<
       for (const key in _) {
         no[key === mappingTo ? mappingFrom : key] = _[key]
       }
-      // TODO: decode no
       return parse(no)
     })
   ) as any
