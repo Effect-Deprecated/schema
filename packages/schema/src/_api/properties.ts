@@ -183,9 +183,11 @@ export type SchemaProperties<Props extends PropertyRecord> = S.Schema<
 export type TagsFromProps<Props extends PropertyRecord> = UnionToIntersection<
   {
     [k in keyof Props]: Props[k]["_as"] extends O.None
-      ? S.ApiOf<Props[k]["_schema"]> extends LiteralApi<infer KS>
-        ? KS extends [infer X]
-          ? { [h in k]: { value: X } }
+      ? Props[k]["_optional"] extends "required"
+        ? S.ApiOf<Props[k]["_schema"]> extends LiteralApi<infer KS>
+          ? KS extends [infer X]
+            ? { [h in k]: { value: X } }
+            : never
           : never
         : never
       : never
