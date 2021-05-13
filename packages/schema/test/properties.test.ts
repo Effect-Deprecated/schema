@@ -11,7 +11,7 @@ const Identified = S.properties({
 })
 
 const Person = S.properties({
-  ...Identified.props,
+  ...Identified.Api.props,
   age: S.property(S.number).optional(),
   birthDate: S.property(S.date).optional().from("bd")
 })
