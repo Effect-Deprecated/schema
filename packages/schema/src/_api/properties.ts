@@ -6,7 +6,6 @@ import type { Compute, UnionToIntersection } from "@effect-ts/core/Utils"
 import { intersect } from "@effect-ts/core/Utils"
 import type * as fc from "fast-check"
 
-import type { HasContinuation } from "../_schema"
 import * as S from "../_schema"
 import { augmentRecord } from "../_utils"
 import * as Arbitrary from "../Arbitrary"
@@ -165,39 +164,15 @@ export type ParserErrorFromProperties<Props extends PropertyRecord> = S.Composit
 
 export const propertiesIdentifier = Symbol.for("@effect-ts/schema/ids/properties")
 
-export class SchemaProperties<Props extends PropertyRecord>
-  extends S.Schema<
-    unknown,
-    ParserErrorFromProperties<Props>,
-    ShapeFromProperties<Props>,
-    ShapeFromProperties<Props>,
-    never,
-    EncodedFromProperties<Props>,
-    {}
-  >
-  implements HasContinuation
-{
-  readonly _tag = "SchemaProperties"
-
-  readonly Api = {};
-
-  readonly [S.SchemaContinuationSymbol]: S.SchemaAny = this.self
-
-  constructor(
-    readonly self: S.Schema<
-      unknown,
-      ParserErrorFromProperties<Props>,
-      ShapeFromProperties<Props>,
-      ShapeFromProperties<Props>,
-      never,
-      EncodedFromProperties<Props>,
-      {}
-    >,
-    readonly props: Props
-  ) {
-    super()
-  }
-}
+export type SchemaProperties<Props extends PropertyRecord> = S.Schema<
+  unknown,
+  ParserErrorFromProperties<Props>,
+  ShapeFromProperties<Props>,
+  ShapeFromProperties<Props>,
+  never,
+  EncodedFromProperties<Props>,
+  { props: Props }
+>
 
 export function properties<Props extends PropertyRecord>(
   props: Props
@@ -353,14 +328,12 @@ export function properties<Props extends PropertyRecord>(
     )
   }
 
-  return new SchemaProperties(
-    pipe(
-      S.identity(guard),
-      S.parser(parser),
-      S.encoder(encoder),
-      S.arbitrary(arb),
-      S.identified(propertiesIdentifier, { props })
-    ),
-    props
+  return pipe(
+    S.identity(guard),
+    S.parser(parser),
+    S.encoder(encoder),
+    S.arbitrary(arb),
+    S.mapApi(() => ({ props })),
+    S.identified(propertiesIdentifier, { props })
   )
 }
