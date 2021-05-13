@@ -36,33 +36,6 @@ export interface TaggedApi<
   Key extends string,
   Props extends readonly SchemaK<Key, string>[]
 > extends ApiSelfType<unknown> {
-  readonly of: {
-    [K in Props[number]["Api"]["fields"][Key]["value"]]: (
-      _: {
-        [H in keyof Props]: Props[H] extends S.SchemaAny
-          ? S.ParsedShapeOf<Props[H]> extends { readonly [k in Key]: K }
-            ? S.ConstructorInputOf<Props[H]>
-            : never
-          : never
-      }[number]
-    ) => Th.These<
-      UnionE<
-        {
-          [K in keyof Props]: Props[K] extends S.SchemaAny
-            ? S.MemberE<S.ParsedShapeOf<Props[K]>[Key], S.ConstructorErrorOf<Props[K]>>
-            : never
-        }[number]
-      >,
-      S.GetApiSelfType<
-        this,
-        {
-          [K in keyof Props]: Props[K] extends S.SchemaAny
-            ? S.ParsedShapeOf<Props[K]>
-            : never
-        }[number]
-      >
-    >
-  }
   readonly matchS: <A>(
     _: {
       [K in Props[number]["Api"]["fields"][Key]["value"]]: (
@@ -159,7 +132,6 @@ export function makeTagged<Key extends string>(key: Key) {
     const parsers = {}
     const encoders = {}
     const constructors = {}
-    const ofs = {}
     const arbitraries = [] as Arbitrary.Gen<unknown>[]
     const keys = [] as string[]
 
@@ -169,10 +141,6 @@ export function makeTagged<Key extends string>(key: Key) {
       parsers[p.Api.fields[key].value] = Parser.for(p)
       encoders[p.Api.fields[key].value] = Encoder.for(p)
       constructors[p.Api.fields[key].value] = Constructor.for(p)
-      ofs[p.Api.fields[key].value] = (_: any) =>
-        constructors[p.Api.fields[key].value](
-          Object.assign({ [key]: p.Api.fields[key].value }, _)
-        )
       arbitraries.push(Arbitrary.for(p))
       keys.push(p.Api.fields[key].value)
     }
@@ -316,7 +284,6 @@ export function makeTagged<Key extends string>(key: Key) {
       S.mapApi(
         (_) =>
           ({
-            of: ofs,
             matchS: (match) => (a) => match[a[key]](a),
             matchW: (match) => (a) => match[a[key]](a)
           } as TaggedApi<Key, Props>)
