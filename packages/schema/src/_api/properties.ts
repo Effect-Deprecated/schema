@@ -34,11 +34,11 @@ export class Property<
     return new Property(this._as, this._schema, "required")
   }
 
-  as<As1 extends PropertyKey>(as: As1): Property<Self, Optional, O.Some<As1>> {
+  from<As1 extends PropertyKey>(as: As1): Property<Self, Optional, O.Some<As1>> {
     return new Property(new O.Some(as), this._schema, this._optional)
   }
 
-  removeAs(): Property<Self, Optional, O.None> {
+  removeFrom(): Property<Self, Optional, O.None> {
     return new Property(new O.None(), this._schema, this._optional)
   }
 }

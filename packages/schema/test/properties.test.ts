@@ -6,14 +6,14 @@ import * as Encoder from "../src/Encoder"
 import * as Parser from "../src/Parser"
 
 const Identified = S.properties({
-  id: S.property(S.string).as("sub"),
+  id: S.property(S.string).from("sub"),
   name: S.property(S.string).optional()
 })
 
 const Person = S.properties({
   ...Identified.props,
   age: S.property(S.number).optional(),
-  birthDate: S.property(S.date).optional().as("bd")
+  birthDate: S.property(S.date).optional().from("bd")
 })
 
 const parsePerson = Parser.for(Person)["|>"](S.condemnFail)
