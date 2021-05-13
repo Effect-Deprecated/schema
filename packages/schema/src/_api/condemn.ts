@@ -30,6 +30,14 @@ export class CondemnException extends Case<{ readonly message: string }> {
   }
 }
 
+export class ThrowableCondemnException extends Error {
+  readonly _tag = "CondemnException"
+
+  constructor(readonly error: AnyError) {
+    super(drawError(error))
+  }
+}
+
 export function condemnFail<X, A>(self: (a: X) => These<AnyError, A>) {
   return (a: X, __trace?: string) =>
     T.fromEither(() => {
@@ -54,11 +62,11 @@ export function unsafe<X, A>(self: (a: X) => These<AnyError, A>) {
   return (a: X) => {
     const res = self(a).effect
     if (res._tag === "Left") {
-      throw new CondemnException({ message: drawError(res.left) })
+      throw new ThrowableCondemnException(res.left)
     }
     const warn = res.right.get(1)
     if (warn._tag === "Some") {
-      throw new CondemnException({ message: drawError(warn.value) })
+      throw new ThrowableCondemnException(warn.value)
     }
     return res.right.get(0)
   }
