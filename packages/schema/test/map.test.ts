@@ -38,49 +38,52 @@ function mapping<
   DestKey extends string,
   Key extends string
 >(
-  self: S.Schema<
-    ParserInput,
-    ParserError,
+  mappingFrom: Key, // TODO: From key should be constrained.
+  mappingTo: DestKey
+) {
+  return (
+    self: S.Schema<
+      ParserInput,
+      ParserError,
+      ParsedShape,
+      ConstructorInput,
+      ConstructorError,
+      Encoded,
+      Api
+    >
+  ): S.Schema<
+    unknown,
+    ParserError, // TODO
     ParsedShape,
     ConstructorInput,
     ConstructorError,
-    Encoded,
+    Rename<Encoded, Key, DestKey>,
     Api
-  >,
-  mappingFrom: Key, // TODO: From key should be constrained.
-  mappingTo: DestKey
-): S.Schema<
-  unknown,
-  ParserError, // TODO
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError,
-  Rename<Encoded, Key, DestKey>,
-  Api
-> {
-  const enc = Encoder.for(self)
-  const parse = Parser.for(self)
-  return pipe(
-    S.identity((_): _ is Record<any, any> => typeof _ === "object" && _ !== null),
-    S.encoder((_) => {
-      const e = enc(_)
-      const no: any = {}
-      for (const key in e) {
-        no[(key as any) === mappingFrom ? mappingTo : key] = _[key]
-      }
-      return no
-    }),
-    S.parser((_: Record<any, any>) => {
-      const no: any = {}
-      for (const key in _) {
-        no[key === mappingTo ? mappingFrom : key] = _[key]
-      }
-      return parse(no)
-    })
-  ) as any
+  > => {
+    const enc = Encoder.for(self)
+    const parse = Parser.for(self)
+    return pipe(
+      S.identity((_): _ is Record<any, any> => typeof _ === "object" && _ !== null),
+      S.encoder((_) => {
+        const e = enc(_)
+        const no: any = {}
+        for (const key in e) {
+          no[(key as any) === mappingFrom ? mappingTo : key] = _[key]
+        }
+        return no
+      }),
+      S.parser((_: Record<any, any>) => {
+        const no: any = {}
+        for (const key in _) {
+          no[key === mappingTo ? mappingFrom : key] = _[key]
+        }
+        return parse(no)
+      })
+    ) as any
+  }
 }
 
-const test = mapping(UserProfile[S.schemaField], "id", "sub")
+const test = UserProfile[S.schemaField]["|>"](mapping("id", "sub"))
 // type P = S.ParsedShapeOf<typeof test>
 // type E = S.EncodedOf<typeof test>
 const parse = Parser.for(test)
