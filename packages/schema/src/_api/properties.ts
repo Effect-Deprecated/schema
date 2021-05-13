@@ -13,6 +13,7 @@ import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
+import type { LiteralApi } from "./literal"
 
 export class Property<
   Self extends S.SchemaUPI,
@@ -52,16 +53,21 @@ export type AnyProperty = Property<any, any, any>
 
 export type PropertyRecord = Record<PropertyKey, AnyProperty>
 
-export type ShapeFromProperties<Props extends PropertyRecord> = Compute<
+export type ShapeFromProperties<
+  Props extends PropertyRecord,
+  Excluded extends keyof Props = never
+> = Compute<
   UnionToIntersection<
     {
-      [k in keyof Props]: Props[k] extends AnyProperty
+      [k in keyof Props]: k extends Excluded
+        ? never
+        : Props[k] extends AnyProperty
         ? Props[k]["_optional"] extends "optional"
           ? {
-              [h in k]?: S.ParsedShapeOf<Props[k]["_schema"]>
+              readonly [h in k]?: S.ParsedShapeOf<Props[k]["_schema"]>
             }
           : {
-              [h in k]: S.ParsedShapeOf<Props[k]["_schema"]>
+              readonly [h in k]: S.ParsedShapeOf<Props[k]["_schema"]>
             }
         : never
     }[keyof Props]
@@ -75,12 +81,12 @@ export type EncodedFromProperties<Props extends PropertyRecord> = Compute<
       [k in keyof Props]: Props[k] extends AnyProperty
         ? Props[k]["_optional"] extends "optional"
           ? {
-              [h in Props[k]["_as"] extends O.Some<any>
+              readonly [h in Props[k]["_as"] extends O.Some<any>
                 ? Props[k]["_as"]["value"]
                 : k]?: S.EncodedOf<Props[k]["_schema"]>
             }
           : {
-              [h in Props[k]["_as"] extends O.Some<any>
+              readonly [h in Props[k]["_as"] extends O.Some<any>
                 ? Props[k]["_as"]["value"]
                 : k]: S.EncodedOf<Props[k]["_schema"]>
             }
@@ -168,10 +174,22 @@ export type SchemaProperties<Props extends PropertyRecord> = S.Schema<
   unknown,
   ParserErrorFromProperties<Props>,
   ShapeFromProperties<Props>,
-  ShapeFromProperties<Props>,
+  ShapeFromProperties<Props, keyof TagsFromProps<Props>>,
   never,
   EncodedFromProperties<Props>,
-  { props: Props }
+  { props: Props; fields: TagsFromProps<Props> }
+>
+
+export type TagsFromProps<Props extends PropertyRecord> = UnionToIntersection<
+  {
+    [k in keyof Props]: Props[k]["_as"] extends O.None
+      ? S.ApiOf<Props[k]["_schema"]> extends LiteralApi<infer KS>
+        ? KS extends [infer X]
+          ? { [h in k]: { value: X } }
+          : never
+        : never
+      : never
+  }[keyof Props]
 >
 
 export function properties<Props extends PropertyRecord>(
@@ -180,6 +198,8 @@ export function properties<Props extends PropertyRecord>(
   const parsers = {} as Record<string, Parser.Parser<unknown, unknown, unknown>>
   const encoders = {}
   const guards = {}
+  const fields = {} as TagsFromProps<Props>
+  const tags = {}
   const arbitrariesReq = {} as Record<string, Arbitrary.Gen<unknown>>
   const arbitrariesPar = {} as Record<string, Arbitrary.Gen<unknown>>
   const keys = Object.keys(props)
@@ -196,6 +216,18 @@ export function properties<Props extends PropertyRecord>(
       arbitrariesReq[key] = Arbitrary.for(props[key]._schema)
     } else {
       arbitrariesPar[key] = Arbitrary.for(props[key]._schema)
+    }
+
+    const s: S.SchemaUPI = props[key]._schema
+
+    if (
+      "literals" in s.Api &&
+      Array.isArray(s.Api["literals"]) &&
+      s.Api["literals"].length === 1 &&
+      typeof s.Api["literals"][0] === "string"
+    ) {
+      fields[key] = { value: s.Api["literals"][0] }
+      tags[key] = s.Api["literals"][0]
     }
   }
 
@@ -333,7 +365,12 @@ export function properties<Props extends PropertyRecord>(
     S.parser(parser),
     S.encoder(encoder),
     S.arbitrary(arb),
-    S.mapApi(() => ({ props })),
-    S.identified(propertiesIdentifier, { props })
+    S.mapApi(() => ({ props, fields })),
+    S.identified(propertiesIdentifier, { props }),
+    S.constructor((_) => {
+      const res = {} as ShapeFromProperties<Props>
+      Object.assign(res, _, tags)
+      return Th.succeed(res)
+    })
   )
 }

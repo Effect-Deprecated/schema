@@ -10,6 +10,7 @@ import type { SchemaWithDefaults } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
 
 export interface LiteralApi<KS extends readonly string[]> extends ApiSelfType {
+  readonly literals: KS
   readonly matchS: <A>(
     _: {
       [K in KS[number]]: (_: K) => A
@@ -36,7 +37,7 @@ export function literal<KS extends readonly string[]>(
   KS[number],
   KS[number],
   never,
-  string,
+  KS[number],
   LiteralApi<KS>
 > {
   const ko = {}
@@ -54,6 +55,7 @@ export function literal<KS extends readonly string[]>(
     S.mapApi(
       (): LiteralApi<KS> => ({
         _AS: undefined as any,
+        literals,
         matchS: (m) => (k) => m[k](k),
         matchW: (m) => (k) => m[k](k)
       })
