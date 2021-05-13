@@ -6,24 +6,24 @@ import * as Constructor from "../src/Constructor"
 import * as Encoder from "../src/Encoder"
 import * as Parser from "../src/Parser"
 
-const Identified = S.properties({
-  id: S.property(S.string).from("sub"),
-  name: S.property(S.string).optional()
+const Identified = S.props({
+  id: S.prop(S.string).from("sub"),
+  name: S.prop(S.string).opt()
 })
 
-const Person = S.properties({
-  _tag: S.property(S.literal("Person")),
+const Person = S.props({
+  _tag: S.prop(S.literal("Person")),
   ...Identified.Api.props,
-  age: S.property(S.number).optional(),
-  birthDate: S.property(S.date).optional().from("bd")
+  age: S.prop(S.number).opt(),
+  birthDate: S.prop(S.date).opt().from("bd")
 })
 
-const Animal = S.properties({
-  _tag: S.property(S.literal("Animal")),
+const Animal = S.props({
+  _tag: S.prop(S.literal("Animal")),
   ...Identified.Api.props,
-  age: S.property(S.number).optional(),
-  birthDate: S.property(S.date).optional().from("bd"),
-  color: S.property(S.string)
+  age: S.prop(S.number).opt(),
+  birthDate: S.prop(S.date).opt().from("bd"),
+  color: S.prop(S.string)
 })
 
 const PersonOrAnimal = S.tagged(Person, Animal)
