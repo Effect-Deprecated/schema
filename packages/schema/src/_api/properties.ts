@@ -26,11 +26,11 @@ export class Property<
     return new Property(this._as, schema, this._optional)
   }
 
-  optional(): Property<Self, "optional", As> {
+  opt(): Property<Self, "optional", As> {
     return new Property(this._as, this._schema, "optional")
   }
 
-  required(): Property<Self, "required", As> {
+  req(): Property<Self, "required", As> {
     return new Property(this._as, this._schema, "required")
   }
 
@@ -43,7 +43,7 @@ export class Property<
   }
 }
 
-export function property<Self extends S.SchemaUPI>(
+export function prop<Self extends S.SchemaUPI>(
   schema: Self
 ): Property<Self, "required", O.None> {
   return new Property(new O.None(), schema, "required")
@@ -177,7 +177,10 @@ export type SchemaProperties<Props extends PropertyRecord> = S.Schema<
   ShapeFromProperties<Props, keyof TagsFromProps<Props>>,
   never,
   EncodedFromProperties<Props>,
-  { props: Props; fields: TagsFromProps<Props> }
+  {
+    props: Props
+    fields: TagsFromProps<Props>
+  }
 >
 
 export type TagsFromProps<Props extends PropertyRecord> = UnionToIntersection<
@@ -194,7 +197,7 @@ export type TagsFromProps<Props extends PropertyRecord> = UnionToIntersection<
   }[keyof Props]
 >
 
-export function properties<Props extends PropertyRecord>(
+export function props<Props extends PropertyRecord>(
   props: Props
 ): SchemaProperties<Props> {
   const parsers = {} as Record<string, Parser.Parser<unknown, unknown, unknown>>
