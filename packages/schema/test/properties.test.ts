@@ -5,16 +5,16 @@ import * as S from "../src"
 import * as Encoder from "../src/Encoder"
 import * as Parser from "../src/Parser"
 
-const Identified = S.properties(
-  S.property("id").schema(S.string).as("sub"),
-  S.property("name").schema(S.string).optional()
-)
+const Identified = S.properties({
+  id: S.property(S.string).as("sub"),
+  name: S.property(S.string).optional()
+})
 
-const Person = S.properties(
+const Person = S.properties({
   ...Identified.props,
-  S.property("age").schema(S.number).optional(),
-  S.property("birthDate").schema(S.date).optional().as("bd")
-)
+  age: S.property(S.number).optional(),
+  birthDate: S.property(S.date).optional().as("bd")
+})
 
 const parsePerson = Parser.for(Person)["|>"](S.condemnFail)
 const encodePerson = Encoder.for(Person)
