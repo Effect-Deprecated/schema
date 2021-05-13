@@ -94,6 +94,10 @@ it("Parse should map", () => {
   })
 })
 
+it("Parse should fail on wrong input", () => {
+  expect(() => parse["|>"](S.unsafe)(undefined)).toThrow(/sub/)
+})
+
 it("Construct should work", () => {
   expect(cons["|>"](S.unsafe)({ id: "some string", email: "some email" })).toEqual({
     id: "some string",
