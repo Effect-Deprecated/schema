@@ -1,8 +1,8 @@
 import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../src"
+import * as Constructor from "../src/Constructor"
 import * as Encoder from "../src/Encoder"
-import * as Constructor from "../src/Parser"
 import * as Parser from "../src/Parser"
 
 export class UserProfile extends S.Model<UserProfile>()(
@@ -95,11 +95,20 @@ it("Parse should map", () => {
 })
 
 it("Parse should fail on wrong input", () => {
+  expect(() => parse["|>"](S.unsafe)(undefined)).toThrow()
+})
+
+it("Parse should fail on wrong input and show mapped key", () => {
   expect(() => parse["|>"](S.unsafe)(undefined)).toThrow(/sub/)
 })
 
 it("Construct should work", () => {
-  expect(cons["|>"](S.unsafe)({ id: "some string", email: "some email" })).toEqual({
+  expect(
+    cons["|>"](S.unsafe)({
+      id: "some string" as S.NonEmptyString,
+      email: "some email" as S.NonEmptyString
+    })
+  ).toEqual({
     id: "some string",
     email: "some email"
   })
