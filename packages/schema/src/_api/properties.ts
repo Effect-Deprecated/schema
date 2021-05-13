@@ -1,6 +1,7 @@
 import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import * as Dictionary from "@effect-ts/core/Collections/Immutable/Dictionary"
 import { pipe } from "@effect-ts/core/Function"
+import * as O from "@effect-ts/core/Option"
 import type { Compute, UnionToIntersection } from "@effect-ts/core/Utils"
 import { intersect } from "@effect-ts/core/Utils"
 import type * as fc from "fast-check"
@@ -13,101 +14,94 @@ import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
-import { unknown } from "./unknown"
 
 export class Property<
-  Key extends PropertyKey,
   Self extends S.SchemaUPI,
   Optional extends "optional" | "required",
-  As extends PropertyKey
+  As extends O.Option<PropertyKey>
 > {
-  constructor(
-    readonly _key: Key,
-    readonly _as: As,
-    readonly _schema: Self,
-    readonly _optional: Optional
-  ) {}
+  constructor(readonly _as: As, readonly _schema: Self, readonly _optional: Optional) {}
 
-  schema<That extends S.SchemaUPI>(schema: That): Property<Key, That, Optional, As> {
-    return new Property(this._key, this._as, schema, this._optional)
+  schema<That extends S.SchemaUPI>(schema: That): Property<That, Optional, As> {
+    return new Property(this._as, schema, this._optional)
   }
 
-  optional(): Property<Key, Self, "optional", As> {
-    return new Property(this._key, this._as, this._schema, "optional")
+  optional(): Property<Self, "optional", As> {
+    return new Property(this._as, this._schema, "optional")
   }
 
-  required(): Property<Key, Self, "required", As> {
-    return new Property(this._key, this._as, this._schema, "required")
+  required(): Property<Self, "required", As> {
+    return new Property(this._as, this._schema, "required")
   }
 
-  as<As1 extends PropertyKey>(as: As1): Property<Key, Self, Optional, As1> {
-    return new Property(this._key, as, this._schema, this._optional)
+  as<As1 extends PropertyKey>(as: As1): Property<Self, Optional, O.Some<As1>> {
+    return new Property(new O.Some(as), this._schema, this._optional)
+  }
+
+  removeAs(): Property<Self, Optional, O.None> {
+    return new Property(new O.None(), this._schema, this._optional)
   }
 }
 
-export function property<Key extends PropertyKey>(
-  key: Key
-): Property<Key, typeof unknown, "required", Key>
-export function property<Key extends PropertyKey, Self extends S.SchemaUPI>(
-  key: Key,
+export function property<Self extends S.SchemaUPI>(
   schema: Self
-): Property<Key, Self, "required", Key>
-export function property<Key extends PropertyKey, Self extends S.SchemaUPI>(
-  key: Key,
-  schema?: Self | typeof unknown
-): Property<Key, Self | typeof unknown, "required", Key> {
-  return new Property(key, key, schema || unknown, "required")
+): Property<Self, "required", O.None> {
+  return new Property(new O.None(), schema, "required")
 }
 
-export type AnyProperty = Property<any, any, any, any>
+export type AnyProperty = Property<any, any, any>
 
-export type PropertyArray = readonly AnyProperty[]
+export type PropertyRecord = Record<PropertyKey, AnyProperty>
 
-export type ShapeFromProperties<Props extends PropertyArray> = Compute<
+export type ShapeFromProperties<Props extends PropertyRecord> = Compute<
   UnionToIntersection<
     {
       [k in keyof Props]: Props[k] extends AnyProperty
         ? Props[k]["_optional"] extends "optional"
           ? {
-              [h in Props[k]["_key"]]?: S.ParsedShapeOf<Props[k]["_schema"]>
+              [h in k]?: S.ParsedShapeOf<Props[k]["_schema"]>
             }
           : {
-              [h in Props[k]["_key"]]: S.ParsedShapeOf<Props[k]["_schema"]>
+              [h in k]: S.ParsedShapeOf<Props[k]["_schema"]>
             }
         : never
-    }[number]
+    }[keyof Props]
   >,
   "flat"
 >
 
-export type EncodedFromProperties<Props extends PropertyArray> = Compute<
+export type EncodedFromProperties<Props extends PropertyRecord> = Compute<
   UnionToIntersection<
     {
       [k in keyof Props]: Props[k] extends AnyProperty
         ? Props[k]["_optional"] extends "optional"
           ? {
-              [h in Props[k]["_as"]]?: S.EncodedOf<Props[k]["_schema"]>
+              [h in Props[k]["_as"] extends O.Some<any>
+                ? Props[k]["_as"]["value"]
+                : k]?: S.EncodedOf<Props[k]["_schema"]>
             }
           : {
-              [h in Props[k]["_as"]]: S.EncodedOf<Props[k]["_schema"]>
+              [h in Props[k]["_as"] extends O.Some<any>
+                ? Props[k]["_as"]["value"]
+                : k]: S.EncodedOf<Props[k]["_schema"]>
             }
         : never
-    }[number]
+    }[keyof Props]
   >,
   "flat"
 >
 
-export type HasRequiredProperty<Props extends PropertyArray> = unknown extends {
+export type HasRequiredProperty<Props extends PropertyRecord> = unknown extends {
   [k in keyof Props]: Props[k] extends AnyProperty
     ? Props[k]["_optional"] extends "required"
       ? unknown
       : never
     : never
-}[number]
+}[keyof Props]
   ? true
   : false
 
-export type ParserErrorFromProperties<Props extends PropertyArray> = S.CompositionE<
+export type ParserErrorFromProperties<Props extends PropertyRecord> = S.CompositionE<
   | S.PrevE<S.LeafE<S.UnknownRecordE>>
   | S.NextE<
       HasRequiredProperty<Props> extends true
@@ -118,9 +112,11 @@ export type ParserErrorFromProperties<Props extends PropertyArray> = S.Compositi
                     [k in keyof Props]: Props[k] extends AnyProperty
                       ? Props[k]["_optional"] extends "optional"
                         ? never
-                        : Props[k]["_as"]
+                        : Props[k]["_as"] extends O.Some<any>
+                        ? Props[k]["_as"]["value"]
+                        : k
                       : never
-                  }[number]
+                  }[keyof Props]
                 >
               >
             | S.NextE<
@@ -129,15 +125,19 @@ export type ParserErrorFromProperties<Props extends PropertyArray> = S.Compositi
                     [k in keyof Props]: Props[k] extends AnyProperty
                       ? Props[k]["_optional"] extends "optional"
                         ? S.OptionalKeyE<
-                            Props[k]["_as"],
+                            Props[k]["_as"] extends O.Some<any>
+                              ? Props[k]["_as"]["value"]
+                              : k,
                             S.ParserErrorOf<Props[k]["_schema"]>
                           >
                         : S.RequiredKeyE<
-                            Props[k]["_as"],
+                            Props[k]["_as"] extends O.Some<any>
+                              ? Props[k]["_as"]["value"]
+                              : k,
                             S.ParserErrorOf<Props[k]["_schema"]>
                           >
                       : never
-                  }[number]
+                  }[keyof Props]
                 >
               >
           >
@@ -146,22 +146,26 @@ export type ParserErrorFromProperties<Props extends PropertyArray> = S.Compositi
               [k in keyof Props]: Props[k] extends AnyProperty
                 ? Props[k]["_optional"] extends "optional"
                   ? S.OptionalKeyE<
-                      Props[k]["_as"],
+                      Props[k]["_as"] extends O.Some<any>
+                        ? Props[k]["_as"]["value"]
+                        : k,
                       S.ParserErrorOf<Props[k]["_schema"]>
                     >
                   : S.RequiredKeyE<
-                      Props[k]["_as"],
+                      Props[k]["_as"] extends O.Some<any>
+                        ? Props[k]["_as"]["value"]
+                        : k,
                       S.ParserErrorOf<Props[k]["_schema"]>
                     >
                 : never
-            }[number]
+            }[keyof Props]
           >
     >
 >
 
 export const propertiesIdentifier = Symbol.for("@effect-ts/schema/ids/properties")
 
-export class SchemaProperties<Props extends PropertyArray>
+export class SchemaProperties<Props extends PropertyRecord>
   extends S.Schema<
     unknown,
     ParserErrorFromProperties<Props>,
@@ -195,29 +199,28 @@ export class SchemaProperties<Props extends PropertyArray>
   }
 }
 
-export function properties<Props extends PropertyArray>(
-  ...props: Props
+export function properties<Props extends PropertyRecord>(
+  props: Props
 ): SchemaProperties<Props> {
   const parsers = {} as Record<string, Parser.Parser<unknown, unknown, unknown>>
   const encoders = {}
   const guards = {}
   const arbitrariesReq = {} as Record<string, Arbitrary.Gen<unknown>>
   const arbitrariesPar = {} as Record<string, Arbitrary.Gen<unknown>>
-  const keys = {}
-  const mapped = {}
+  const keys = Object.keys(props)
   const required = [] as string[]
 
-  for (const entry of props) {
-    parsers[entry._as] = Parser.for(entry._schema)
-    encoders[entry._as] = Encoder.for(entry._schema)
-    guards[entry._as] = Guard.for(entry._schema)
-    keys[entry._as] = entry._key
-    mapped[entry._key] = entry._as
-    if (entry._optional === "required") {
-      required.push(entry._as)
-      arbitrariesReq[entry._key] = Arbitrary.for(entry._schema)
+  for (const key of keys) {
+    parsers[key] = Parser.for(props[key]._schema)
+    encoders[key] = Encoder.for(props[key]._schema)
+    guards[key] = Guard.for(props[key]._schema)
+
+    if (props[key]._optional === "required") {
+      required.push(O.getOrElse_(props[key]._as, () => key))
+
+      arbitrariesReq[key] = Arbitrary.for(props[key]._schema)
     } else {
-      arbitrariesPar[entry._key] = Arbitrary.for(entry._schema)
+      arbitrariesPar[key] = Arbitrary.for(props[key]._schema)
     }
   }
 
@@ -227,12 +230,15 @@ export function properties<Props extends PropertyArray>(
     if (typeof _ !== "object" || _ === null) {
       return false
     }
-    for (const k of props) {
-      if (k._optional === "required" && !(k._key in _)) {
+
+    for (const key of keys) {
+      const s = props[key]
+
+      if (s._optional === "required" && !(key in _)) {
         return false
       }
-      if (k._key in _) {
-        if (!guards[k._as](_[k._key])) {
+      if (key in _) {
+        if (!guards[key](_[key])) {
           return false
         }
       }
@@ -272,29 +278,32 @@ export function properties<Props extends PropertyArray>(
 
     const result = {}
 
-    for (const k of props) {
-      if (k._as in _) {
-        const res = parsers[k._as](_[k._as])
+    for (const key of keys) {
+      const prop = props[key]
+      const _as: string = O.getOrElse_(props[key]._as, () => key)
+
+      if (_as in _) {
+        const res = parsers[key](_[_as])
 
         if (res.effect._tag === "Left") {
           errors = Chunk.append_(
             errors,
-            k._optional === "required"
-              ? S.requiredKeyE(k._as, res.effect.left)
-              : S.optionalKeyE(k._as, res.effect.left)
+            prop._optional === "required"
+              ? S.requiredKeyE(_as, res.effect.left)
+              : S.optionalKeyE(_as, res.effect.left)
           )
           isError = true
         } else {
-          result[k._key] = res.effect.right.get(0)
+          result[key] = res.effect.right.get(0)
 
           const warnings = res.effect.right.get(1)
 
           if (warnings._tag === "Some") {
             errors = Chunk.append_(
               errors,
-              k._optional === "required"
-                ? S.requiredKeyE(k._as, warnings.value)
-                : S.optionalKeyE(k._as, warnings.value)
+              prop._optional === "required"
+                ? S.requiredKeyE(_as, warnings.value)
+                : S.optionalKeyE(_as, warnings.value)
             )
           }
         }
@@ -323,9 +332,11 @@ export function properties<Props extends PropertyArray>(
 
   function encoder(_: ShapeFromProperties<Props>): EncodedFromProperties<Props> {
     const enc = {}
-    for (const p of props) {
-      if (p._key in _) {
-        enc[p._as] = encoders[p._as](_[p._key])
+
+    for (const key of keys) {
+      if (key in _) {
+        const _as: string = O.getOrElse_(props[key]._as, () => key)
+        enc[_as] = encoders[key](_[key])
       }
     }
     // @ts-expect-error
