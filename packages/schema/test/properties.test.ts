@@ -17,7 +17,7 @@ const Identified = S.props({
 const Person = S.props({
   _tag: S.prop(S.literal("Person")),
   ...Identified.props,
-  age: S.prop(S.number).opt(),
+  age: S.prop(S.number).def(30),
   birthDate: S.prop(S.date).opt().from("bd")
 })
 
@@ -50,7 +50,12 @@ describe("Props", () => {
     )
 
     expect(res).toEqual(
-      Ex.succeed({ _tag: "Person", id: "ok", birthDate: new Date(Date.parse(dt)) })
+      Ex.succeed({
+        _tag: "Person",
+        id: "ok",
+        age: 30,
+        birthDate: new Date(Date.parse(dt))
+      })
     )
 
     const res2 = await T.runPromiseExit(parseStringOrNumber("ok"))
@@ -74,6 +79,7 @@ describe("Props", () => {
       expect(encodePersonOrAnimal(res.value)).toEqual({
         _tag: "Person",
         sub: "ok",
+        age: 30,
         bd: dt
       })
     }
