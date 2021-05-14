@@ -199,14 +199,14 @@ describe("Schema", () => {
     FC.assert(
       FC.property(arbitraryPerson, (p) => {
         expect(["E", "F", "M"]).toContain(
-          Sex.Api.matchW({
+          Sex.matchW({
             else: () => "E" as const,
             female: () => "F" as const,
             male: () => "M" as const
           })(p.Sex)
         )
         expect(["E", "F", "M"]).toContain(
-          Sex.Api.matchS({
+          Sex.matchS({
             else: () => "E",
             female: () => "F",
             male: () => "M"
