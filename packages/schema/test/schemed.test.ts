@@ -10,7 +10,7 @@ import * as Parser from "../src/Parser"
 export class Person extends Model<Person>()(
   MO.props({
     _tag: MO.prop(MO.literal("Person")),
-    firstName: MO.prop(MO.string).def(() => "Mike"),
+    firstName: MO.prop(MO.string).def(() => "Mike", "constructor"),
     lastName: MO.prop(MO.string),
     pets: MO.prop(MO.lazy(() => MO.chunk(Animal))).opt()
   })
