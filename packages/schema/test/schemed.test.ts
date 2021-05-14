@@ -20,12 +20,10 @@ export class Person extends Model<Person>()(
 ) {}
 
 export class Animal extends Model<Animal>()(
-  pipe(
-    MO.props({
-      _tag: MO.prop(MO.literal("Animal")),
-      size: MO.prop(MO.literal("small", "mid"))
-    })
-  )
+  MO.props({
+    _tag: MO.prop(MO.literal("Animal")),
+    size: MO.prop(MO.literal("small", "mid"))
+  })
 ) {}
 
 const PersonOrAnimal = MO.union({ Person, Animal })
