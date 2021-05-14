@@ -24,20 +24,11 @@ export class C extends MO.Model<C>()(
     _type: MO.prop(MO.literal("TC")),
     c: MO.prop(MO.string)
   })
-) {
-  static Model = MO.schema(C)
-}
+) {}
 
-const ABC = MO.union({
-  A,
-  B,
-  C
-})
+const ABC = MO.union({ A, B, C })
 
-const BC = MO.union({
-  B,
-  C
-})
+const BC = MO.union({ B, C })
 
 const parseABC = Parser.for(ABC)["|>"](MO.condemnFail)
 const parseBC = Parser.for(BC)["|>"](MO.condemnFail)
