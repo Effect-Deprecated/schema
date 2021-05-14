@@ -12,9 +12,6 @@ export const interpreters: ((
   schema: S.SchemaAny
 ) => O.Option<() => Encoder<unknown, unknown>>)[] = [
   O.partial((miss) => (schema: S.SchemaAny): (() => Encoder<unknown, unknown>) => {
-    if (schema instanceof S.SchemaRecursive) {
-      return () => encoderFor(schema.self(schema))
-    }
     if (schema instanceof S.SchemaIdentity) {
       return () => (_) => _
     }

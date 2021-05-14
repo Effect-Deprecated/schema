@@ -21,9 +21,6 @@ export const interpreters: ((
     unknown,
     unknown
   >) => {
-    if (schema instanceof S.SchemaRecursive) {
-      return () => parserFor(schema.self(schema))
-    }
     if (schema instanceof S.SchemaNamed) {
       return () => {
         const self = parserFor(schema.self)

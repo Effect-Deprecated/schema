@@ -621,49 +621,6 @@ export class SchemaNamed<
   }
 }
 
-export class SchemaRecursive<
-  ParserInput,
-  ParserError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError,
-  Encoded
-> extends Schema<
-  ParserInput,
-  ParserError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError,
-  Encoded,
-  {}
-> {
-  readonly Api = {}
-
-  constructor(
-    readonly self: (
-      _: Schema<
-        ParserInput,
-        ParserError,
-        ParsedShape,
-        ConstructorInput,
-        ConstructorError,
-        Encoded,
-        {}
-      >
-    ) => Schema<
-      ParserInput,
-      ParserError,
-      ParsedShape,
-      ConstructorInput,
-      ConstructorError,
-      Encoded,
-      {}
-    >
-  ) {
-    super()
-  }
-}
-
 export const Identifiable = Symbol()
 
 export function isAnnotated<Self extends SchemaAny, A>(

@@ -13,9 +13,6 @@ export const interpreters: ((schema: S.SchemaAny) => O.Option<() => Guard<unknow
       if (schema instanceof S.SchemaGuard) {
         return () => schema.guard
       }
-      if (schema instanceof S.SchemaRecursive) {
-        return () => guardFor(schema.self(schema))
-      }
       if (schema instanceof S.SchemaIdentity) {
         return () => schema.guard
       }

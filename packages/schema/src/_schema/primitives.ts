@@ -5,7 +5,7 @@ import type * as fc from "fast-check"
 
 import type * as Th from "../These"
 import type { Annotation } from "./annotation"
-import type { AnyError, CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
+import type { CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
 import type { ApiSelfType, Schema, SchemaAny } from "./schema"
 import {
   SchemaAnnotated,
@@ -21,7 +21,6 @@ import {
   SchemaNamed,
   SchemaParser,
   SchemaPipe,
-  SchemaRecursive,
   SchemaRefinement
 } from "./schema"
 
@@ -45,45 +44,6 @@ export function opaque<Shape>() {
     Encoded,
     Api & ApiSelfType<Shape>
   > => schema as any
-}
-
-export function recursive<
-  ParsedShape,
-  Encoded = unknown,
-  ParserInput = unknown,
-  ConstructorInput = ParsedShape,
-  ParserError = AnyError,
-  ConstructorError = AnyError
->(
-  f: (
-    _: Schema<
-      ParserInput,
-      ParserError,
-      ParsedShape,
-      ConstructorInput,
-      ConstructorError,
-      Encoded,
-      {}
-    >
-  ) => Schema<
-    ParserInput,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    {}
-  >
-): Schema<
-  ParserInput,
-  ParserError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError,
-  Encoded,
-  {}
-> {
-  return new SchemaRecursive(f)
 }
 
 export function named<Name extends string>(name: Name) {

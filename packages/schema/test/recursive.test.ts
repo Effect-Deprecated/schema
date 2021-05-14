@@ -6,25 +6,18 @@ import * as S from "../src"
 import * as Encoder from "../src/Encoder"
 import * as Parser from "../src/Parser"
 
-export interface Person {
-  readonly id: string
-  readonly friends: Chunk.Chunk<Person>
-}
-
-export interface PersonEncoded {
-  readonly id: string
-  readonly friends: readonly PersonEncoded[]
-}
-
-export const Person = S.Model<Person>()(
+export class Person extends S.Model<Person>()(
   S.lazy(
-    (): S.Standard<Person, PersonEncoded> =>
+    (): S.Standard<{
+      readonly id: string
+      readonly friends: Chunk.Chunk<Person>
+    }> =>
       S.props({
         id: S.prop(S.string),
         friends: S.prop(S.chunk(Person))
       })
   )
-)
+) {}
 
 const parsePerson = Parser.for(Person)["|>"](S.condemnFail)
 const encodePerson = Encoder.for(Person)

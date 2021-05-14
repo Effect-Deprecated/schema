@@ -19,9 +19,6 @@ export const interpreters: ((
     unknown,
     unknown
   >) => {
-    if (schema instanceof S.SchemaRecursive) {
-      return () => constructorFor(schema.self(schema))
-    }
     if (schema instanceof S.SchemaNamed) {
       return () => {
         const self = constructorFor(schema.self)

@@ -10,9 +10,6 @@ export type Gen<T> = { (_: typeof fc): fc.Arbitrary<T> }
 
 export const interpreters: ((schema: S.SchemaAny) => O.Option<() => Gen<unknown>>)[] = [
   O.partial((miss) => (schema: S.SchemaAny): (() => Gen<unknown>) => {
-    if (schema instanceof S.SchemaRecursive) {
-      return () => for_(schema.self(schema))
-    }
     if (schema instanceof S.SchemaIdentity) {
       return () => (_) => _.anything().filter(schema.guard)
     }
