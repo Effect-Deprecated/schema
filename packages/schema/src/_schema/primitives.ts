@@ -5,7 +5,18 @@ import type * as fc from "fast-check"
 
 import type * as Th from "../These"
 import type { AnyError, CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
-import type { ApiSelfType, Schema, SchemaAny } from "./schema"
+import type {
+  ApiOf,
+  ApiSelfType,
+  ConstructorErrorOf,
+  ConstructorInputOf,
+  EncodedOf,
+  ParsedShapeOf,
+  ParserErrorOf,
+  ParserInputOf,
+  Schema,
+  SchemaAny
+} from "./schema"
 import {
   SchemaArbitrary,
   SchemaConstructor,
@@ -13,6 +24,7 @@ import {
   SchemaGuard,
   SchemaIdentified,
   SchemaIdentity,
+  SchemaLazy,
   SchemaMapApi,
   SchemaMapConstructorError,
   SchemaMapParserError,
@@ -641,4 +653,18 @@ export function into<
   ThatApi
 > {
   return (self) => new SchemaPipe(self, that)
+}
+
+export function lazy<Self extends SchemaAny>(
+  self: () => Self
+): Schema<
+  ParserInputOf<Self>,
+  ParserErrorOf<Self>,
+  ParsedShapeOf<Self>,
+  ConstructorInputOf<Self>,
+  ConstructorErrorOf<Self>,
+  EncodedOf<Self>,
+  ApiOf<Self>
+> {
+  return new SchemaLazy(self)
 }

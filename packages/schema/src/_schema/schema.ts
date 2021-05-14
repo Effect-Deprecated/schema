@@ -1,6 +1,7 @@
 // tracing: off
 
 import type { Refinement } from "@effect-ts/core/Function"
+import { LazyGetter } from "@effect-ts/core/Utils"
 import type * as fc from "fast-check"
 
 import type * as Th from "../These"
@@ -188,7 +189,10 @@ export class SchemaConstructor<
   >
   implements HasContinuation
 {
-  readonly Api = this.self.Api;
+  get Api() {
+    return this.self.Api
+  }
+
   readonly [SchemaContinuationSymbol]: SchemaAny
   constructor(
     readonly self: Schema<
@@ -229,8 +233,12 @@ export class SchemaParser<
   >
   implements HasContinuation
 {
-  readonly Api = this.self.Api;
+  get Api() {
+    return this.self.Api
+  }
+
   readonly [SchemaContinuationSymbol]: SchemaAny
+
   constructor(
     readonly self: Schema<
       ParserInput,
@@ -268,8 +276,12 @@ export class SchemaArbitrary<
   >
   implements HasContinuation
 {
-  readonly Api = this.self.Api;
+  get Api() {
+    return this.self.Api
+  }
+
   readonly [SchemaContinuationSymbol]: SchemaAny
+
   constructor(
     readonly self: Schema<
       ParserInput,
@@ -308,8 +320,12 @@ export class SchemaEncoder<
   >
   implements HasContinuation
 {
-  readonly Api = this.self.Api;
+  get Api() {
+    return this.self.Api
+  }
+
   readonly [SchemaContinuationSymbol]: SchemaAny
+
   constructor(
     readonly self: Schema<
       ParserInput,
@@ -346,7 +362,10 @@ export class SchemaRefinement<
   Encoded,
   Api
 > {
-  readonly Api = this.self.Api
+  get Api() {
+    return this.self.Api
+  }
+
   constructor(
     readonly self: Schema<
       ParserInput,
@@ -389,8 +408,12 @@ export class SchemaPipe<
   >
   implements HasContinuation
 {
+  get Api() {
+    return this.that.Api
+  }
+
   readonly [SchemaContinuationSymbol]: SchemaAny = this.that
-  readonly Api = this.that.Api
+
   constructor(
     readonly self: Schema<
       ParserInput,
@@ -436,7 +459,9 @@ export class SchemaMapParserError<
   >
   implements HasContinuation
 {
-  readonly Api = this.self.Api;
+  get Api() {
+    return this.self.Api
+  }
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
 
@@ -477,7 +502,9 @@ export class SchemaMapConstructorError<
   >
   implements HasContinuation
 {
-  readonly Api = this.self.Api;
+  get Api() {
+    return this.self.Api
+  }
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
 
@@ -518,7 +545,10 @@ export class SchemaMapApi<
   >
   implements HasContinuation
 {
-  readonly Api = this.mapApi(this.self.Api);
+  @LazyGetter()
+  get Api() {
+    return this.mapApi(this.self.Api)
+  }
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
 
@@ -559,7 +589,9 @@ export class SchemaNamed<
   >
   implements HasContinuation
 {
-  readonly Api = this.self.Api;
+  get Api() {
+    return this.self.Api
+  }
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
 
@@ -657,7 +689,10 @@ export class SchemaIdentified<
   >
   implements HasContinuation
 {
-  readonly Api = this.self.Api;
+  get Api() {
+    return this.self.Api
+  }
+
   readonly [Identifiable] = Identifiable;
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
@@ -699,7 +734,9 @@ export class SchemaGuard<
   >
   implements HasContinuation
 {
-  readonly Api = this.self.Api;
+  get Api() {
+    return this.self.Api
+  }
 
   readonly [SchemaContinuationSymbol]: SchemaAny = this.self
 
@@ -715,6 +752,44 @@ export class SchemaGuard<
     >,
     readonly guard: (u: unknown) => u is ParsedShape
   ) {
+    super()
+  }
+}
+
+export class SchemaLazy<Self extends SchemaAny>
+  extends Schema<
+    ParserInputOf<Self>,
+    ParserErrorOf<Self>,
+    ParsedShapeOf<Self>,
+    ConstructorInputOf<Self>,
+    ConstructorErrorOf<Self>,
+    EncodedOf<Self>,
+    ApiOf<Self>
+  >
+  implements HasContinuation
+{
+  get Api(): ApiOf<Self> {
+    return this.lazy.Api
+  }
+
+  get [SchemaContinuationSymbol](): SchemaAny {
+    return this.lazy
+  }
+
+  @LazyGetter()
+  get lazy(): Schema<
+    ParserInputOf<Self>,
+    ParserErrorOf<Self>,
+    ParsedShapeOf<Self>,
+    ConstructorInputOf<Self>,
+    ConstructorErrorOf<Self>,
+    EncodedOf<Self>,
+    ApiOf<Self>
+  > {
+    return this.self()
+  }
+
+  constructor(readonly self: () => Self) {
     super()
   }
 }
