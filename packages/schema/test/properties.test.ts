@@ -17,7 +17,7 @@ const Identified = S.props({
 const Person = S.props({
   _tag: S.prop(S.literal("Person")),
   ...Identified.props,
-  age: S.prop(S.number).def(30),
+  age: S.prop(S.number).def(() => 30),
   birthDate: S.prop(S.date).opt().from("bd")
 })
 
