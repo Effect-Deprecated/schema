@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.2](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.6.1...@effect-ts/schema@0.6.2) (2021-05-14)
+
+
+### Features
+
+* **schema:** add second param in matchers ([ae0c61c](https://github.com/Effect-TS/schema/commit/ae0c61c5f3bd8112bdb80898b0c644c45fe7b8b8))
+* **schema:** matchS with default ([bcf89e7](https://github.com/Effect-TS/schema/commit/bcf89e777ee306ead822fd5275d0be103d996f3f))
+* **schema:** matchW with default ([0dcffc3](https://github.com/Effect-TS/schema/commit/0dcffc356e4b904b5263fe05c451ef7c2aedabba))
+
+
+
+
+
 ## [0.6.1](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.6.0...@effect-ts/schema@0.6.1) (2021-05-14)
 
 **Note:** Version bump only for package @effect-ts/schema
