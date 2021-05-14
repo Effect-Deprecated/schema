@@ -17,7 +17,7 @@ export interface PersonEncoded {
 }
 
 export const Person = S.Model<Person>()(
-  S.recursive<unknown, Person, PersonEncoded>((F) =>
+  S.recursive<Person, PersonEncoded>((F) =>
     S.props({
       id: S.prop(S.string),
       friends: S.prop(S.chunk(F))
