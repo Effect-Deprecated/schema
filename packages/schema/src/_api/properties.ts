@@ -1,5 +1,6 @@
 import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import * as Dictionary from "@effect-ts/core/Collections/Immutable/Dictionary"
+import * as HashMap from "@effect-ts/core/Collections/Immutable/HashMap"
 import { pipe } from "@effect-ts/core/Function"
 import * as O from "@effect-ts/core/Option"
 import type { Compute, UnionToIntersection } from "@effect-ts/core/Utils"
@@ -13,6 +14,7 @@ import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
+import type { Annotation } from "./annotation"
 import type { LiteralApi } from "./literal"
 import type { DefaultSchema } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
@@ -27,27 +29,40 @@ export class Property<
     readonly _as: As,
     readonly _schema: Self,
     readonly _optional: Optional,
-    readonly _def: Def
+    readonly _def: Def,
+    readonly _map: HashMap.HashMap<Annotation<any>, any>
   ) {}
 
   schema<That extends S.SchemaUPI>(schema: That): Property<That, Optional, As, O.None> {
-    return new Property(this._as, schema, this._optional, new O.None())
+    return new Property(this._as, schema, this._optional, new O.None(), this._map)
   }
 
   opt(): Property<Self, "optional", As, Def> {
-    return new Property(this._as, this._schema, "optional", this._def)
+    return new Property(this._as, this._schema, "optional", this._def, this._map)
   }
 
   req(): Property<Self, "required", As, Def> {
-    return new Property(this._as, this._schema, "required", this._def)
+    return new Property(this._as, this._schema, "required", this._def, this._map)
   }
 
   from<As1 extends PropertyKey>(as: As1): Property<Self, Optional, O.Some<As1>, Def> {
-    return new Property(new O.Some(as), this._schema, this._optional, this._def)
+    return new Property(
+      new O.Some(as),
+      this._schema,
+      this._optional,
+      this._def,
+      this._map
+    )
   }
 
   removeFrom(): Property<Self, Optional, O.None, Def> {
-    return new Property(new O.None(), this._schema, this._optional, this._def)
+    return new Property(
+      new O.None(),
+      this._schema,
+      this._optional,
+      this._def,
+      this._map
+    )
   }
 
   def(
@@ -78,19 +93,34 @@ export class Property<
       this._schema,
       this._optional,
       // @ts-expect-error
-      new O.Some([k ?? "both", _])
+      new O.Some([k ?? "both", _]),
+      this._map
     )
   }
 
   removeDef(): Property<Self, Optional, As, O.None> {
-    return new Property(this._as, this._schema, this._optional, new O.None())
+    return new Property(this._as, this._schema, this._optional, new O.None(), this._map)
+  }
+
+  get<A>(annotation: Annotation<A>): A {
+    return O.getOrElse_(HashMap.get_(this._map, annotation), () => annotation.initial)
+  }
+
+  set<A>(annotation: Annotation<A>, value: A): Property<Self, Optional, As, Def> {
+    return new Property(
+      this._as,
+      this._schema,
+      this._optional,
+      this._def,
+      HashMap.set_(this._map, annotation, annotation.merge(this.get(annotation), value))
+    )
   }
 }
 
 export function prop<Self extends S.SchemaUPI>(
   schema: Self
 ): Property<Self, "required", O.None, O.None> {
-  return new Property(new O.None(), schema, "required", new O.None())
+  return new Property(new O.None(), schema, "required", new O.None(), HashMap.make())
 }
 
 export type AnyProperty = Property<any, any, any, any>
