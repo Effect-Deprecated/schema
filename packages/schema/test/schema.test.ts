@@ -48,16 +48,12 @@ const Sex = Sex_["|>"](S.brand<Sex>())
 
 interface Person extends S.ParsedShapeOf<typeof Person_> {}
 
-const Person_ = S.struct({
-  required: {
-    Id,
-    Name,
-    Age,
-    Sex
-  },
-  optional: {
-    Addresses: S.chunk(Address)
-  }
+const Person_ = S.props({
+  Id: S.prop(Id),
+  Name: S.prop(Name),
+  Age: S.prop(Age),
+  Sex: S.prop(Sex),
+  Addresses: S.prop(S.chunk(Address)).opt()
 })["|>"](S.named("Person"))
 
 const Person = Person_["|>"](S.brand<Person>())
@@ -73,21 +69,6 @@ const personArrayS = S.chunk(Person)
 const parsePersonArray = Parser.for(personArrayS)["|>"](S.condemnFail)
 const createPersonArray = Constructor.for(personArrayS)["|>"](S.condemnFail)
 const guardPersonArray = Guard.for(personArrayS)
-
-const personNoAddressS = Person.Api.omit("Addresses")
-
-const createPersonNoAddresses = Constructor.for(personNoAddressS)["|>"](S.condemnFail)
-
-const partialAddressS = S.partial({
-  streetName: S.string["|>"](S.nonEmpty)
-})
-const streetName = Constructor.for(partialAddressS.Api.props.streetName)["|>"](S.unsafe)
-
-const parsePartialAddress = Parser.for(partialAddressS)["|>"](S.condemnFail)
-const createPartialAddress = Constructor.for(partialAddressS)["|>"](S.condemnFail)
-const arbitraryPartialAddress = Arbitrary.for(partialAddressS)(FC)
-const guardPartialAddress = Guard.for(partialAddressS)
-const encodePartialAddress = Encoder.for(partialAddressS)
 
 describe("Schema", () => {
   it("should parse person", async () => {
@@ -106,11 +87,9 @@ describe("Schema", () => {
         new S.CondemnException({
           message:
             "1 error(s) found while processing Person\n" +
-            "└─ 1 error(s) found while processing an intersection\n" +
-            "   └─ 1 error(s) found while processing member 0\n" +
-            "      └─ 2 error(s) found while checking keys\n" +
-            '         ├─ missing required key "Age"\n' +
-            '         └─ missing required key "Sex"'
+            "└─ 2 error(s) found while checking keys\n" +
+            '   ├─ missing required key "Age"\n' +
+            '   └─ missing required key "Sex"'
         })
       )
     }
@@ -158,17 +137,15 @@ describe("Schema", () => {
     )
     expect(result._tag).equals("Left")
     if (result._tag === "Left") {
-      expect(result.left).equals(
+      expect(result.left).toEqual(
         new S.CondemnException({
           message:
             "1 error(s) found while processing a collection\n" +
             "└─ 1 error(s) found while processing optional index 0\n" +
             "   └─ 1 error(s) found while processing Person\n" +
-            "      └─ 1 error(s) found while processing an intersection\n" +
-            "         └─ 1 error(s) found while processing member 0\n" +
-            "            └─ 2 error(s) found while checking keys\n" +
-            '               ├─ missing required key "Age"\n' +
-            '               └─ missing required key "Sex"'
+            "      └─ 2 error(s) found while checking keys\n" +
+            '         ├─ missing required key "Age"\n' +
+            '         └─ missing required key "Sex"'
         })
       )
     }
@@ -239,21 +216,6 @@ describe("Schema", () => {
     )
   })
 
-  it("person-no-address", async () => {
-    const result = await T.runPromise(
-      T.either(
-        createPersonNoAddresses({
-          Age: Age(30),
-          Id: Id(0),
-          Name: Name("Mike"),
-          Sex: Sex("male")
-        })
-      )
-    )
-
-    expect(result._tag).toEqual("Right")
-  })
-
   it("date", async () => {
     const date = new Date().toISOString()
     const parse = Parser.for(S.date)["|>"](S.condemnFail)
@@ -272,84 +234,17 @@ describe("Schema", () => {
     const encodeDate = Encoder.for(S.date)
     expect(encodeDate(newDate)).toEqual(newDate.toISOString())
   })
-
-  it("partial", () =>
-    T.gen(function* (_) {
-      const res_ok = yield* _(
-        T.either(
-          parsePartialAddress({
-            streetName: "Finchley Road"
-          })
-        )
-      )
-
-      const res_ok_empty = yield* _(T.either(parsePartialAddress({})))
-
-      expect(res_ok._tag).toEqual("Right")
-      expect(res_ok_empty._tag).toEqual("Right")
-
-      const res_not_ok = yield* _(
-        T.either(
-          parsePartialAddress({
-            streetName: 0
-          })
-        )
-      )
-
-      expect(res_not_ok).equals(
-        E.left(
-          new S.CondemnException({
-            message:
-              "1 error(s) found while processing a struct\n" +
-              '└─ 1 error(s) found while processing optional key "streetName"\n' +
-              "   └─ 1 error(s) found while processing a refinement\n" +
-              "      └─ cannot process 0, expected an string"
-          })
-        )
-      )
-
-      const create_ok = yield* _(T.either(createPartialAddress({})))
-
-      expect(create_ok._tag).toEqual("Right")
-
-      const create_ok_2 = yield* _(
-        T.either(
-          createPartialAddress({
-            streetName: streetName("ok")
-          })
-        )
-      )
-
-      expect(create_ok_2._tag).toEqual("Right")
-    })["|>"](T.runPromise))
-
-  it("arbitrary partial", () => {
-    FC.assert(
-      FC.property(arbitraryPartialAddress, (address) => {
-        expect(guardPartialAddress(address)).equals(true)
-        expect(encodePartialAddress(address)).toEqual(address)
-        expect(encodePartialAddress(address)).not.equals(address)
-        expect(address).equals(address)
-      })
-    )
-  })
 })
 
 describe("Intersection", () => {
-  const A = S.struct({
-    required: {
-      a: S.string
-    }
+  const A = S.props({
+    a: S.prop(S.string)
   })
-  const B = S.struct({
-    required: {
-      b: S.string
-    }
+  const B = S.props({
+    b: S.prop(S.string)
   })
-  const C = S.struct({
-    required: {
-      c: S.string
-    }
+  const C = S.props({
+    c: S.prop(S.string)
   })
   const fields = A["|>"](S.intersect(B))["|>"](S.intersect(C))
 

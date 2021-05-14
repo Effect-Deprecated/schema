@@ -10,25 +10,25 @@ import * as Parser from "../src/Parser"
 
 export class Person extends Model<Person>()(
   pipe(
-    MO.required({
-      firstName: MO.string,
-      lastName: MO.string
+    MO.props({
+      _tag: MO.prop(MO.literal("Person")),
+      firstName: MO.prop(MO.string),
+      lastName: MO.prop(MO.string)
     }),
-    MO.tag("Person"),
     MO.withDefaultConstructorField("firstName", () => "Mike")
   )
 ) {}
 
 export class Animal extends Model<Animal>()(
   pipe(
-    MO.required({
-      size: MO.literal("small", "mid")
-    }),
-    MO.tag("Animal")
+    MO.props({
+      _tag: MO.prop(MO.literal("Animal")),
+      size: MO.prop(MO.literal("small", "mid"))
+    })
   )
 ) {}
 
-const PersonOrAnimal = MO.tagged(Person, Animal)
+const PersonOrAnimal = MO.union({ Person, Animal })
 
 const parsePerson = MO.jsonString[">>>"](Person)["|>"](Parser.for)["|>"](MO.condemnFail)
 const encodePerson = MO.jsonString[">>>"](Person)["|>"](Encoder.for)

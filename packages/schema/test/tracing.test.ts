@@ -43,16 +43,12 @@ const Sex_ = S.literal("male", "female", "else")
 type Sex = S.ParsedShapeOf<typeof Sex_> & SexBrand
 const Sex = Sex_["|>"](S.brand<Sex>())
 
-const Person_ = S.struct({
-  required: {
-    Id,
-    Name,
-    Age,
-    Sex
-  },
-  optional: {
-    Addresses: S.chunk(Address)
-  }
+const Person_ = S.props({
+  Id: S.prop(Id),
+  Name: S.prop(Name),
+  Age: S.prop(Age),
+  Sex: S.prop(Sex),
+  Addresses: S.prop(S.chunk(Address)).opt()
 })["|>"](S.named("Person"))
 
 interface Person extends S.ParsedShapeOf<typeof Person_> {}
@@ -73,7 +69,7 @@ describe("Tracing", () => {
     assertsFailure(result)
     const prettyCause = pretty(result.cause)
     expect(prettyCause).toContain(
-      "(@effect-ts/schema/test): test/tracing.test.ts:67:18"
+      "(@effect-ts/schema/test): test/tracing.test.ts:63:18"
     )
     expect(prettyCause).toContain("processing Person")
   })
