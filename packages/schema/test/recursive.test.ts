@@ -18,7 +18,7 @@ export interface PersonEncoded {
 
 export const Person = S.Model<Person>()(
   S.lazy(
-    (): S.Schema<unknown, S.AnyError, Person, Person, never, PersonEncoded, {}> =>
+    (): S.Standard<Person, PersonEncoded> =>
       S.props({
         id: S.prop(S.string),
         friends: S.prop(S.chunk(Person))

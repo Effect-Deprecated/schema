@@ -6,7 +6,7 @@ import type * as fc from "fast-check"
 
 import type * as Th from "../These"
 import type { Annotation } from "./annotation"
-import type { CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
+import type { AnyError, CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
 
 export const SchemaSym = Symbol()
 export type SchemaSym = typeof SchemaSym
@@ -84,6 +84,15 @@ export abstract class Schema<
 
 export type SchemaAny = Schema<any, any, any, any, any, any, any>
 export type SchemaUPI = Schema<unknown, any, any, any, any, any, any>
+export type Standard<A, Enc = unknown, Err = AnyError> = Schema<
+  unknown,
+  Err,
+  A,
+  A,
+  never,
+  Enc,
+  {}
+>
 
 export interface ApiSelfType<AS = unknown> {
   _AS: AS
