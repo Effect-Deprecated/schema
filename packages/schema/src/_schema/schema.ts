@@ -657,15 +657,19 @@ export class SchemaRecursive<
 
 export const Identifiable = Symbol()
 
-export function isIdentifiable<A extends SchemaAny>(
-  _: A
-): _ is A & {
-  readonly self: SchemaAny
-  readonly identifier: symbol
-  readonly meta: unknown
+export function isAnnotated<Self extends SchemaAny, A>(
+  self: Self,
+  annotation: Annotation<A>
+): self is Self & {
+  readonly self: Self extends { self: infer X } ? X : SchemaAny
+  readonly annotation: Annotation<A>
+  readonly meta: A
 } {
   return (
-    (typeof _ === "object" || typeof _ === "function") && _ != null && Identifiable in _
+    (typeof self === "object" || typeof self === "function") &&
+    self != null &&
+    Identifiable in self &&
+    self["annotation"] === annotation
   )
 }
 
@@ -708,7 +712,7 @@ export class SchemaAnnotated<
       Encoded,
       Api
     >,
-    readonly identifier: Annotation<Meta>,
+    readonly annotation: Annotation<Meta>,
     readonly meta: Meta
   ) {
     super()
