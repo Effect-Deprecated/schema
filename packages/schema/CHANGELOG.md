@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.3](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.6.2...@effect-ts/schema@0.6.3) (2021-05-14)
+
+
+### Features
+
+* **schema:** improve annotation guard ([c1f4b0d](https://github.com/Effect-TS/schema/commit/c1f4b0dd974bb7e895887b30461552fa9a55d913))
+
+
+
+
+
 ## [0.6.2](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.6.1...@effect-ts/schema@0.6.2) (2021-05-14)
 
 
