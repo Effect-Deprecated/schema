@@ -101,5 +101,14 @@ describe("Props", () => {
     fc.assert(fc.property(arbPersonOrAnimal, isPersonOrAnimal))
 
     expect(Person.props.id.getAnnotation(fieldDoc)).toEqual(O.some("id field"))
+
+    const matchStringOrNumberDef = StringOrNumber.matchS(
+      {
+        number: () => T.succeed({ a: 0 })
+      },
+      (_) => T.succeed({ a: 1 })
+    )
+
+    expect(await T.runPromise(matchStringOrNumberDef("ok"))).toEqual({ a: 1 })
   })
 })

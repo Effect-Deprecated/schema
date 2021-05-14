@@ -15,23 +15,49 @@ import * as Th from "../These"
 import type { DefaultSchema } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
 
-export interface UnionApi<Props extends Record<PropertyKey, S.SchemaUPI>>
-  extends S.ApiSelfType<unknown> {
-  readonly matchS: <A>(
-    _: {
+interface MatchS<Props extends Record<PropertyKey, S.SchemaUPI>, AS> {
+  <
+    M extends {
+      [K in keyof Props]?: (
+        x0: S.ParsedShapeOf<Props[K]>,
+        x1: S.ParsedShapeOf<Props[K]>
+      ) => Result
+    },
+    Result
+  >(
+    mat: M,
+    def: (
+      x0: { [K in keyof Props]: S.ParsedShapeOf<Props[K]> }[Exclude<
+        keyof Props,
+        keyof M
+      >],
+      x1: { [K in keyof Props]: S.ParsedShapeOf<Props[K]> }[Exclude<
+        keyof Props,
+        keyof M
+      >]
+    ) => Result
+  ): (ks: AS) => Result
+  <Result>(
+    mat: {
       [K in keyof Props]: (
         _: S.ParsedShapeOf<Props[K]>,
         __: S.ParsedShapeOf<Props[K]>
-      ) => A
+      ) => Result
     }
-  ) => (
-    ks: S.GetApiSelfType<
+  ): (ks: AS) => Result
+}
+
+export interface UnionApi<Props extends Record<PropertyKey, S.SchemaUPI>>
+  extends S.ApiSelfType<unknown> {
+  readonly matchS: MatchS<
+    Props,
+    S.GetApiSelfType<
       this,
       {
         [k in keyof Props]: S.ParsedShapeOf<Props[k]>
       }[keyof Props]
     >
-  ) => A
+  >
   readonly matchW: <
     M extends {
       [K in keyof Props]: (
@@ -245,17 +271,19 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
     S.mapApi(
       () =>
         ({
-          matchS: (matcher) => (ks) => {
+          // @ts-ignore
+          matchS: (matcher, def) => (ks) => {
             if (O.isSome(tag)) {
-              return matcher[ks[tag.value.key]](ks, ks)
+              return (matcher[ks[tag.value.key]] ?? def)(ks, ks)
             }
             for (const k of keys) {
               if (guards[k](ks)) {
-                return matcher[k](ks, ks)
+                return (matcher[k] ?? def)(ks, ks)
               }
             }
             throw new Error(`bug: can't find any valid matcher`)
           },
+          // @ts-ignore
           matchW: (matcher) => (ks) => {
             if (O.isSome(tag)) {
               return matcher[ks[tag.value.key]](ks, ks)
