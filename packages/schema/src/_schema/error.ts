@@ -33,7 +33,7 @@ export type SchemaError<E> =
   | NamedE<string, SchemaError<E>>
   | IntersectionE<SchemaError<E>>
   | UnionE<SchemaError<E>>
-  | MemberE<string | number, SchemaError<E>>
+  | MemberE<PropertyKey, SchemaError<E>>
 
 export interface LeafErrors {
   ParseStringE: ParseStringE
