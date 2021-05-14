@@ -4,18 +4,16 @@ import { pipe } from "@effect-ts/core/Function"
 import * as MO from "../src"
 import * as Parser from "../src/Parser"
 
-export class A extends MO.Schemed(
+export class A extends MO.Model<A>()(
   pipe(
     MO.props({
       _tag: MO.prop(MO.literal("A")),
       a: MO.prop(MO.string)
     })
   )
-) {
-  static Model = MO.schema(A)
-}
+) {}
 
-export class B extends MO.Schemed(
+export class B extends MO.Model<B>()(
   pipe(
     MO.props({
       _tag: MO.prop(MO.literal("B")),
@@ -23,31 +21,27 @@ export class B extends MO.Schemed(
       b: MO.prop(MO.string)
     })
   )
-) {
-  static Model = MO.schema(B)
-}
+) {}
 
-export class C extends MO.Schemed(
-  pipe(
-    MO.props({
-      _tag: MO.prop(MO.literal("C")),
-      _type: MO.prop(MO.literal("TC")),
-      c: MO.prop(MO.string)
-    })
-  )
+export class C extends MO.Model<C>()(
+  MO.props({
+    _tag: MO.prop(MO.literal("C")),
+    _type: MO.prop(MO.literal("TC")),
+    c: MO.prop(MO.string)
+  })
 ) {
   static Model = MO.schema(C)
 }
 
 const ABC = MO.union({
-  A: A.Model,
-  B: B.Model,
-  C: C.Model
+  A,
+  B,
+  C
 })
 
 const BC = MO.union({
-  B: B.Model,
-  C: C.Model
+  B,
+  C
 })
 
 const parseABC = Parser.for(ABC)["|>"](MO.condemnFail)
