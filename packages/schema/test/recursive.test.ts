@@ -1,4 +1,4 @@
-import type * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
+import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import * as T from "@effect-ts/core/Effect"
 import * as E from "@effect-ts/core/Either"
 
@@ -16,15 +16,17 @@ export interface PersonEncoded {
   readonly friends: readonly PersonEncoded[]
 }
 
-const personS = S.recursive<unknown, Person, PersonEncoded>((F) =>
-  S.props({
-    id: S.prop(S.string),
-    friends: S.prop(S.chunk(F))
-  })
+export const Person = S.Model<Person>()(
+  S.recursive<unknown, Person, PersonEncoded>((F) =>
+    S.props({
+      id: S.prop(S.string),
+      friends: S.prop(S.chunk(F))
+    })
+  )
 )
 
-const parsePerson = Parser.for(personS)["|>"](S.condemnFail)
-const encodePerson = Encoder.for(personS)
+const parsePerson = Parser.for(Person)["|>"](S.condemnFail)
+const encodePerson = Encoder.for(Person)
 
 describe("Recursive", () => {
   it("parse", async () => {
@@ -50,5 +52,12 @@ describe("Recursive", () => {
         ]
       })
     )
+
+    expect(
+      encodePerson(new Person({ friends: Chunk.empty(), id: "ok" }).copy({ id: "ok1" }))
+    ).toEqual({
+      id: "ok1",
+      friends: []
+    })
   })
 })
