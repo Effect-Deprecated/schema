@@ -6,7 +6,7 @@ import type { ApiSelfType } from "../_schema"
 import * as S from "../_schema"
 import * as Th from "../These"
 import { refinement } from "./refinement"
-import type { SchemaWithDefaults } from "./withDefaults"
+import type { DefaultSchema } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
 
 export interface LiteralApi<KS extends readonly string[]> extends ApiSelfType {
@@ -31,7 +31,7 @@ export const literalIdentifier = S.makeAnnotation<{ literals: readonly string[] 
 
 export function literal<KS extends readonly string[]>(
   ...literals: KS
-): SchemaWithDefaults<
+): DefaultSchema<
   unknown,
   S.RefinementE<S.LeafE<S.LiteralE<KS>>>,
   KS[number],

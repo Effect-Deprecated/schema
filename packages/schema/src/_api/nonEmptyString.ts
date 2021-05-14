@@ -8,13 +8,13 @@ import { brand } from "./brand"
 import type { NonEmptyBrand } from "./nonEmpty"
 import { nonEmpty } from "./nonEmpty"
 import { fromString, string } from "./string"
-import type { SchemaWithDefaults } from "./withDefaults"
+import type { DefaultSchema } from "./withDefaults"
 
 export type NonEmptyString = string & NonEmptyBrand
 
 export const nonEmptyStringFromStringIdentifier = S.makeAnnotation<{}>()
 
-export const nonEmptyStringFromString: SchemaWithDefaults<
+export const nonEmptyStringFromString: DefaultSchema<
   string,
   S.RefinementE<S.LeafE<S.NonEmptyE<string>>>,
   NonEmptyString,
@@ -34,7 +34,7 @@ export const nonEmptyStringFromString: SchemaWithDefaults<
 
 export const nonEmptyStringIdentifier = S.makeAnnotation<{}>()
 
-export const nonEmptyString: SchemaWithDefaults<
+export const nonEmptyString: DefaultSchema<
   unknown,
   S.CompositionE<
     | S.NextE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>

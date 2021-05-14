@@ -9,11 +9,11 @@ import { intFromNumber } from "./int"
 import { number } from "./number"
 import type { Positive } from "./positive"
 import { positive } from "./positive"
-import type { SchemaWithDefaults } from "./withDefaults"
+import type { DefaultSchema } from "./withDefaults"
 
 export const positiveIntFromNumberIdentifier = S.makeAnnotation<{}>()
 
-export const positiveIntFromNumber: SchemaWithDefaults<
+export const positiveIntFromNumber: DefaultSchema<
   number,
   S.CompositionE<
     | S.PrevE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
@@ -37,7 +37,7 @@ export const positiveIntFromNumber: SchemaWithDefaults<
 
 export const positiveIntIdentifier = S.makeAnnotation<{}>()
 
-export const positiveInt: SchemaWithDefaults<
+export const positiveInt: DefaultSchema<
   unknown,
   S.CompositionE<
     | S.PrevE<S.RefinementE<S.LeafE<S.ParseNumberE>>>

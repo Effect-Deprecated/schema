@@ -11,7 +11,7 @@ import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import { unsafe } from "./condemn"
 
-export interface SchemaWithDefaults<
+export interface SchemaDefaultSchema<
   ParserInput,
   ParserError,
   ParsedShape,
@@ -66,7 +66,7 @@ export type DefaultSchema<
   ConstructorError extends MO.AnyError,
   Encoded,
   Api
-> = SchemaWithDefaults<
+> = SchemaDefaultSchema<
   ParserInput,
   ParserError,
   ParsedShape,

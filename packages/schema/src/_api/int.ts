@@ -7,7 +7,7 @@ import * as S from "../_schema"
 import { brand } from "./brand"
 import { fromNumber, number, stringNumberFromString } from "./number"
 import { string } from "./string"
-import type { SchemaWithDefaults } from "./withDefaults"
+import type { DefaultSchema } from "./withDefaults"
 
 export interface IntBrand {
   readonly Int: unique symbol
@@ -17,7 +17,7 @@ export type Int = number & IntBrand
 
 export const intFromNumberIdentifier = S.makeAnnotation<{}>()
 
-export const intFromNumber: SchemaWithDefaults<
+export const intFromNumber: DefaultSchema<
   number,
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
   Int,
@@ -42,7 +42,7 @@ export const intFromNumber: SchemaWithDefaults<
 
 export const stringIntFromStringIdentifier = S.makeAnnotation<{}>()
 
-export const stringIntFromString: SchemaWithDefaults<
+export const stringIntFromString: DefaultSchema<
   string,
   S.CompositionE<
     | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
@@ -61,7 +61,7 @@ export const stringIntFromString: SchemaWithDefaults<
 
 export const stringIntIdentifier = S.makeAnnotation<{}>()
 
-export const stringInt: SchemaWithDefaults<
+export const stringInt: DefaultSchema<
   unknown,
   S.CompositionE<
     | S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>>
@@ -85,7 +85,7 @@ export const stringInt: SchemaWithDefaults<
 
 export const intIdentifier = S.makeAnnotation<{}>()
 
-export const int: SchemaWithDefaults<
+export const int: DefaultSchema<
   unknown,
   S.CompositionE<
     | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>

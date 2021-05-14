@@ -8,7 +8,7 @@ import { brand } from "./brand"
 import { nonEmpty } from "./nonEmpty"
 import type { NonEmptyString } from "./nonEmptyString"
 import { fromString, string } from "./string"
-import type { SchemaWithDefaults } from "./withDefaults"
+import type { DefaultSchema } from "./withDefaults"
 
 export interface UUIDBrand {
   readonly UUID: unique symbol
@@ -25,7 +25,7 @@ const isUUID: Refinement<string, UUID> = (s: string): s is UUID => {
   return regexUUID.test(s)
 }
 
-export const UUIDFromString: SchemaWithDefaults<
+export const UUIDFromString: DefaultSchema<
   string,
   S.CompositionE<
     | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
@@ -52,7 +52,7 @@ export const UUIDFromString: SchemaWithDefaults<
 
 export const UUIDIdentifier = S.makeAnnotation<{}>()
 
-export const UUID: SchemaWithDefaults<
+export const UUID: DefaultSchema<
   unknown,
   S.CompositionE<
     | S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>>
