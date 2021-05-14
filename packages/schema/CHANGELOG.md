@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.5.5...@effect-ts/schema@0.6.0) (2021-05-14)
+
+
+### Bug Fixes
+
+* **schema:** avoid optional in tags ([f0535f8](https://github.com/Effect-TS/schema/commit/f0535f8d97f74d1b3bb9f6b3136f4509307b47db))
+* **schema:** brand return type to reflect default schema ([2cac921](https://github.com/Effect-TS/schema/commit/2cac921d6fae6ee39d8194b20001c0fe7672b23c))
+
+
+### Features
+
+* **schema:** add default on prop ([87c3f87](https://github.com/Effect-TS/schema/commit/87c3f87b5196a9daa6408ff3333cdaf88e4b2204))
+* **schema:** compact matchW types ([78ef549](https://github.com/Effect-TS/schema/commit/78ef54956aa66ee80faa1e684be3fdaa2bcd5af9))
+* **schema:** default configurable ([7653441](https://github.com/Effect-TS/schema/commit/7653441201b803eb351087625458710fe084f2f4))
+* **schema:** defaults with carry over ([a3afa60](https://github.com/Effect-TS/schema/commit/a3afa60037ee0eb9decbbf16b44b01c15da02a9e))
+* **schema:** generalize identifier to annotation ([51d694d](https://github.com/Effect-TS/schema/commit/51d694dff146539d1ac848bbf66c2d1f98eaf12c))
+* **schema:** generic union ([c86b911](https://github.com/Effect-TS/schema/commit/c86b911f8a58f4d99ed54928670ec68cc5cd3db8))
+* **schema:** improve properties ([fe07c5e](https://github.com/Effect-TS/schema/commit/fe07c5e2f8797f94ea3530b2df94bc7cecb38859))
+* **schema:** improve throwable ([7ecd9ec](https://github.com/Effect-TS/schema/commit/7ecd9ec50a7f17e72300d7180a7f56abb7d58557))
+* **schema:** introduce lazy ([5a6e9b0](https://github.com/Effect-TS/schema/commit/5a6e9b0b1579a8c3dca452e6b87d14eb0a711c2e))
+* **schema:** make default lazy ([dc6cfcc](https://github.com/Effect-TS/schema/commit/dc6cfcccdf280ccea7d0448bb6cde7b0541deb2c))
+* **schema:** recursion safety ([a1ada3f](https://github.com/Effect-TS/schema/commit/a1ada3f0843cf014e20ba5f7068c8232e6492dcd))
+* **schema:** remove deprecated api ([0b1d0df](https://github.com/Effect-TS/schema/commit/0b1d0dfef09d9bffdff718449716795de915a1f8))
+* **schema:** rename as to from ([5b95a56](https://github.com/Effect-TS/schema/commit/5b95a563920b4cc5451167312b7e2fcfbe7b7f37))
+* **schema:** rework struct implementation ([55cd807](https://github.com/Effect-TS/schema/commit/55cd807120e767972e67c17ab5ff4bf9b2c644da))
+* **schema:** shorten naming ([388ba6e](https://github.com/Effect-TS/schema/commit/388ba6e92f4941cd6c85bba712012dccf94a549b))
+* **schema:** support tags from literals ([acc5035](https://github.com/Effect-TS/schema/commit/acc50356a45bf0b22dd5ee7ad838ec7ef686c173))
+* **schema:** use plain api ([e50d808](https://github.com/Effect-TS/schema/commit/e50d8085a081330dfdca14d1d314127cf96afa89))
+
+
+
+
+
 ## [0.5.5](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.5.4...@effect-ts/schema@0.5.5) (2021-05-12)
 
 
