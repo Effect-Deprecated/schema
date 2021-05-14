@@ -53,6 +53,11 @@ function for_<
   if (cache.has(schema)) {
     return cache.get(schema)
   }
+  if (schema instanceof S.SchemaLazy) {
+    const arb: Gen<unknown> = (__) => for_(schema.self())(__)
+    cache.set(schema, arb)
+    return arb as Gen<ParsedShape>
+  }
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
     if (_._tag === "Some") {

@@ -98,6 +98,12 @@ function constructorFor<
   if (cache.has(schema)) {
     return cache.get(schema)
   }
+  if (schema instanceof S.SchemaLazy) {
+    const of_: Constructor<unknown, unknown, unknown> = (__) =>
+      constructorFor(schema.self())(__)
+    cache.set(schema, of_)
+    return of_ as Constructor<ConstructorInput, ParsedShape, ConstructorError>
+  }
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
     if (_._tag === "Some") {

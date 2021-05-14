@@ -129,6 +129,12 @@ function parserFor<
   if (cache.has(schema)) {
     return cache.get(schema)
   }
+  if (schema instanceof S.SchemaLazy) {
+    const parser: Parser<unknown, unknown, unknown> = (__) =>
+      parserFor(schema.self())(__)
+    cache.set(schema, parser)
+    return parser as Parser<ParserInput, ParserError, ParsedShape>
+  }
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
     if (_._tag === "Some") {

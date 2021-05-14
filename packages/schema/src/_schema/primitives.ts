@@ -6,18 +6,7 @@ import type * as fc from "fast-check"
 import type * as Th from "../These"
 import type { Annotation } from "./annotation"
 import type { AnyError, CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
-import type {
-  ApiOf,
-  ApiSelfType,
-  ConstructorErrorOf,
-  ConstructorInputOf,
-  EncodedOf,
-  ParsedShapeOf,
-  ParserErrorOf,
-  ParserInputOf,
-  Schema,
-  SchemaAny
-} from "./schema"
+import type { ApiSelfType, Schema, SchemaAny } from "./schema"
 import {
   SchemaAnnotated,
   SchemaArbitrary,
@@ -656,16 +645,32 @@ export function into<
   return (self) => new SchemaPipe(self, that)
 }
 
-export function lazy<Self extends SchemaAny>(
-  self: () => Self
+export function lazy<
+  ParserInput,
+  ParserError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError,
+  Encoded,
+  Api
+>(
+  self: () => Schema<
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    Encoded,
+    Api
+  >
 ): Schema<
-  ParserInputOf<Self>,
-  ParserErrorOf<Self>,
-  ParsedShapeOf<Self>,
-  ConstructorInputOf<Self>,
-  ConstructorErrorOf<Self>,
-  EncodedOf<Self>,
-  ApiOf<Self>
+  ParserInput,
+  ParserError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError,
+  Encoded,
+  {}
 > {
   return new SchemaLazy(self)
 }

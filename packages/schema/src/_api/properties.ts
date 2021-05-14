@@ -294,221 +294,211 @@ export type TagsFromProps<Props extends PropertyRecord> = UnionToIntersection<
 export function props<Props extends PropertyRecord>(
   props: Props
 ): SchemaProperties<Props> {
-  return pipe(
-    S.lazy(() => {
-      const parsers = {} as Record<string, Parser.Parser<unknown, unknown, unknown>>
-      const encoders = {}
-      const guards = {}
-      const fields = {} as TagsFromProps<Props>
-      const tags = {}
-      const arbitrariesReq = {} as Record<string, Arbitrary.Gen<unknown>>
-      const arbitrariesPar = {} as Record<string, Arbitrary.Gen<unknown>>
-      const keys = Object.keys(props)
-      const required = [] as string[]
-      const defaults = [] as [string, [string, any]][]
+  const parsers = {} as Record<string, Parser.Parser<unknown, unknown, unknown>>
+  const encoders = {}
+  const guards = {}
+  const fields = {} as TagsFromProps<Props>
+  const tags = {}
+  const arbitrariesReq = {} as Record<string, Arbitrary.Gen<unknown>>
+  const arbitrariesPar = {} as Record<string, Arbitrary.Gen<unknown>>
+  const keys = Object.keys(props)
+  const required = [] as string[]
+  const defaults = [] as [string, [string, any]][]
 
-      for (const key of keys) {
-        parsers[key] = Parser.for(props[key]._schema)
-        encoders[key] = Encoder.for(props[key]._schema)
-        guards[key] = Guard.for(props[key]._schema)
+  for (const key of keys) {
+    parsers[key] = Parser.for(props[key]._schema)
+    encoders[key] = Encoder.for(props[key]._schema)
+    guards[key] = Guard.for(props[key]._schema)
 
-        if (props[key]._optional === "required") {
-          if (
-            O.isNone(props[key]._def) ||
-            (O.isSome(props[key]._def) && props[key]._def.value[0] === "constructor")
-          ) {
-            required.push(O.getOrElse_(props[key]._as, () => key))
-          }
-          if (
-            O.isSome(props[key]._def) &&
-            (props[key]._def.value[0] === "constructor" ||
-              props[key]._def.value[0] === "both")
-          ) {
-            defaults.push([key, props[key]._def.value])
-          }
-
-          arbitrariesReq[key] = Arbitrary.for(props[key]._schema)
-        } else {
-          arbitrariesPar[key] = Arbitrary.for(props[key]._schema)
-        }
-
-        const s: S.SchemaUPI = props[key]._schema
-
-        if (
-          "literals" in s.Api &&
-          Array.isArray(s.Api["literals"]) &&
-          s.Api["literals"].length === 1 &&
-          typeof s.Api["literals"][0] === "string"
-        ) {
-          fields[key] = { value: s.Api["literals"][0] }
-          tags[key] = s.Api["literals"][0]
-        }
+    if (props[key]._optional === "required") {
+      if (
+        O.isNone(props[key]._def) ||
+        (O.isSome(props[key]._def) && props[key]._def.value[0] === "constructor")
+      ) {
+        required.push(O.getOrElse_(props[key]._as, () => key))
+      }
+      if (
+        O.isSome(props[key]._def) &&
+        (props[key]._def.value[0] === "constructor" ||
+          props[key]._def.value[0] === "both")
+      ) {
+        defaults.push([key, props[key]._def.value])
       }
 
-      const hasRequired = required.length > 0
+      arbitrariesReq[key] = Arbitrary.for(props[key]._schema)
+    } else {
+      arbitrariesPar[key] = Arbitrary.for(props[key]._schema)
+    }
 
-      function guard(_: unknown): _ is ShapeFromProperties<Props> {
-        if (typeof _ !== "object" || _ === null) {
+    const s: S.SchemaUPI = props[key]._schema
+
+    if (
+      "literals" in s.Api &&
+      Array.isArray(s.Api["literals"]) &&
+      s.Api["literals"].length === 1 &&
+      typeof s.Api["literals"][0] === "string"
+    ) {
+      fields[key] = { value: s.Api["literals"][0] }
+      tags[key] = s.Api["literals"][0]
+    }
+  }
+
+  const hasRequired = required.length > 0
+
+  function guard(_: unknown): _ is ShapeFromProperties<Props> {
+    if (typeof _ !== "object" || _ === null) {
+      return false
+    }
+
+    for (const key of keys) {
+      const s = props[key]
+
+      if (s._optional === "required" && !(key in _)) {
+        return false
+      }
+      if (key in _) {
+        if (!guards[key](_[key])) {
           return false
         }
-
-        for (const key of keys) {
-          const s = props[key]
-
-          if (s._optional === "required" && !(key in _)) {
-            return false
-          }
-          if (key in _) {
-            if (!guards[key](_[key])) {
-              return false
-            }
-          }
-        }
-        return true
       }
+    }
+    return true
+  }
 
-      function parser(
-        _: unknown
-      ): Th.These<ParserErrorFromProperties<Props>, ShapeFromProperties<Props>> {
-        if (typeof _ !== "object" || _ === null) {
-          return Th.fail(
-            S.compositionE(Chunk.single(S.prevE(S.leafE(S.unknownRecordE(_)))))
-          )
-        }
-        let missingKeys = Chunk.empty()
-        for (const k of required) {
-          if (!(k in _)) {
-            missingKeys = Chunk.append_(missingKeys, k)
-          }
-        }
-        if (!Chunk.isEmpty(missingKeys)) {
-          // @ts-expect-error
-          return Th.fail(
-            S.compositionE(
-              Chunk.single(
-                S.nextE(
-                  S.compositionE(Chunk.single(S.prevE(S.missingKeysE(missingKeys))))
-                )
-              )
-            )
-          )
-        }
-
-        let errors =
-          Chunk.empty<
-            S.OptionalKeyE<string, unknown> | S.RequiredKeyE<string, unknown>
-          >()
-
-        let isError = false
-
-        const result = {}
-
-        for (const key of keys) {
-          const prop = props[key]
-          const _as: string = O.getOrElse_(props[key]._as, () => key)
-
-          if (_as in _) {
-            const res = parsers[key](_[_as])
-
-            if (res.effect._tag === "Left") {
-              errors = Chunk.append_(
-                errors,
-                prop._optional === "required"
-                  ? S.requiredKeyE(_as, res.effect.left)
-                  : S.optionalKeyE(_as, res.effect.left)
-              )
-              isError = true
-            } else {
-              result[key] = res.effect.right.get(0)
-
-              const warnings = res.effect.right.get(1)
-
-              if (warnings._tag === "Some") {
-                errors = Chunk.append_(
-                  errors,
-                  prop._optional === "required"
-                    ? S.requiredKeyE(_as, warnings.value)
-                    : S.optionalKeyE(_as, warnings.value)
-                )
-              }
-            }
-          } else {
-            if (
-              O.isSome(prop._def) &&
-              // @ts-expect-error
-              (prop._def.value[0] === "parser" || prop._def.value[0] === "both")
-            ) {
-              // @ts-expect-error
-              result[key] = prop._def.value[1]()
-            }
-          }
-        }
-
-        if (!isError) {
-          augmentRecord(result)
-        }
-
-        if (Chunk.isEmpty(errors)) {
-          return Th.succeed(result as ShapeFromProperties<Props>)
-        }
-
-        const error_ = S.compositionE(Chunk.single(S.nextE(S.structE(errors))))
-        const error = hasRequired
-          ? S.compositionE(Chunk.single(S.nextE(error_)))
-          : error_
-
-        if (isError) {
-          // @ts-expect-error
-          return Th.fail(error)
-        }
-
-        // @ts-expect-error
-        return Th.warn(result, error)
-      }
-
-      function encoder(_: ShapeFromProperties<Props>): EncodedFromProperties<Props> {
-        const enc = {}
-
-        for (const key of keys) {
-          if (key in _) {
-            const _as: string = O.getOrElse_(props[key]._as, () => key)
-            enc[_as] = encoders[key](_[key])
-          }
-        }
-        // @ts-expect-error
-        return enc
-      }
-
-      function arb(_: typeof fc): fc.Arbitrary<ShapeFromProperties<Props>> {
-        const req = Dictionary.map_(arbitrariesReq, (g) => g(_))
-        const par = Dictionary.map_(arbitrariesPar, (g) => g(_))
-
-        // @ts-expect-error
-        return _.record(req).chain((a) =>
-          _.record(par, { withDeletedKeys: true }).map((b) => intersect(a, b))
-        )
-      }
-
-      return pipe(
-        S.identity(guard),
-        S.parser(parser),
-        S.encoder(encoder),
-        S.arbitrary(arb),
-        S.mapApi(() => ({ props, fields })),
-        S.constructor((_) => {
-          const res = {} as ShapeFromProperties<Props>
-          Object.assign(res, _, tags)
-          for (const [k, v] of defaults) {
-            if (!(k in res)) {
-              if (v[0] === "constructor" || v[0] === "both") {
-                res[k] = v[1]()
-              }
-            }
-          }
-          return Th.succeed(res)
-        })
+  function parser(
+    _: unknown
+  ): Th.These<ParserErrorFromProperties<Props>, ShapeFromProperties<Props>> {
+    if (typeof _ !== "object" || _ === null) {
+      return Th.fail(
+        S.compositionE(Chunk.single(S.prevE(S.leafE(S.unknownRecordE(_)))))
       )
+    }
+    let missingKeys = Chunk.empty()
+    for (const k of required) {
+      if (!(k in _)) {
+        missingKeys = Chunk.append_(missingKeys, k)
+      }
+    }
+    if (!Chunk.isEmpty(missingKeys)) {
+      // @ts-expect-error
+      return Th.fail(
+        S.compositionE(
+          Chunk.single(
+            S.nextE(S.compositionE(Chunk.single(S.prevE(S.missingKeysE(missingKeys)))))
+          )
+        )
+      )
+    }
+
+    let errors =
+      Chunk.empty<S.OptionalKeyE<string, unknown> | S.RequiredKeyE<string, unknown>>()
+
+    let isError = false
+
+    const result = {}
+
+    for (const key of keys) {
+      const prop = props[key]
+      const _as: string = O.getOrElse_(props[key]._as, () => key)
+
+      if (_as in _) {
+        const res = parsers[key](_[_as])
+
+        if (res.effect._tag === "Left") {
+          errors = Chunk.append_(
+            errors,
+            prop._optional === "required"
+              ? S.requiredKeyE(_as, res.effect.left)
+              : S.optionalKeyE(_as, res.effect.left)
+          )
+          isError = true
+        } else {
+          result[key] = res.effect.right.get(0)
+
+          const warnings = res.effect.right.get(1)
+
+          if (warnings._tag === "Some") {
+            errors = Chunk.append_(
+              errors,
+              prop._optional === "required"
+                ? S.requiredKeyE(_as, warnings.value)
+                : S.optionalKeyE(_as, warnings.value)
+            )
+          }
+        }
+      } else {
+        if (
+          O.isSome(prop._def) &&
+          // @ts-expect-error
+          (prop._def.value[0] === "parser" || prop._def.value[0] === "both")
+        ) {
+          // @ts-expect-error
+          result[key] = prop._def.value[1]()
+        }
+      }
+    }
+
+    if (!isError) {
+      augmentRecord(result)
+    }
+
+    if (Chunk.isEmpty(errors)) {
+      return Th.succeed(result as ShapeFromProperties<Props>)
+    }
+
+    const error_ = S.compositionE(Chunk.single(S.nextE(S.structE(errors))))
+    const error = hasRequired ? S.compositionE(Chunk.single(S.nextE(error_))) : error_
+
+    if (isError) {
+      // @ts-expect-error
+      return Th.fail(error)
+    }
+
+    // @ts-expect-error
+    return Th.warn(result, error)
+  }
+
+  function encoder(_: ShapeFromProperties<Props>): EncodedFromProperties<Props> {
+    const enc = {}
+
+    for (const key of keys) {
+      if (key in _) {
+        const _as: string = O.getOrElse_(props[key]._as, () => key)
+        enc[_as] = encoders[key](_[key])
+      }
+    }
+    // @ts-expect-error
+    return enc
+  }
+
+  function arb(_: typeof fc): fc.Arbitrary<ShapeFromProperties<Props>> {
+    const req = Dictionary.map_(arbitrariesReq, (g) => g(_))
+    const par = Dictionary.map_(arbitrariesPar, (g) => g(_))
+
+    // @ts-expect-error
+    return _.record(req).chain((a) =>
+      _.record(par, { withDeletedKeys: true }).map((b) => intersect(a, b))
+    )
+  }
+
+  return pipe(
+    S.identity(guard),
+    S.parser(parser),
+    S.encoder(encoder),
+    S.arbitrary(arb),
+    S.constructor((_) => {
+      const res = {} as ShapeFromProperties<Props>
+      Object.assign(res, _, tags)
+      for (const [k, v] of defaults) {
+        if (!(k in res)) {
+          if (v[0] === "constructor" || v[0] === "both") {
+            res[k] = v[1]()
+          }
+        }
+      }
+      return Th.succeed(res)
     }),
+    S.mapApi(() => ({ props, fields })),
     withDefaults,
     S.annotate(propertiesIdentifier, { props })
   )

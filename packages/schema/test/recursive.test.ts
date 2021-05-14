@@ -17,11 +17,12 @@ export interface PersonEncoded {
 }
 
 export const Person = S.Model<Person>()(
-  S.recursive<Person, PersonEncoded>((F) =>
-    S.props({
-      id: S.prop(S.string),
-      friends: S.prop(S.chunk(F))
-    })
+  S.lazy(
+    (): S.Schema<unknown, S.AnyError, Person, Person, never, PersonEncoded, {}> =>
+      S.props({
+        id: S.prop(S.string),
+        friends: S.prop(S.chunk(S.lazy(() => Person)))
+      })
   )
 )
 
@@ -29,7 +30,7 @@ const parsePerson = Parser.for(Person)["|>"](S.condemnFail)
 const encodePerson = Encoder.for(Person)
 
 describe("Recursive", () => {
-  it("parse", async () => {
+  it("parse/encode", async () => {
     const result = await T.runPromise(
       T.either(
         parsePerson({

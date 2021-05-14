@@ -53,6 +53,11 @@ function guardFor<
   if (cache.has(schema)) {
     return cache.get(schema)
   }
+  if (schema instanceof S.SchemaLazy) {
+    const guard: Guard<unknown> = (__): __ is unknown => guardFor(schema.self())(__)
+    cache.set(schema, guard)
+    return guard as Guard<ParsedShape>
+  }
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
     if (_._tag === "Some") {

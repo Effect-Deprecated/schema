@@ -761,21 +761,27 @@ export class SchemaGuard<
   }
 }
 
-export class SchemaLazy<Self extends SchemaAny>
+export class SchemaLazy<
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    Encoded,
+    Api
+  >
   extends Schema<
-    ParserInputOf<Self>,
-    ParserErrorOf<Self>,
-    ParsedShapeOf<Self>,
-    ConstructorInputOf<Self>,
-    ConstructorErrorOf<Self>,
-    EncodedOf<Self>,
-    ApiOf<Self>
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    Encoded,
+    {}
   >
   implements HasContinuation
 {
-  get Api(): ApiOf<Self> {
-    return this.lazy.Api
-  }
+  readonly Api = {}
 
   get [SchemaContinuationSymbol](): SchemaAny {
     return this.lazy
@@ -783,18 +789,28 @@ export class SchemaLazy<Self extends SchemaAny>
 
   @LazyGetter()
   get lazy(): Schema<
-    ParserInputOf<Self>,
-    ParserErrorOf<Self>,
-    ParsedShapeOf<Self>,
-    ConstructorInputOf<Self>,
-    ConstructorErrorOf<Self>,
-    EncodedOf<Self>,
-    ApiOf<Self>
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    Encoded,
+    Api
   > {
     return this.self()
   }
 
-  constructor(readonly self: () => Self) {
+  constructor(
+    readonly self: () => Schema<
+      ParserInput,
+      ParserError,
+      ParsedShape,
+      ConstructorInput,
+      ConstructorError,
+      Encoded,
+      Api
+    >
+  ) {
     super()
   }
 }

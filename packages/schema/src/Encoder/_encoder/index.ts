@@ -58,6 +58,11 @@ function encoderFor<
   if (cache.has(schema)) {
     return cache.get(schema)
   }
+  if (schema instanceof S.SchemaLazy) {
+    const encoder: Encoder<unknown, unknown> = (__) => encoderFor(schema.self())(__)
+    cache.set(schema, encoder)
+    return encoder as Encoder<ParsedShape, Encoded>
+  }
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
     if (_._tag === "Some") {
