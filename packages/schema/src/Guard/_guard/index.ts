@@ -7,39 +7,27 @@ import { hasContinuation, SchemaContinuationSymbol } from "../../_schema"
 
 export type Guard<T> = { (u: unknown): u is T }
 
-const interpreterCache = new WeakMap()
-const interpretedCache = new WeakMap()
-
-export const interpreters: ((schema: S.SchemaAny) => O.Option<Guard<unknown>>)[] = [
-  O.partial((miss) => (schema: S.SchemaAny): Guard<unknown> => {
-    if (schema instanceof S.SchemaGuard) {
-      return schema.guard
-    }
-    if (schema instanceof S.SchemaRecursive) {
-      if (interpreterCache.has(schema)) {
-        return interpreterCache.get(schema)
+export const interpreters: ((schema: S.SchemaAny) => O.Option<() => Guard<unknown>>)[] =
+  [
+    O.partial((miss) => (schema: S.SchemaAny): (() => Guard<unknown>) => {
+      if (schema instanceof S.SchemaGuard) {
+        return () => schema.guard
       }
-      const parser = (u: unknown): u is unknown => {
-        if (interpretedCache.has(schema)) {
-          return interpretedCache.get(schema)(u)
+      if (schema instanceof S.SchemaRecursive) {
+        return () => guardFor(schema.self(schema))
+      }
+      if (schema instanceof S.SchemaIdentity) {
+        return () => schema.guard
+      }
+      if (schema instanceof S.SchemaRefinement) {
+        return () => {
+          const self = guardFor(schema.self)
+          return (u): u is unknown => self(u) && schema.refinement(u)
         }
-        const e = guardFor(schema.self(schema))
-        interpretedCache.set(schema, e)
-        return e(u)
       }
-      interpreterCache.set(schema, parser)
-      return parser
-    }
-    if (schema instanceof S.SchemaIdentity) {
-      return schema.guard
-    }
-    if (schema instanceof S.SchemaRefinement) {
-      const self = guardFor(schema.self)
-      return (u): u is unknown => self(u) && schema.refinement(u)
-    }
-    return miss()
-  })
-]
+      return miss()
+    })
+  ]
 
 const cache = new WeakMap()
 
@@ -68,13 +56,24 @@ function guardFor<
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
     if (_._tag === "Some") {
-      cache.set(schema, _.value)
-      return _.value as Guard<ParsedShape>
+      let x: Guard<unknown>
+      const guard: Guard<unknown> = (__): __ is unknown => {
+        if (!x) {
+          x = _.value()
+        }
+        return x(__)
+      }
+      return guard as Guard<ParsedShape>
     }
   }
   if (hasContinuation(schema)) {
-    const guard = guardFor(schema[SchemaContinuationSymbol])
-    cache.set(schema, guard)
+    let x: Guard<unknown>
+    const guard: Guard<unknown> = (__): __ is unknown => {
+      if (!x) {
+        x = guardFor(schema[SchemaContinuationSymbol])
+      }
+      return x(__)
+    }
     return guard as Guard<ParsedShape>
   }
   throw new Error(`Missing guard integration for: ${schema.constructor}`)

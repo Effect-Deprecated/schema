@@ -11,69 +11,64 @@ export type Constructor<Input, Output, ConstructorError> = {
   (u: Input): Th.These<ConstructorError, Output>
 }
 
-const interpreterCache = new WeakMap()
-const interpretedCache = new WeakMap()
-
 export const interpreters: ((
   schema: S.SchemaAny
-) => O.Option<Constructor<unknown, unknown, unknown>>)[] = [
-  O.partial((miss) => (schema: S.SchemaAny): Constructor<unknown, unknown, unknown> => {
+) => O.Option<() => Constructor<unknown, unknown, unknown>>)[] = [
+  O.partial((miss) => (schema: S.SchemaAny): (() => Constructor<
+    unknown,
+    unknown,
+    unknown
+  >) => {
     if (schema instanceof S.SchemaRecursive) {
-      if (interpreterCache.has(schema)) {
-        return interpreterCache.get(schema)
-      }
-      const parser = (u: unknown) => {
-        if (interpretedCache.has(schema)) {
-          return interpretedCache.get(schema)(u)
-        }
-        const e = constructorFor(schema.self(schema))
-        interpretedCache.set(schema, e)
-        return e(u)
-      }
-      interpreterCache.set(schema, parser)
-      return parser
+      return () => constructorFor(schema.self(schema))
     }
     if (schema instanceof S.SchemaNamed) {
-      const self = constructorFor(schema.self)
-      return (u) => Th.mapError_(self(u), (e) => S.namedE(schema.name, e))
+      return () => {
+        const self = constructorFor(schema.self)
+        return (u) => Th.mapError_(self(u), (e) => S.namedE(schema.name, e))
+      }
     }
     if (schema instanceof S.SchemaMapConstructorError) {
-      const self = constructorFor(schema.self)
-      return (u) => Th.mapError_(self(u), schema.mapError)
+      return () => {
+        const self = constructorFor(schema.self)
+        return (u) => Th.mapError_(self(u), schema.mapError)
+      }
     }
     if (schema instanceof S.SchemaIdentity) {
-      return (u) => Th.succeed(u)
+      return () => (u) => Th.succeed(u)
     }
     if (schema instanceof S.SchemaConstructor) {
-      return schema.of
+      return () => schema.of
     }
     if (schema instanceof S.SchemaRefinement) {
-      const self = constructorFor(schema.self)
-      return (u) =>
-        Th.chain_(
-          self(u)["|>"](Th.mapError((e) => S.compositionE(Chunk.single(S.prevE(e))))),
-          (
-            a,
-            w
-          ): Th.These<
-            S.CompositionE<S.PrevE<unknown> | S.NextE<S.RefinementE<unknown>>>,
-            unknown
-          > =>
-            schema.refinement(a)
-              ? w._tag === "Some"
-                ? Th.warn(a, w.value)
-                : Th.succeed(a)
-              : Th.fail(
-                  S.compositionE(
-                    w._tag === "None"
-                      ? Chunk.single(S.nextE(S.refinementE(schema.error(a))))
-                      : Chunk.append_(
-                          w.value.errors,
-                          S.nextE(S.refinementE(schema.error(a)))
-                        )
+      return () => {
+        const self = constructorFor(schema.self)
+        return (u) =>
+          Th.chain_(
+            self(u)["|>"](Th.mapError((e) => S.compositionE(Chunk.single(S.prevE(e))))),
+            (
+              a,
+              w
+            ): Th.These<
+              S.CompositionE<S.PrevE<unknown> | S.NextE<S.RefinementE<unknown>>>,
+              unknown
+            > =>
+              schema.refinement(a)
+                ? w._tag === "Some"
+                  ? Th.warn(a, w.value)
+                  : Th.succeed(a)
+                : Th.fail(
+                    S.compositionE(
+                      w._tag === "None"
+                        ? Chunk.single(S.nextE(S.refinementE(schema.error(a))))
+                        : Chunk.append_(
+                            w.value.errors,
+                            S.nextE(S.refinementE(schema.error(a)))
+                          )
+                    )
                   )
-                )
-        )
+          )
+      }
     }
     return miss()
   })
@@ -106,13 +101,25 @@ function constructorFor<
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
     if (_._tag === "Some") {
-      cache.set(schema, _.value)
-      return _.value as Constructor<ConstructorInput, ParsedShape, ConstructorError>
+      let x: Constructor<unknown, unknown, unknown>
+      const of_: Constructor<unknown, unknown, unknown> = (__) => {
+        if (!x) {
+          x = _.value()
+        }
+        return x(__)
+      }
+      cache.set(schema, of_)
+      return of_ as Constructor<ConstructorInput, ParsedShape, ConstructorError>
     }
   }
   if (hasContinuation(schema)) {
-    const of_ = constructorFor(schema[SchemaContinuationSymbol])
-    cache.set(schema, of_)
+    let x: Constructor<unknown, unknown, unknown>
+    const of_: Constructor<unknown, unknown, unknown> = (__) => {
+      if (!x) {
+        x = constructorFor(schema[SchemaContinuationSymbol])
+      }
+      return x(__)
+    }
     return of_ as Constructor<ConstructorInput, ParsedShape, ConstructorError>
   }
   throw new Error(`Missing guard integration for: ${JSON.stringify(schema)}`)
