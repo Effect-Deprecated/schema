@@ -6,10 +6,10 @@ import * as Parser from "../src/Parser"
 
 export class A extends MO.Schemed(
   pipe(
-    MO.required({
-      a: MO.string
-    }),
-    MO.tag("A")
+    MO.props({
+      _tag: MO.prop(MO.literal("A")),
+      a: MO.prop(MO.string)
+    })
   )
 ) {
   static Model = MO.schema(A)
@@ -17,11 +17,11 @@ export class A extends MO.Schemed(
 
 export class B extends MO.Schemed(
   pipe(
-    MO.required({
-      b: MO.string
-    }),
-    MO.withTag("_type", "TB"),
-    MO.withTag("_tag", "B")
+    MO.props({
+      _tag: MO.prop(MO.literal("B")),
+      _type: MO.prop(MO.literal("TB")),
+      b: MO.prop(MO.string)
+    })
   )
 ) {
   static Model = MO.schema(B)
@@ -29,18 +29,26 @@ export class B extends MO.Schemed(
 
 export class C extends MO.Schemed(
   pipe(
-    MO.required({
-      c: MO.string
-    }),
-    MO.withTag("_type", "TC"),
-    MO.withTag("_tag", "C")
+    MO.props({
+      _tag: MO.prop(MO.literal("C")),
+      _type: MO.prop(MO.literal("TC")),
+      c: MO.prop(MO.string)
+    })
   )
 ) {
   static Model = MO.schema(C)
 }
 
-const ABC = MO.makeTagged("_tag")(A.Model, B.Model, C.Model)
-const BC = MO.makeTagged("_type")(B.Model, C.Model)
+const ABC = MO.union({
+  A: A.Model,
+  B: B.Model,
+  C: C.Model
+})
+
+const BC = MO.union({
+  B: B.Model,
+  C: C.Model
+})
 
 const parseABC = Parser.for(ABC)["|>"](MO.condemnFail)
 const parseBC = Parser.for(BC)["|>"](MO.condemnFail)

@@ -5,7 +5,6 @@ import * as fc from "fast-check"
 import * as S from "../src"
 import { number, string } from "../src"
 import * as Arbitrary from "../src/Arbitrary"
-import * as Constructor from "../src/Constructor"
 import * as Encoder from "../src/Encoder"
 import * as Guard from "../src/Guard"
 import * as Parser from "../src/Parser"
@@ -30,48 +29,24 @@ const Animal = S.props({
   color: S.prop(S.string)
 })
 
-const PersonOrAnimal = S.tagged(Person, Animal)
-
-const parsePerson = Parser.for(PersonOrAnimal)["|>"](S.condemnFail)
-const encodePerson = Encoder.for(Person)
-const createPerson = Constructor.for(Person)["|>"](S.unsafe)
-
-export const PersonOrAnimal2 = S.union({ Person, Animal })
+export const PersonOrAnimal = S.union({ Person, Animal })
 export const StringOrNumber = S.union({ string, number })
 
-export const parsePersonOrAnimal2 = Parser.for(PersonOrAnimal2)["|>"](S.condemnFail)
+export const parsePersonOrAnimal = Parser.for(PersonOrAnimal)["|>"](S.condemnFail)
 export const parseStringOrNumber = Parser.for(StringOrNumber)["|>"](S.condemnFail)
 export const isStringOrNumber = Guard.for(StringOrNumber)
 export const encodeStringOrNumber = Encoder.for(StringOrNumber)
-export const isPersonOrAnimal2 = Guard.for(PersonOrAnimal2)
-export const encodePersonOrAnimal2 = Encoder.for(PersonOrAnimal2)
+export const isPersonOrAnimal = Guard.for(PersonOrAnimal)
+export const encodePersonOrAnimal = Encoder.for(PersonOrAnimal)
 export const arbStringOrNumber = Arbitrary.for(StringOrNumber)(fc)
-export const arbPersonOrAnimal2 = Arbitrary.for(PersonOrAnimal2)(fc)
+export const arbPersonOrAnimal = Arbitrary.for(PersonOrAnimal)(fc)
 
 describe("Props", () => {
-  it("parse succeed", async () => {
-    const dt = new Date().toISOString()
-    const res = await T.runPromiseExit(
-      parsePerson({ _tag: "Person", sub: "ok", bd: dt })
-    )
-
-    expect(res).toEqual(
-      Ex.succeed({ _tag: "Person", id: "ok", birthDate: new Date(Date.parse(dt)) })
-    )
-    if (res._tag === "Success" && res.value._tag === "Person") {
-      expect(encodePerson(res.value)).toEqual({ _tag: "Person", sub: "ok", bd: dt })
-    }
-
-    const created = createPerson({ id: "ok" })
-
-    expect(encodePerson(created)).toEqual({ _tag: "Person", sub: "ok" })
-  })
-
   it("union", async () => {
     const dt = new Date().toISOString()
 
     const res = await T.runPromiseExit(
-      parsePersonOrAnimal2({ _tag: "Person", sub: "ok", bd: dt })
+      parsePersonOrAnimal({ _tag: "Person", sub: "ok", bd: dt })
     )
 
     expect(res).toEqual(
@@ -84,19 +59,19 @@ describe("Props", () => {
 
     expect(isStringOrNumber(0)).toEqual(true)
 
-    expect(isPersonOrAnimal2({})).toEqual(false)
+    expect(isPersonOrAnimal({})).toEqual(false)
 
     if (res._tag === "Success") {
-      expect(isPersonOrAnimal2(res.value)).toEqual(true)
+      expect(isPersonOrAnimal(res.value)).toEqual(true)
 
       expect(
-        PersonOrAnimal2.matchW({
+        PersonOrAnimal.matchW({
           Animal: (_) => `got animal: ${_.id}`,
           Person: (_) => `got person: ${_.id}`
         })(res.value)
       ).toEqual("got person: ok")
 
-      expect(encodePersonOrAnimal2(res.value)).toEqual({
+      expect(encodePersonOrAnimal(res.value)).toEqual({
         _tag: "Person",
         sub: "ok",
         bd: dt
@@ -114,6 +89,6 @@ describe("Props", () => {
     expect(encodeStringOrNumber("ok")).toEqual("ok")
 
     fc.assert(fc.property(arbStringOrNumber, isStringOrNumber))
-    fc.assert(fc.property(arbPersonOrAnimal2, isPersonOrAnimal2))
+    fc.assert(fc.property(arbPersonOrAnimal, isPersonOrAnimal))
   })
 })
