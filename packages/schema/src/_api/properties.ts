@@ -14,6 +14,8 @@ import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
 import type { LiteralApi } from "./literal"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export class Property<
   Self extends S.SchemaUPI,
@@ -170,7 +172,7 @@ export type ParserErrorFromProperties<Props extends PropertyRecord> = S.Composit
 
 export const propertiesIdentifier = Symbol.for("@effect-ts/schema/ids/properties")
 
-export type SchemaProperties<Props extends PropertyRecord> = S.Schema<
+export type SchemaProperties<Props extends PropertyRecord> = DefaultSchema<
   unknown,
   ParserErrorFromProperties<Props>,
   ShapeFromProperties<Props>,
@@ -371,11 +373,12 @@ export function props<Props extends PropertyRecord>(
     S.encoder(encoder),
     S.arbitrary(arb),
     S.mapApi(() => ({ props, fields })),
-    S.identified(propertiesIdentifier, { props }),
     S.constructor((_) => {
       const res = {} as ShapeFromProperties<Props>
       Object.assign(res, _, tags)
       return Th.succeed(res)
-    })
+    }),
+    withDefaults,
+    S.identified(propertiesIdentifier, { props })
   )
 }

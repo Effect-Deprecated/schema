@@ -1,3 +1,5 @@
+import type { UnionToIntersection } from "@effect-ts/core/Utils"
+
 import * as MO from "../_schema"
 import type { Schema } from "../_schema/schema"
 import * as Arbitrary from "../Arbitrary"
@@ -43,7 +45,7 @@ export interface SchemaWithDefaults<
   readonly id: <Meta>(
     identifier: symbol,
     meta: Meta
-  ) => SchemaWithDefaults<
+  ) => DefaultSchema<
     ParserInput,
     ParserError,
     ParsedShape,
@@ -53,6 +55,35 @@ export interface SchemaWithDefaults<
     Api
   >
 }
+
+export type DefaultSchema<
+  ParserInput,
+  ParserError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError extends MO.AnyError,
+  Encoded,
+  Api
+> = SchemaWithDefaults<
+  ParserInput,
+  ParserError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError,
+  Encoded,
+  Api
+> &
+  CarryFromApi<Api>
+
+const carryOver = ["matchW", "matchS", "props"] as const
+
+type CarryOverFromApi = typeof carryOver[number]
+
+type CarryFromApi<Api> = UnionToIntersection<
+  {
+    [k in keyof Api]: k extends CarryOverFromApi ? { [h in k]: Api[h] } : never
+  }[keyof Api]
+>
 
 export function withDefaults<
   ParserInput,
@@ -72,7 +103,7 @@ export function withDefaults<
     Encoded,
     Api
   >
-): SchemaWithDefaults<
+): DefaultSchema<
   ParserInput,
   ParserError,
   ParsedShape,
@@ -128,6 +159,14 @@ export function withDefaults<
       return x
     }
   })
+
+  for (const k of carryOver) {
+    if (k in self.Api) {
+      Object.defineProperty(schemed, k, {
+        value: self.Api[k]
+      })
+    }
+  }
 
   // @ts-expect-error
   return schemed
