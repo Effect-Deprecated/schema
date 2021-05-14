@@ -1,6 +1,5 @@
 import * as T from "@effect-ts/core/Effect"
 import * as Ex from "@effect-ts/core/Effect/Exit"
-import { pipe } from "@effect-ts/core/Function"
 import * as FC from "fast-check"
 
 import * as MO from "../src"
@@ -9,15 +8,12 @@ import * as Encoder from "../src/Encoder"
 import * as Parser from "../src/Parser"
 
 export class Person extends Model<Person>()(
-  pipe(
-    MO.props({
-      _tag: MO.prop(MO.literal("Person")),
-      firstName: MO.prop(MO.string),
-      lastName: MO.prop(MO.string),
-      pets: MO.prop(MO.lazy(() => MO.chunk(Animal))).opt()
-    }),
-    MO.withDefaultConstructorField("firstName", () => "Mike")
-  )
+  MO.props({
+    _tag: MO.prop(MO.literal("Person")),
+    firstName: MO.prop(MO.string).def(() => "Mike"),
+    lastName: MO.prop(MO.string),
+    pets: MO.prop(MO.lazy(() => MO.chunk(Animal))).opt()
+  })
 ) {}
 
 export class Animal extends Model<Animal>()(

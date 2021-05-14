@@ -21,7 +21,7 @@ export class Property<
   Self extends S.SchemaUPI,
   Optional extends "optional" | "required",
   As extends O.Option<PropertyKey>,
-  Def extends O.Option<S.ParsedShapeOf<Self>>
+  Def extends O.Option<() => S.ParsedShapeOf<Self>>
 > {
   constructor(
     readonly _as: As,
@@ -52,9 +52,9 @@ export class Property<
 
   def(
     _: Optional extends "required"
-      ? S.ParsedShapeOf<Self>
+      ? () => S.ParsedShapeOf<Self>
       : ["default can be set only for required properties", never]
-  ): Property<Self, Optional, As, O.Some<S.ParsedShapeOf<Self>>> {
+  ): Property<Self, Optional, As, O.Some<() => S.ParsedShapeOf<Self>>> {
     // @ts-expect-error
     return new Property(this._as, this._schema, this._optional, new O.Some(_))
   }
@@ -377,7 +377,7 @@ export function props<Props extends PropertyRecord>(
             }
           } else {
             if (O.isSome(prop._def)) {
-              result[key] = prop._def.value
+              result[key] = (prop._def.value as Function)()
             }
           }
         }
@@ -438,7 +438,7 @@ export function props<Props extends PropertyRecord>(
           Object.assign(res, _, tags)
           for (const [k, v] of defaults) {
             if (!(k in res)) {
-              res[k] = v
+              res[k] = v()
             }
           }
           return Th.succeed(res)
