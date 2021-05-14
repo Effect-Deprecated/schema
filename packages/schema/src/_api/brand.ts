@@ -1,7 +1,7 @@
 // tracing: off
 import type * as MO from "../_schema"
 import type { ApiSelfType, Schema } from "../_schema/schema"
-import type { SchemaWithDefaults } from "./withDefaults"
+import type { DefaultSchema } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
 
 export function brand<B>() {
@@ -23,7 +23,7 @@ export function brand<B>() {
       Encoded,
       Api
     >
-  ): SchemaWithDefaults<
+  ): DefaultSchema<
     ParserInput,
     ParserError,
     B,
