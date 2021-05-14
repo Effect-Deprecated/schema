@@ -47,6 +47,54 @@ interface MatchS<Props extends Record<PropertyKey, S.SchemaUPI>, AS> {
   ): (ks: AS) => Result
 }
 
+export interface MatchW<Props extends Record<PropertyKey, S.SchemaUPI>, AS> {
+  <
+    M extends {
+      [K in keyof Props]?: (
+        _: S.ParsedShapeOf<Props[K]>,
+        __: S.ParsedShapeOf<Props[K]>
+      ) => any
+    },
+    Result
+  >(
+    mat: M,
+    def: (
+      x0: { [K in keyof Props]: S.ParsedShapeOf<Props[K]> }[Exclude<
+        keyof Props,
+        keyof M
+      >],
+      x1: { [K in keyof Props]: S.ParsedShapeOf<Props[K]> }[Exclude<
+        keyof Props,
+        keyof M
+      >]
+    ) => Result
+  ): (ks: AS) => Unify<
+    | {
+        [K in keyof M]: M[K] extends (
+          _: S.ParsedShapeOf<Props[K]>,
+          __: S.ParsedShapeOf<Props[K]>
+        ) => any
+          ? ReturnType<M[K]>
+          : never
+      }[keyof M]
+    | Result
+  >
+  <
+    M extends {
+      [K in keyof Props]: (
+        _: S.ParsedShapeOf<Props[K]>,
+        __: S.ParsedShapeOf<Props[K]>
+      ) => any
+    }
+  >(
+    _: M
+  ): (ks: AS) => Unify<
+    {
+      [K in keyof M]: ReturnType<M[K]>
+    }[keyof M]
+  >
+}
+
 export interface UnionApi<Props extends Record<PropertyKey, S.SchemaUPI>>
   extends S.ApiSelfType<unknown> {
   readonly matchS: MatchS<
@@ -58,26 +106,14 @@ export interface UnionApi<Props extends Record<PropertyKey, S.SchemaUPI>>
       }[keyof Props]
     >
   >
-  readonly matchW: <
-    M extends {
-      [K in keyof Props]: (
-        _: S.ParsedShapeOf<Props[K]>,
-        __: S.ParsedShapeOf<Props[K]>
-      ) => any
-    }
-  >(
-    _: M
-  ) => (
-    ks: S.GetApiSelfType<
+  readonly matchW: MatchW<
+    Props,
+    S.GetApiSelfType<
       this,
       {
         [k in keyof Props]: S.ParsedShapeOf<Props[k]>
       }[keyof Props]
     >
-  ) => Unify<
-    {
-      [K in keyof M]: ReturnType<M[K]>
-    }[keyof M]
   >
 }
 
@@ -284,13 +320,13 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
             throw new Error(`bug: can't find any valid matcher`)
           },
           // @ts-ignore
-          matchW: (matcher) => (ks) => {
+          matchW: (matcher, def) => (ks) => {
             if (O.isSome(tag)) {
-              return matcher[ks[tag.value.key]](ks, ks)
+              return (matcher[ks[tag.value.key]] ?? def)(ks, ks)
             }
             for (const k of keys) {
               if (guards[k](ks)) {
-                return matcher[k](ks, ks)
+                return (matcher[k] ?? def)(ks, ks)
               }
             }
             throw new Error(`bug: can't find any valid matcher`)

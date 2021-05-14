@@ -109,6 +109,14 @@ describe("Props", () => {
       (_) => T.succeed({ a: 1 })
     )
 
+    const matchStringOrNumberWDef = StringOrNumber.matchW(
+      {
+        number: () => T.succeed({ a: 0 })
+      },
+      (_) => T.succeed({ b: 1 })
+    )
+
     expect(await T.runPromise(matchStringOrNumberDef("ok"))).toEqual({ a: 1 })
+    expect(await T.runPromise(matchStringOrNumberWDef("ok"))).toEqual({ b: 1 })
   })
 })
