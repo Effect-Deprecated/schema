@@ -14,7 +14,7 @@ export class Person extends Model<Person>()(
       _tag: MO.prop(MO.literal("Person")),
       firstName: MO.prop(MO.string),
       lastName: MO.prop(MO.string),
-      pets: MO.prop(MO.lazy(() => Animal)).opt()
+      pets: MO.prop(MO.lazy(() => MO.chunk(Animal))).opt()
     }),
     MO.withDefaultConstructorField("firstName", () => "Mike")
   )
