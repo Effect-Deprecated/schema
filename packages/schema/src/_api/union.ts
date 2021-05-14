@@ -4,7 +4,7 @@ import * as D from "@effect-ts/core/Collections/Immutable/Dictionary"
 import { tuple } from "@effect-ts/core/Collections/Immutable/Tuple"
 import { pipe } from "@effect-ts/core/Function"
 import * as O from "@effect-ts/core/Option"
-import type { EnforceNonEmptyRecord } from "@effect-ts/core/Utils"
+import type { EnforceNonEmptyRecord, Unify } from "@effect-ts/core/Utils"
 
 import * as S from "../_schema"
 import * as Arbitrary from "../Arbitrary"
@@ -12,7 +12,6 @@ import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
-import type { Compact } from "./compactable"
 import type { DefaultSchema } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
 
@@ -43,7 +42,7 @@ export interface UnionApi<Props extends Record<PropertyKey, S.SchemaUPI>>
         [k in keyof Props]: S.ParsedShapeOf<Props[k]>
       }[keyof Props]
     >
-  ) => Compact<
+  ) => Unify<
     {
       [K in keyof M]: ReturnType<M[K]>
     }[keyof M]

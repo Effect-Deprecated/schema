@@ -26,7 +26,7 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@effect-ts/core": "^0.38.1"
+    "@effect-ts/core": "^0.39.0"
   },
   "peerDependencies": {
     "fast-check": ">= 2.14.0"
