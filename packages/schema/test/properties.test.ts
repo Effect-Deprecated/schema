@@ -17,14 +17,14 @@ const Identified = S.props({
 
 const Person = S.props({
   _tag: S.prop(S.literal("Person")),
-  ...Identified.Api.props,
+  ...Identified.props,
   age: S.prop(S.number).opt(),
   birthDate: S.prop(S.date).opt().from("bd")
 })
 
 const Animal = S.props({
   _tag: S.prop(S.literal("Animal")),
-  ...Identified.Api.props,
+  ...Identified.props,
   age: S.prop(S.number).opt(),
   birthDate: S.prop(S.date).opt().from("bd"),
   color: S.prop(S.string)
@@ -90,7 +90,7 @@ describe("Props", () => {
       expect(isPersonOrAnimal2(res.value)).toEqual(true)
 
       expect(
-        PersonOrAnimal2.Api.matchW({
+        PersonOrAnimal2.matchW({
           Animal: (_) => `got animal: ${_.id}`,
           Person: (_) => `got person: ${_.id}`
         })(res.value)
@@ -103,7 +103,7 @@ describe("Props", () => {
       })
     }
 
-    const matchStringOrNumber = StringOrNumber.Api.matchS({
+    const matchStringOrNumber = StringOrNumber.matchS({
       number: (_) => `got number: ${_}`,
       string: (_) => `got string: ${_}`
     })

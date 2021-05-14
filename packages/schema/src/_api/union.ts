@@ -12,6 +12,8 @@ import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export interface UnionApi<Props extends Record<PropertyKey, S.SchemaUPI>>
   extends S.ApiSelfType<unknown> {
@@ -45,7 +47,7 @@ export interface UnionApi<Props extends Record<PropertyKey, S.SchemaUPI>>
   }[keyof M]
 }
 
-export type SchemaUnion<Props extends Record<PropertyKey, S.SchemaUPI>> = S.Schema<
+export type SchemaUnion<Props extends Record<PropertyKey, S.SchemaUPI>> = DefaultSchema<
   unknown,
   S.CompositionE<
     | S.PrevE<S.LeafE<S.ExtractKeyE>>
@@ -258,6 +260,7 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
           }
         } as UnionApi<Props>)
     ),
+    withDefaults,
     S.identified(unionIdentifier, { props })
   )
 }
