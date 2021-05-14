@@ -123,7 +123,9 @@ export function withDefaults<
   })
 
   Object.defineProperty(schemed, "Api", {
-    value: self.Api
+    get() {
+      return self.Api
+    }
   })
 
   Object.defineProperty(schemed, ">>>", {
@@ -161,11 +163,11 @@ export function withDefaults<
   })
 
   for (const k of carryOver) {
-    if (k in self.Api) {
-      Object.defineProperty(schemed, k, {
-        value: self.Api[k]
-      })
-    }
+    Object.defineProperty(schemed, k, {
+      get() {
+        return self.Api[k]
+      }
+    })
   }
 
   // @ts-expect-error

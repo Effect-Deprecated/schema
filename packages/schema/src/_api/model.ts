@@ -83,7 +83,9 @@ export function Model<M>(__name?: string) {
     })
 
     Object.defineProperty(schemed, "Api", {
-      value: self.Api
+      get() {
+        return self.Api
+      }
     })
 
     Object.defineProperty(schemed, ">>>", {
