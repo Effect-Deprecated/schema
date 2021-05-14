@@ -10,7 +10,7 @@ import * as Guard from "../Guard"
 import * as Th from "../These"
 import { chunk } from "./chunk"
 
-export const arrayIdentifier = Symbol.for("@effect-ts/schema/ids/array")
+export const arrayIdentifier = S.makeAnnotation<{ self: S.SchemaUPI }>()
 
 export function array<Self extends S.SchemaUPI>(
   self: Self
@@ -45,6 +45,6 @@ export function array<Self extends S.SchemaUPI>(
     S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
     S.constructor((_: readonly S.ParsedShapeOf<Self>[]) => Th.succeed(_)),
     S.encoder((u) => u.map(encodeSelf)),
-    S.identified(arrayIdentifier, { self })
+    S.annotate(arrayIdentifier, { self })
   )
 }

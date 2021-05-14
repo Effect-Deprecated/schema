@@ -8,13 +8,13 @@ import { intersect } from "@effect-ts/core/Utils"
 import type * as fc from "fast-check"
 
 import * as S from "../_schema"
+import type { Annotation } from "../_schema/annotation"
 import { augmentRecord } from "../_utils"
 import * as Arbitrary from "../Arbitrary"
 import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
-import type { Annotation } from "./annotation"
 import type { LiteralApi } from "./literal"
 import type { DefaultSchema } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
@@ -102,17 +102,17 @@ export class Property<
     return new Property(this._as, this._schema, this._optional, new O.None(), this._map)
   }
 
-  get<A>(annotation: Annotation<A>): A {
-    return O.getOrElse_(HashMap.get_(this._map, annotation), () => annotation.initial)
+  getAnnotation<A>(annotation: Annotation<A>): O.Option<A> {
+    return HashMap.get_(this._map, annotation)
   }
 
-  set<A>(annotation: Annotation<A>, value: A): Property<Self, Optional, As, Def> {
+  annotate<A>(annotation: Annotation<A>, value: A): Property<Self, Optional, As, Def> {
     return new Property(
       this._as,
       this._schema,
       this._optional,
       this._def,
-      HashMap.set_(this._map, annotation, annotation.merge(this.get(annotation), value))
+      HashMap.set_(this._map, annotation, value)
     )
   }
 }
@@ -262,7 +262,7 @@ export type ParserErrorFromProperties<Props extends PropertyRecord> = S.Composit
     >
 >
 
-export const propertiesIdentifier = Symbol.for("@effect-ts/schema/ids/properties")
+export const propertiesIdentifier = S.makeAnnotation<{ props: PropertyRecord }>()
 
 export type SchemaProperties<Props extends PropertyRecord> = DefaultSchema<
   unknown,
@@ -510,6 +510,6 @@ export function props<Props extends PropertyRecord>(
       )
     }),
     withDefaults,
-    S.identified(propertiesIdentifier, { props })
+    S.annotate(propertiesIdentifier, { props })
   )
 }

@@ -19,9 +19,7 @@ export const regexUUID =
 
 export type UUID = NonEmptyString & UUIDBrand
 
-export const UUIDFromStringIdentifier = Symbol.for(
-  "@effect-ts/schema/ids/UUIDFromString"
-)
+export const UUIDFromStringIdentifier = S.makeAnnotation<{}>()
 
 const isUUID: Refinement<string, UUID> = (s: string): s is UUID => {
   return regexUUID.test(s)
@@ -49,10 +47,10 @@ export const UUIDFromString: SchemaWithDefaults<
   S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
   S.refine(isUUID, (n) => S.leafE(parseUuidE(n))),
   brand<UUID>(),
-  S.identified(UUIDFromStringIdentifier, {})
+  S.annotate(UUIDFromStringIdentifier, {})
 )
 
-export const UUIDIdentifier = Symbol.for("@effect-ts/schema/ids/UUID")
+export const UUIDIdentifier = S.makeAnnotation<{}>()
 
 export const UUID: SchemaWithDefaults<
   unknown,
@@ -73,4 +71,4 @@ export const UUID: SchemaWithDefaults<
   >,
   string,
   S.ApiSelfType<UUID>
-> = pipe(string[">>>"](UUIDFromString), brand<UUID>(), S.identified(UUIDIdentifier, {}))
+> = pipe(string[">>>"](UUIDFromString), brand<UUID>(), S.annotate(UUIDIdentifier, {}))

@@ -1,5 +1,6 @@
 import * as T from "@effect-ts/core/Effect"
 import * as Ex from "@effect-ts/core/Effect/Exit"
+import * as O from "@effect-ts/core/Option"
 import * as fc from "fast-check"
 
 import * as S from "../src"
@@ -9,10 +10,10 @@ import * as Encoder from "../src/Encoder"
 import * as Guard from "../src/Guard"
 import * as Parser from "../src/Parser"
 
-const fieldDoc = S.makeAnnotation({} as { doc?: string }, (_, x) => x)
+const fieldDoc = S.makeAnnotation<string>()
 
 const Identified = S.props({
-  id: S.prop(S.string).from("sub").set(fieldDoc, { doc: "id field" }),
+  id: S.prop(S.string).from("sub").annotate(fieldDoc, "id field"),
   name: S.prop(S.string).opt()
 })
 
@@ -99,6 +100,6 @@ describe("Props", () => {
     fc.assert(fc.property(arbStringOrNumber, isStringOrNumber))
     fc.assert(fc.property(arbPersonOrAnimal, isPersonOrAnimal))
 
-    expect(Person.props.id.get(fieldDoc)).toEqual({ doc: "id field" })
+    expect(Person.props.id.getAnnotation(fieldDoc)).toEqual(O.some("id field"))
   })
 })

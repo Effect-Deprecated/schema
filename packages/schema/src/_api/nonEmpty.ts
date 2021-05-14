@@ -8,7 +8,7 @@ export interface NonEmptyBrand {
   readonly NonEmpty: unique symbol
 }
 
-export const nonEmptyIdentifier = Symbol.for("@effect-ts/schema/ids/nonEmpty")
+export const nonEmptyIdentifier = S.makeAnnotation<{ self: S.SchemaAny }>()
 
 export function nonEmpty<
   ParserInput,
@@ -48,6 +48,6 @@ export function nonEmpty<
       (n): n is ParsedShape & NonEmptyBrand => n.length > 0,
       (n) => S.leafE(S.nonEmptyE(n))
     ),
-    S.identified(nonEmptyIdentifier, { self })
+    S.annotate(nonEmptyIdentifier, { self })
   )
 }

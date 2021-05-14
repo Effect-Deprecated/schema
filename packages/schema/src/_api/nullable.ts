@@ -9,7 +9,7 @@ import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
 
-export const nullableIdentifier = Symbol.for("@effect-ts/schema/ids/nullable")
+export const nullableIdentifier = S.makeAnnotation<{ self: S.SchemaAny }>()
 
 export function nullable<Self extends S.SchemaAny>(
   self: Self
@@ -47,6 +47,6 @@ export function nullable<Self extends S.SchemaAny>(
     ),
     S.encoder((_) => O.map_(_, encode)["|>"](O.toNullable) as S.EncodedOf<Self> | null),
     S.mapApi(() => self.Api as S.ApiOf<Self>),
-    S.identified(nullableIdentifier, { self })
+    S.annotate(nullableIdentifier, { self })
   )
 }

@@ -1,9 +1,9 @@
 // tracing: off
 
-import type { Schema } from "../_schema"
-import { identified, identity } from "../_schema"
+import * as S from "../_schema"
+import { annotate, identity } from "../_schema"
 
-export const unknownIdentifier = Symbol.for("@effect-ts/schema/ids/unknown")
+export const unknownIdentifier = S.makeAnnotation<{}>()
 
-export const unknown: Schema<unknown, never, unknown, unknown, never, unknown, {}> =
-  identity((_): _ is unknown => true)["|>"](identified(unknownIdentifier, {}))
+export const unknown: S.Schema<unknown, never, unknown, unknown, never, unknown, {}> =
+  identity((_): _ is unknown => true)["|>"](annotate(unknownIdentifier, {}))

@@ -27,7 +27,7 @@ export interface LiteralApi<KS extends readonly string[]> extends ApiSelfType {
   }[keyof M]
 }
 
-export const literalIdentifier = Symbol.for("@effect-ts/schema/ids/literal")
+export const literalIdentifier = S.makeAnnotation<{ literals: readonly string[] }>()
 
 export function literal<KS extends readonly string[]>(
   ...literals: KS
@@ -61,6 +61,6 @@ export function literal<KS extends readonly string[]>(
       })
     ),
     withDefaults,
-    S.identified(literalIdentifier, { literals })
+    S.annotate(literalIdentifier, { literals })
   )
 }

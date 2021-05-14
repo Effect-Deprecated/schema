@@ -5,6 +5,7 @@ import { LazyGetter } from "@effect-ts/core/Utils"
 import type * as fc from "fast-check"
 
 import type * as Th from "../These"
+import type { Annotation } from "./annotation"
 import type { CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
 
 export const SchemaSym = Symbol()
@@ -67,8 +68,8 @@ export abstract class Schema<
     ThatApi
   > => new SchemaPipe(this, that)
 
-  readonly id = <Meta>(
-    identifier: symbol,
+  readonly annotate = <Meta>(
+    identifier: Annotation<Meta>,
     meta: Meta
   ): Schema<
     ParserInput,
@@ -78,7 +79,7 @@ export abstract class Schema<
     ConstructorError,
     Encoded,
     Api
-  > => new SchemaIdentified(this, identifier, meta)
+  > => new SchemaAnnotated(this, identifier, meta)
 }
 
 export type SchemaAny = Schema<any, any, any, any, any, any, any>
@@ -668,7 +669,7 @@ export function isIdentifiable<A extends SchemaAny>(
   )
 }
 
-export class SchemaIdentified<
+export class SchemaAnnotated<
     ParserInput,
     ParserError,
     ParsedShape,
@@ -707,7 +708,7 @@ export class SchemaIdentified<
       Encoded,
       Api
     >,
-    readonly identifier: symbol,
+    readonly identifier: Annotation<Meta>,
     readonly meta: Meta
   ) {
     super()

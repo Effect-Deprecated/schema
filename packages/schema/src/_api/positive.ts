@@ -10,7 +10,7 @@ export interface PositiveBrand {
 
 export type Positive = number & PositiveBrand
 
-export const positiveIdentifier = Symbol.for("@effect-ts/schema/ids/positive")
+export const positiveIdentifier = S.makeAnnotation<{ self: S.SchemaAny }>()
 
 export function positive<
   ParserInput,
@@ -47,6 +47,6 @@ export function positive<
       (n): n is ParsedShape & Positive => n >= 0,
       (n) => S.leafE(S.positiveE(n))
     ),
-    S.identified(positiveIdentifier, { self })
+    S.annotate(positiveIdentifier, { self })
   )
 }

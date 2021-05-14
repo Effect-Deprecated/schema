@@ -5,7 +5,7 @@ import { pipe } from "@effect-ts/core/Function"
 import * as S from "../_schema"
 import * as Th from "../These"
 
-export const dateIdentifier = Symbol.for("@effect-ts/schema/ids/date")
+export const dateIdentifier = S.makeAnnotation<{}>()
 
 export const date: S.Schema<
   unknown,
@@ -30,10 +30,10 @@ export const date: S.Schema<
   S.arbitrary((_) => _.date()),
   S.encoder((_) => _.toISOString()),
   S.mapApi((_) => ({})),
-  S.identified(dateIdentifier, {})
+  S.annotate(dateIdentifier, {})
 )
 
-export const dateMsIdentifier = Symbol.for("@effect-ts/schema/ids/dateMs")
+export const dateMsIdentifier = S.makeAnnotation<{}>()
 
 export const dateMs: S.Schema<unknown, S.ParseDateMsE, Date, Date, never, number, {}> =
   pipe(
@@ -43,5 +43,5 @@ export const dateMs: S.Schema<unknown, S.ParseDateMsE, Date, Date, never, number
     ),
     S.encoder((_) => _.getTime()),
     S.mapApi((_) => ({})),
-    S.identified(dateMsIdentifier, {})
+    S.annotate(dateMsIdentifier, {})
   )

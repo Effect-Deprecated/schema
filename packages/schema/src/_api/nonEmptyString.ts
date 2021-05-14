@@ -12,9 +12,7 @@ import type { SchemaWithDefaults } from "./withDefaults"
 
 export type NonEmptyString = string & NonEmptyBrand
 
-export const nonEmptyStringFromStringIdentifier = Symbol.for(
-  "@effect-ts/schema/ids/nonEmptyStringFromString"
-)
+export const nonEmptyStringFromStringIdentifier = S.makeAnnotation<{}>()
 
 export const nonEmptyStringFromString: SchemaWithDefaults<
   string,
@@ -31,12 +29,10 @@ export const nonEmptyStringFromString: SchemaWithDefaults<
   S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
   brand<NonEmptyString>(),
-  S.identified(nonEmptyStringFromStringIdentifier, {})
+  S.annotate(nonEmptyStringFromStringIdentifier, {})
 )
 
-export const nonEmptyStringIdentifier = Symbol.for(
-  "@effect-ts/schema/ids/nonEmptyString"
-)
+export const nonEmptyStringIdentifier = S.makeAnnotation<{}>()
 
 export const nonEmptyString: SchemaWithDefaults<
   unknown,
@@ -52,5 +48,5 @@ export const nonEmptyString: SchemaWithDefaults<
 > = pipe(
   string[">>>"](nonEmptyStringFromString),
   brand<NonEmptyString>(),
-  S.identified(nonEmptyStringIdentifier, {})
+  S.annotate(nonEmptyStringIdentifier, {})
 )
