@@ -11,9 +11,7 @@ import type { Positive } from "./positive"
 import { positive } from "./positive"
 import type { SchemaWithDefaults } from "./withDefaults"
 
-export const positiveIntFromNumberIdentifier = Symbol.for(
-  "@effect-ts/schema/ids/positiveIntFromNumber"
-)
+export const positiveIntFromNumberIdentifier = S.makeAnnotation<{}>()
 
 export const positiveIntFromNumber: SchemaWithDefaults<
   number,
@@ -34,10 +32,10 @@ export const positiveIntFromNumber: SchemaWithDefaults<
   positive,
   S.arbitrary((FC) => FC.integer({ min: 1 }).map((_) => _ as Int & Positive)),
   brand<Int & Positive>(),
-  S.identified(positiveIntFromNumberIdentifier, {})
+  S.annotate(positiveIntFromNumberIdentifier, {})
 )
 
-export const positiveIntIdentifier = Symbol.for("@effect-ts/schema/ids/positiveInt")
+export const positiveIntIdentifier = S.makeAnnotation<{}>()
 
 export const positiveInt: SchemaWithDefaults<
   unknown,
@@ -61,5 +59,5 @@ export const positiveInt: SchemaWithDefaults<
 > = pipe(
   number[">>>"](positiveIntFromNumber),
   brand<Int & Positive>(),
-  S.identified(positiveIntIdentifier, {})
+  S.annotate(positiveIntIdentifier, {})
 )

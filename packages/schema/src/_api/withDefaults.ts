@@ -1,5 +1,6 @@
 import type { UnionToIntersection } from "@effect-ts/core/Utils"
 
+import type { Annotation } from "../_schema"
 import * as MO from "../_schema"
 import type { Schema } from "../_schema/schema"
 import * as Arbitrary from "../Arbitrary"
@@ -42,8 +43,8 @@ export interface SchemaWithDefaults<
 
   readonly Arbitrary: Arbitrary.Arbitrary<ParsedShape>
 
-  readonly id: <Meta>(
-    identifier: symbol,
+  readonly annotate: <Meta>(
+    identifier: Annotation<Meta>,
     meta: Meta
   ) => DefaultSchema<
     ParserInput,
@@ -152,8 +153,8 @@ export function withDefaults<
     value: Arbitrary.for(self)
   })
 
-  Object.defineProperty(schemed, "id", {
-    value: <Meta>(identifier: symbol, meta: Meta) => {
+  Object.defineProperty(schemed, "annotate", {
+    value: <Meta>(identifier: Annotation<Meta>, meta: Meta) => {
       const x = withDefaults(self)
       x["identifier"] = identifier
       x["self"] = self

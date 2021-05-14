@@ -15,7 +15,7 @@ export interface IntBrand {
 
 export type Int = number & IntBrand
 
-export const intFromNumberIdentifier = Symbol.for("@effect-ts/schema/ids/intFromNumber")
+export const intFromNumberIdentifier = S.makeAnnotation<{}>()
 
 export const intFromNumber: SchemaWithDefaults<
   number,
@@ -37,12 +37,10 @@ export const intFromNumber: SchemaWithDefaults<
   S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapApi(() => ({})),
   brand<Int>(),
-  S.identified(intFromNumberIdentifier, {})
+  S.annotate(intFromNumberIdentifier, {})
 )
 
-export const stringIntFromStringIdentifier = Symbol.for(
-  "@effect-ts/schema/ids/stringIntFromString"
-)
+export const stringIntFromStringIdentifier = S.makeAnnotation<{}>()
 
 export const stringIntFromString: SchemaWithDefaults<
   string,
@@ -58,10 +56,10 @@ export const stringIntFromString: SchemaWithDefaults<
 > = pipe(
   stringNumberFromString[">>>"](intFromNumber),
   brand<Int>(),
-  S.identified(stringIntFromStringIdentifier, {})
+  S.annotate(stringIntFromStringIdentifier, {})
 )
 
-export const stringIntIdentifier = Symbol.for("@effect-ts/schema/ids/stringInt")
+export const stringIntIdentifier = S.makeAnnotation<{}>()
 
 export const stringInt: SchemaWithDefaults<
   unknown,
@@ -82,10 +80,10 @@ export const stringInt: SchemaWithDefaults<
 > = pipe(
   string[">>>"](stringIntFromString),
   brand<Int>(),
-  S.identified(stringIntIdentifier, {})
+  S.annotate(stringIntIdentifier, {})
 )
 
-export const intIdentifier = Symbol.for("@effect-ts/schema/ids/int")
+export const intIdentifier = S.makeAnnotation<{}>()
 
 export const int: SchemaWithDefaults<
   unknown,
@@ -98,4 +96,4 @@ export const int: SchemaWithDefaults<
   S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
   number,
   S.ApiSelfType<Int>
-> = pipe(number[">>>"](intFromNumber), brand<Int>(), S.identified(intIdentifier, {}))
+> = pipe(number[">>>"](intFromNumber), brand<Int>(), S.annotate(intIdentifier, {}))

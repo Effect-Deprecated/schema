@@ -6,7 +6,7 @@ import * as S from "../_schema"
 import * as Th from "../These"
 import { refinement } from "./refinement"
 
-export const objectIdentifier = Symbol.for("@effect-ts/schema/ids/object")
+export const objectIdentifier = S.makeAnnotation<{}>()
 
 export const object: S.Schema<
   unknown,
@@ -25,5 +25,5 @@ export const object: S.Schema<
   S.arbitrary((_) => _.object()),
   S.encoder((_) => _),
   S.mapApi(() => ({})),
-  S.identified(objectIdentifier, {})
+  S.annotate(objectIdentifier, {})
 )

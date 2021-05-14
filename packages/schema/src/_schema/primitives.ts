@@ -4,6 +4,7 @@ import type { Refinement } from "@effect-ts/system/Function"
 import type * as fc from "fast-check"
 
 import type * as Th from "../These"
+import type { Annotation } from "./annotation"
 import type { AnyError, CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
 import type {
   ApiOf,
@@ -18,11 +19,11 @@ import type {
   SchemaAny
 } from "./schema"
 import {
+  SchemaAnnotated,
   SchemaArbitrary,
   SchemaConstructor,
   SchemaEncoder,
   SchemaGuard,
-  SchemaIdentified,
   SchemaIdentity,
   SchemaLazy,
   SchemaMapApi,
@@ -488,7 +489,7 @@ export function identified_<
     Encoded,
     Api
   >,
-  identifier: symbol,
+  identifier: Annotation<Meta>,
   meta: Meta
 ): Schema<
   ParserInput,
@@ -499,21 +500,21 @@ export function identified_<
   Encoded,
   Api
 > {
-  return new SchemaIdentified(self, identifier, meta)
+  return new SchemaAnnotated(self, identifier, meta)
 }
 
-export function identified<Meta>(
-  identifier: symbol,
+export function annotate<Meta>(
+  annotation: Annotation<Meta>,
   meta: Meta
 ): <
   Self extends SchemaAny & {
-    readonly id: <Meta>(identifier: symbol, meta: Meta) => SchemaAny
+    readonly annotate: <Meta>(annotation: Annotation<Meta>, meta: Meta) => SchemaAny
   }
 >(
   self: Self
-) => ReturnType<Self["id"]> {
+) => ReturnType<Self["annotate"]> {
   // @ts-expect-error
-  return (self) => self.id(identifier, meta)
+  return (self) => self.annotate(annotation, meta)
 }
 
 export function guard_<

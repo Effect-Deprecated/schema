@@ -1,3 +1,4 @@
+import type { Annotation } from "../_schema"
 import * as MO from "../_schema"
 import { named } from "../_schema"
 import * as Arbitrary from "../Arbitrary"
@@ -112,9 +113,9 @@ export function Model<M>(__name?: string) {
       value: Arbitrary.for(schema)
     })
 
-    Object.defineProperty(schemed, "id", {
-      value: <Meta>(identifier: symbol, meta: Meta) =>
-        new MO.SchemaIdentified(schema, identifier, meta)
+    Object.defineProperty(schemed, "annotate", {
+      value: <Meta>(identifier: Annotation<Meta>, meta: Meta) =>
+        new MO.SchemaAnnotated(schema, identifier, meta)
     })
 
     // @ts-expect-error the following is correct

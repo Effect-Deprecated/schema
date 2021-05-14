@@ -1,7 +1,6 @@
 // tracing: off
 
 // codegen:start {preset: barrel, include: ./*.ts}
-export * from "./annotation"
 export * from "./array"
 export * from "./bool"
 export * from "./brand"

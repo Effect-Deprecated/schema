@@ -4,6 +4,7 @@ import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
+import { makeAnnotation } from "../_schema"
 import * as Arbitrary from "../Arbitrary"
 import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
@@ -11,7 +12,7 @@ import * as Parser from "../Parser"
 import * as Th from "../These"
 import { unknownArray } from "./unknownArray"
 
-export const fromChunkIdentifier = Symbol.for("@effect-ts/schema/ids/fromChunk")
+export const fromChunkIdentifier = makeAnnotation<{ self: S.SchemaAny }>()
 
 export function fromChunk<Self extends S.SchemaAny>(
   self: Self
@@ -70,11 +71,11 @@ export function fromChunk<Self extends S.SchemaAny>(
       (_) => Chunk.toArray(Chunk.map_(_, encode)) as readonly S.EncodedOf<Self>[]
     ),
     S.mapApi(() => self.Api as S.ApiOf<Self>),
-    S.identified(fromChunkIdentifier, { self })
+    S.annotate(fromChunkIdentifier, { self })
   )
 }
 
-export const chunkIdentifier = Symbol.for("@effect-ts/schema/ids/chunk")
+export const chunkIdentifier = makeAnnotation<{ self: S.SchemaAny }>()
 
 export function chunk<Self extends S.SchemaUPI>(
   self: Self
@@ -94,6 +95,6 @@ export function chunk<Self extends S.SchemaUPI>(
   return pipe(
     unknownArray[">>>"](fromChunk(self)),
     S.encoder((_) => Chunk.toArray(Chunk.map_(_, encodeSelf))),
-    S.identified(chunkIdentifier, { self })
+    S.annotate(chunkIdentifier, { self })
   )
 }

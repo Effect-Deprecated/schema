@@ -4,9 +4,7 @@ import * as S from "../_schema"
 import * as Th from "../These"
 import { string } from "./string"
 
-export const jsonFromStringIdentifier = Symbol.for(
-  "@effect-ts/schema/ids/jsonFromString"
-)
+export const jsonFromStringIdentifier = S.makeAnnotation<{}>()
 
 export class JsonDecodingE
   extends S.DefaultLeafE<{ readonly actual: string; readonly error: unknown }>
@@ -41,10 +39,10 @@ export const jsonString: S.Schema<
       return Th.fail(S.leafE(new JsonDecodingE({ actual: p, error: err })))
     }
   }),
-  S.identified(jsonFromStringIdentifier, {})
+  S.annotate(jsonFromStringIdentifier, {})
 )
 
-export const jsonIdentifier = Symbol.for("@effect-ts/schema/ids/json")
+export const jsonIdentifier = S.makeAnnotation<{}>()
 
 export const json: S.Schema<
   unknown,
@@ -56,4 +54,4 @@ export const json: S.Schema<
   never,
   string,
   {}
-> = pipe(string[">>>"](jsonString), S.identified(jsonIdentifier, {}))
+> = pipe(string[">>>"](jsonString), S.annotate(jsonIdentifier, {}))

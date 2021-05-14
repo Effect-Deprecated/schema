@@ -75,7 +75,8 @@ export type SchemaUnion<Props extends Record<PropertyKey, S.SchemaUPI>> = Defaul
   UnionApi<Props>
 >
 
-export const unionIdentifier = Symbol.for("@effect-ts/schema/ids/union")
+export const unionIdentifier =
+  S.makeAnnotation<{ props: Record<PropertyKey, S.SchemaUPI> }>()
 
 export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
   props: Props & EnforceNonEmptyRecord<Props>
@@ -264,6 +265,6 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
         } as UnionApi<Props>)
     ),
     withDefaults,
-    S.identified(unionIdentifier, { props })
+    S.annotate(unionIdentifier, { props })
   )
 }

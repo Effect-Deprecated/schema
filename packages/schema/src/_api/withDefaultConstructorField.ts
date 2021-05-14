@@ -10,6 +10,13 @@ export type OptionalKey<ConstructorInput, Key extends keyof ConstructorInput> = 
 > &
   Partial<Pick<ConstructorInput, Key>>
 
+export const withDefaultConstructorFieldIdentifier =
+  S.makeAnnotation<{
+    key: PropertyKey
+    value: Lazy<unknown>
+    self: S.SchemaAny
+  }>()
+
 export function withDefaultConstructorField<
   ConstructorInput,
   Key extends keyof ConstructorInput
@@ -41,7 +48,8 @@ export function withDefaultConstructorField<
       self,
       S.constructor((u: any) =>
         constructSelf(typeof u[key] !== "undefined" ? u : { ...u, [key]: value() })
-      )
+      ),
+      S.annotate(withDefaultConstructorFieldIdentifier, { self, key, value })
     )
   }
 }
