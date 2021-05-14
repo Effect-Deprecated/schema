@@ -21,7 +21,7 @@ export const Person = S.Model<Person>()(
     (): S.Schema<unknown, S.AnyError, Person, Person, never, PersonEncoded, {}> =>
       S.props({
         id: S.prop(S.string),
-        friends: S.prop(S.chunk(S.lazy(() => Person)))
+        friends: S.prop(S.chunk(Person))
       })
   )
 )
