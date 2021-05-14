@@ -19,7 +19,10 @@ export interface UnionApi<Props extends Record<PropertyKey, S.SchemaUPI>>
   extends S.ApiSelfType<unknown> {
   readonly matchS: <A>(
     _: {
-      [K in keyof Props]: (_: S.ParsedShapeOf<Props[K]>) => A
+      [K in keyof Props]: (
+        _: S.ParsedShapeOf<Props[K]>,
+        __: S.ParsedShapeOf<Props[K]>
+      ) => A
     }
   ) => (
     ks: S.GetApiSelfType<
@@ -31,7 +34,10 @@ export interface UnionApi<Props extends Record<PropertyKey, S.SchemaUPI>>
   ) => A
   readonly matchW: <
     M extends {
-      [K in keyof Props]: (_: S.ParsedShapeOf<Props[K]>) => any
+      [K in keyof Props]: (
+        _: S.ParsedShapeOf<Props[K]>,
+        __: S.ParsedShapeOf<Props[K]>
+      ) => any
     }
   >(
     _: M
@@ -241,22 +247,22 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
         ({
           matchS: (matcher) => (ks) => {
             if (O.isSome(tag)) {
-              return matcher[ks[tag.value.key]](ks)
+              return matcher[ks[tag.value.key]](ks, ks)
             }
             for (const k of keys) {
               if (guards[k](ks)) {
-                return matcher[k](ks)
+                return matcher[k](ks, ks)
               }
             }
             throw new Error(`bug: can't find any valid matcher`)
           },
           matchW: (matcher) => (ks) => {
             if (O.isSome(tag)) {
-              return matcher[ks[tag.value.key]](ks)
+              return matcher[ks[tag.value.key]](ks, ks)
             }
             for (const k of keys) {
               if (guards[k](ks)) {
-                return matcher[k](ks)
+                return matcher[k](ks, ks)
               }
             }
             throw new Error(`bug: can't find any valid matcher`)
