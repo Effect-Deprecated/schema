@@ -43,7 +43,7 @@ export const compute = Operation.matchW({
   Add: ({ left, right }): T.UIO<number> =>
     T.suspend(() => T.zipWith_(compute(left), compute(right), (a, b) => a + b)),
   Mul: ({ left, right }): T.UIO<number> =>
-    T.suspend(() => T.zipWith_(compute(left), compute(right), (a, b) => a + b)),
+    T.suspend(() => T.zipWith_(compute(left), compute(right), (a, b) => a * b)),
   Val: ({ value }) => T.succeed(value)
 })
 
@@ -78,6 +78,19 @@ describe("Operation", () => {
       ).toEqual(Ex.succeed("add"))
 
       expect(await T.runPromiseExit(compute(res.value))).toEqual(Ex.succeed(3))
+      expect(
+        await T.runPromiseExit(
+          compute(
+            new Mul({
+              left: new Add({
+                left: new Val({ value: 2 }),
+                right: new Val({ value: 3 })
+              }),
+              right: new Val({ value: 4 })
+            })
+          )
+        )
+      ).toEqual(Ex.succeed(20))
     }
   })
 })
