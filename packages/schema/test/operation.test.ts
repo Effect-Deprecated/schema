@@ -3,7 +3,7 @@ import * as Ex from "@effect-ts/core/Effect/Exit"
 
 import * as S from "../src"
 
-const binary = S.intersectLazy(
+const binaryOp = S.intersectLazy(
   (): S.Standard<{
     readonly left: Operation
     readonly right: Operation
@@ -15,19 +15,15 @@ const binary = S.intersectLazy(
 )
 
 export class Add extends S.Model<Add>()(
-  binary(
-    S.props({
-      _tag: S.prop(S.literal("Add"))
-    })
-  )
+  S.props({
+    _tag: S.prop(S.literal("Add"))
+  })["|>"](binaryOp)
 ) {}
 
 export class Mul extends S.Model<Mul>()(
-  binary(
-    S.props({
-      _tag: S.prop(S.literal("Mul"))
-    })
-  )
+  S.props({
+    _tag: S.prop(S.literal("Mul"))
+  })["|>"](binaryOp)
 ) {}
 
 export class Val extends S.Model<Val>()(
@@ -39,7 +35,7 @@ export class Val extends S.Model<Val>()(
 
 export type Operation = Add | Mul | Val
 
-export const Operation = S.union({ Add, Mul, Val })
+export const Operation = S.union({ Add, Mul, Val })["|>"](S.ensureShape<Operation>())
 
 const parseOperation = Operation.Parser["|>"](S.condemnFail)
 
