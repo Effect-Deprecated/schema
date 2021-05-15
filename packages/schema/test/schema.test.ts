@@ -244,7 +244,7 @@ describe("Intersection", () => {
     b: S.prop(S.string)
   })
   const C = S.props({
-    c: S.prop(S.string)
+    c: S.prop(S.string).opt()
   })
   const fields = A["|>"](S.intersect(B))["|>"](S.intersect(C))
 

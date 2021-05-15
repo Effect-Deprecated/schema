@@ -127,13 +127,27 @@ export type AnyProperty = Property<any, any, any, any>
 
 export type PropertyRecord = Record<PropertyKey, AnyProperty>
 
-export type ShapeFromProperties<
-  Props extends PropertyRecord,
-  Excluded extends keyof Props = never
-> = Compute<
+export type ShapeFromProperties<Props extends PropertyRecord> = Compute<
   UnionToIntersection<
     {
-      [k in keyof Props]: k extends Excluded
+      [k in keyof Props]: Props[k] extends AnyProperty
+        ? Props[k]["_optional"] extends "optional"
+          ? {
+              readonly [h in k]?: S.ParsedShapeOf<Props[k]["_schema"]>
+            }
+          : {
+              readonly [h in k]: S.ParsedShapeOf<Props[k]["_schema"]>
+            }
+        : never
+    }[keyof Props]
+  >,
+  "flat"
+>
+
+export type ConstructorFromProperties<Props extends PropertyRecord> = Compute<
+  UnionToIntersection<
+    {
+      [k in keyof Props]: k extends TagsFromProps<Props>
         ? never
         : Props[k] extends AnyProperty
         ? Props[k]["_optional"] extends "optional"
@@ -268,28 +282,54 @@ export type SchemaProperties<Props extends PropertyRecord> = DefaultSchema<
   unknown,
   ParserErrorFromProperties<Props>,
   ShapeFromProperties<Props>,
-  ShapeFromProperties<Props, keyof TagsFromProps<Props>>,
+  ConstructorFromProperties<Props>,
   never,
   EncodedFromProperties<Props>,
-  {
-    props: Props
-    fields: TagsFromProps<Props>
-  }
+  { props: Props }
 >
 
-export type TagsFromProps<Props extends PropertyRecord> = UnionToIntersection<
-  {
-    [k in keyof Props]: Props[k]["_as"] extends O.None
-      ? Props[k]["_optional"] extends "required"
-        ? S.ApiOf<Props[k]["_schema"]> extends LiteralApi<infer KS>
-          ? KS extends [infer X]
-            ? { [h in k]: { value: X } }
-            : never
+export type TagsFromProps<Props extends PropertyRecord> = {
+  [k in keyof Props]: Props[k]["_as"] extends O.None
+    ? Props[k]["_optional"] extends "required"
+      ? S.ApiOf<Props[k]["_schema"]> extends LiteralApi<infer KS>
+        ? KS extends [string]
+          ? k
           : never
         : never
       : never
-  }[keyof Props]
->
+    : never
+}[keyof Props]
+
+export function isPropertyRecord(u: unknown): u is PropertyRecord {
+  return (
+    typeof u === "object" &&
+    u !== null &&
+    Object.keys(u).every((k) => u[k] instanceof Property)
+  )
+}
+
+export function tagsFromProps<Props extends PropertyRecord>(
+  props: Props
+): Record<string, string> {
+  const keys = Object.keys(props)
+  const tags = {}
+  for (const key of keys) {
+    const s: S.SchemaUPI = props[key]._schema
+
+    if (
+      O.isNone(props[key]._as) &&
+      O.isNone(props[key]._def) &&
+      props[key]._optional === "required" &&
+      "literals" in s.Api &&
+      Array.isArray(s.Api["literals"]) &&
+      s.Api["literals"].length === 1 &&
+      typeof s.Api["literals"][0] === "string"
+    ) {
+      tags[key] = s.Api["literals"][0]
+    }
+  }
+  return tags
+}
 
 export function props<Props extends PropertyRecord>(
   props: Props
@@ -297,8 +337,6 @@ export function props<Props extends PropertyRecord>(
   const parsers = {} as Record<string, Parser.Parser<unknown, unknown, unknown>>
   const encoders = {}
   const guards = {}
-  const fields = {} as TagsFromProps<Props>
-  const tags = {}
   const arbitrariesReq = {} as Record<string, Arbitrary.Gen<unknown>>
   const arbitrariesPar = {} as Record<string, Arbitrary.Gen<unknown>>
   const keys = Object.keys(props)
@@ -328,18 +366,6 @@ export function props<Props extends PropertyRecord>(
       arbitrariesReq[key] = Arbitrary.for(props[key]._schema)
     } else {
       arbitrariesPar[key] = Arbitrary.for(props[key]._schema)
-    }
-
-    const s: S.SchemaUPI = props[key]._schema
-
-    if (
-      "literals" in s.Api &&
-      Array.isArray(s.Api["literals"]) &&
-      s.Api["literals"].length === 1 &&
-      typeof s.Api["literals"][0] === "string"
-    ) {
-      fields[key] = { value: s.Api["literals"][0] }
-      tags[key] = s.Api["literals"][0]
     }
   }
 
@@ -481,6 +507,8 @@ export function props<Props extends PropertyRecord>(
     )
   }
 
+  const tags = tagsFromProps(props)
+
   return pipe(
     S.identity(guard),
     S.parser(parser),
@@ -498,7 +526,7 @@ export function props<Props extends PropertyRecord>(
       }
       return Th.succeed(res)
     }),
-    S.mapApi(() => ({ props, fields })),
+    S.mapApi(() => ({ props })),
     withDefaults,
     S.annotate(propertiesIdentifier, { props })
   )

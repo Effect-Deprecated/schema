@@ -12,10 +12,11 @@ import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
+import { isPropertyRecord, tagsFromProps } from "./properties"
 import type { DefaultSchema } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
 
-interface MatchS<Props extends Record<PropertyKey, S.SchemaUPI>, AS> {
+export interface MatchS<Props extends Record<PropertyKey, S.SchemaUPI>, AS> {
   <
     M extends {
       [K in keyof Props]?: (
@@ -143,7 +144,15 @@ export type SchemaUnion<Props extends Record<PropertyKey, S.SchemaUPI>> = Defaul
 >
 
 export const unionIdentifier =
-  S.makeAnnotation<{ props: Record<PropertyKey, S.SchemaUPI> }>()
+  S.makeAnnotation<{
+    props: Record<PropertyKey, S.SchemaUPI>
+    tag: O.Option<{
+      key: string
+      index: D.Dictionary<string>
+      reverse: D.Dictionary<string>
+      values: readonly string[]
+    }>
+  }>()
 
 export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
   props: Props & EnforceNonEmptyRecord<Props>
@@ -157,44 +166,42 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
 
   const entries = D.collect_(props, (k, v) => [k, v] as const)
 
-  const head = entries[0]![1]
+  const entriesTags = entries.map(
+    ([k, s]) =>
+      [
+        k,
+        "props" in s.Api && isPropertyRecord(s.Api["props"])
+          ? tagsFromProps(s.Api["props"])
+          : {}
+      ] as const
+  )
+
+  const firstMemberTags = entriesTags[0]![1]
 
   const tag: O.Option<{
     key: string
     index: D.Dictionary<string>
     reverse: D.Dictionary<string>
     values: readonly string[]
-  }> =
-    "fields" in head.Api
-      ? A.findFirstMap_(Object.keys(head.Api["fields"]), (key) => {
-          const prop = head.Api["fields"][key]
+  }> = A.findFirstMap_(Object.keys(firstMemberTags), (tagField) => {
+    const tags = A.filterMap_(entriesTags, ([member, tags]) => {
+      if (tagField in tags) {
+        return O.some(tuple(tags[tagField], member))
+      }
+      return O.none
+    })["|>"](A.uniq({ equals: (x, y) => x.get(0) === y.get(0) }))
 
-          if ("value" in prop && typeof prop["value"] === "string") {
-            const tags = A.filterMap_(entries, ([k, s]) => {
-              if (
-                "fields" in s.Api &&
-                key in s.Api["fields"] &&
-                "value" in s.Api["fields"][key] &&
-                typeof s.Api["fields"][key]["value"] === "string"
-              ) {
-                return O.some(tuple(s.Api["fields"][key]["value"], k))
-              }
-              return O.none
-            })["|>"](A.uniq({ equals: (x, y) => x.get(0) === y.get(0) }))
+    if (tags.length === entries.length) {
+      return O.some({
+        key: tagField,
+        index: D.fromArray(tags),
+        reverse: D.fromArray(tags.map(({ tuple: [a, b] }) => tuple(b, a))),
+        values: tags.map((_) => _.get(0))
+      })
+    }
 
-            if (tags.length === entries.length) {
-              return O.some({
-                key,
-                index: D.fromArray(tags),
-                reverse: D.fromArray(tags.map(({ tuple: [a, b] }) => tuple(b, a))),
-                values: tags.map((_) => _.get(0))
-              })
-            }
-          }
-
-          return O.none
-        })
-      : O.none
+    return O.none
+  })
 
   function guard(u: unknown): u is {
     [k in keyof Props]: S.ParsedShapeOf<Props[k]>
@@ -334,6 +341,6 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
         } as UnionApi<Props>)
     ),
     withDefaults,
-    S.annotate(unionIdentifier, { props })
+    S.annotate(unionIdentifier, { props, tag })
   )
 }
