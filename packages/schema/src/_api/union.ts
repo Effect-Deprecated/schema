@@ -142,8 +142,15 @@ export type SchemaUnion<Props extends Record<PropertyKey, S.SchemaUPI>> = Defaul
   UnionApi<Props>
 >
 
+type Tag = {
+  key: string
+  index: D.Dictionary<string>
+  reverse: D.Dictionary<string>
+  values: readonly string[]
+}
+
 export const unionIdentifier =
-  S.makeAnnotation<{ props: Record<PropertyKey, S.SchemaUPI> }>()
+  S.makeAnnotation<{ props: Record<PropertyKey, S.SchemaUPI>; tag: O.Option<Tag> }>()
 
 export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
   props: Props & EnforceNonEmptyRecord<Props>
@@ -159,12 +166,7 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
 
   const head = entries[0]![1]
 
-  const tag: O.Option<{
-    key: string
-    index: D.Dictionary<string>
-    reverse: D.Dictionary<string>
-    values: readonly string[]
-  }> =
+  const tag: O.Option<Tag> =
     "fields" in head.Api
       ? A.findFirstMap_(Object.keys(head.Api["fields"]), (key) => {
           const prop = head.Api["fields"][key]
@@ -334,6 +336,6 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
         } as UnionApi<Props>)
     ),
     withDefaults,
-    S.annotate(unionIdentifier, { props })
+    S.annotate(unionIdentifier, { props, tag })
   )
 }
