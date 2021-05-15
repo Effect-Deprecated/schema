@@ -220,7 +220,7 @@ export function intersect<
   ThatParsedShape extends Record<string, any>,
   ThatConstructorInput,
   ThatConstructorError extends S.SchemaError<any>,
-  ThatEncoded extends Record<string, any>,
+  ThatEncoded,
   ThatApi
 >(
   that: S.Schema<
@@ -261,4 +261,56 @@ export function intersect<
   {}
 > {
   return (self) => intersect_(self, that)
+}
+
+export function intersectLazy<
+  ThatParserError extends S.SchemaError<any>,
+  ThatParsedShape extends Record<string, any>,
+  ThatConstructorInput,
+  ThatConstructorError extends S.SchemaError<any>,
+  ThatEncoded,
+  ThatApi
+>(
+  that: () => S.Schema<
+    unknown,
+    ThatParserError,
+    ThatParsedShape,
+    ThatConstructorInput,
+    ThatConstructorError,
+    ThatEncoded,
+    ThatApi
+  >
+): <
+  SelfParserError extends S.SchemaError<any>,
+  SelfParsedShape extends Record<string, any>,
+  SelfConstructorInput,
+  SelfConstructorError extends S.SchemaError<any>,
+  SelfEncoded extends Record<string, any>,
+  SelfApi
+>(
+  self: S.Schema<
+    unknown,
+    SelfParserError,
+    SelfParsedShape,
+    SelfConstructorInput,
+    SelfConstructorError,
+    SelfEncoded,
+    SelfApi
+  >
+) => S.Schema<
+  unknown,
+  S.IntersectionE<S.MemberE<0, SelfParserError> | S.MemberE<1, ThatParserError>>,
+  SelfParsedShape & ThatParsedShape,
+  SelfConstructorInput & ThatConstructorInput,
+  S.IntersectionE<
+    S.MemberE<0, SelfConstructorError> | S.MemberE<1, ThatConstructorError>
+  >,
+  SelfEncoded & ThatEncoded,
+  SelfApi
+> {
+  return (self) =>
+    pipe(
+      intersect_(self, S.lazy(that)),
+      S.mapApi(() => self.Api)
+    )
 }
