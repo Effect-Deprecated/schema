@@ -11,6 +11,8 @@ import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export type IntersectionApi<Self, That> = Self & That extends { props: infer X }
   ? { props: { [k in keyof X]: X[k] } }
@@ -20,7 +22,7 @@ export type IntersectionSchema<
   Self extends S.Schema<unknown, any, any, any, any, any, any>,
   That extends S.Schema<unknown, any, any, any, any, any, any>,
   Api
-> = S.Schema<
+> = DefaultSchema<
   unknown,
   S.IntersectionE<
     S.MemberE<0, S.ParserErrorOf<Self>> | S.MemberE<1, S.ParserErrorOf<That>>
@@ -198,6 +200,7 @@ export function intersect_<
       }
       return {} as IntersectionApi<S.ApiOf<Self>, S.ApiOf<That>>
     }),
+    withDefaults,
     S.annotate(intersectIdentifier, { self, that })
   )
 }
@@ -212,14 +215,13 @@ export function intersect<That extends S.Schema<unknown, any, any, any, any, any
 
 export function intersectLazy<
   That extends S.Schema<unknown, any, any, any, any, any, any>
->(
-  that: () => That
-): <Self extends S.Schema<unknown, any, any, any, any, any, any>>(
-  self: Self
-) => IntersectionSchema<Self, That, S.ApiOf<Self>> {
-  return (self) =>
+>(that: () => That) {
+  return <Self extends S.Schema<unknown, any, any, any, any, any, any>>(
+    self: Self
+  ): IntersectionSchema<Self, That, S.ApiOf<Self>> =>
     pipe(
       intersect_(self, S.lazy(that)),
-      S.mapApi(() => self.Api)
+      S.mapApi(() => self.Api as S.ApiOf<Self>),
+      withDefaults
     )
 }

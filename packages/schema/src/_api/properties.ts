@@ -531,3 +531,51 @@ export function props<Props extends PropertyRecord>(
     S.annotate(propertiesIdentifier, { props })
   )
 }
+
+export function propsPick<Props extends PropertyRecord, KS extends (keyof Props)[]>(
+  ...ks: KS
+) {
+  return (
+    self: Props
+  ): Compute<
+    UnionToIntersection<
+      {
+        [k in keyof Props]: k extends KS[number] ? { [h in k]: Props[h] } : never
+      }[keyof Props]
+    >,
+    "flat"
+  > => {
+    const newProps = {}
+    for (const k of Object.keys(self)) {
+      if (!ks.includes(k)) {
+        newProps[k] = self[k]
+      }
+    }
+    // @ts-expect-error
+    return newProps
+  }
+}
+
+export function propsOmit<Props extends PropertyRecord, KS extends (keyof Props)[]>(
+  ...ks: KS
+) {
+  return (
+    self: Props
+  ): Compute<
+    UnionToIntersection<
+      {
+        [k in keyof Props]: k extends KS[number] ? never : { [h in k]: Props[h] }
+      }[keyof Props]
+    >,
+    "flat"
+  > => {
+    const newProps = {}
+    for (const k of Object.keys(self)) {
+      if (ks.includes(k)) {
+        newProps[k] = self[k]
+      }
+    }
+    // @ts-expect-error
+    return newProps
+  }
+}
