@@ -19,8 +19,8 @@ export type IntersectionApi<Self, That> = Self & That extends { props: infer X }
   : {}
 
 export type IntersectionSchema<
-  Self extends S.Schema<unknown, any, any, any, any, any, any>,
-  That extends S.Schema<unknown, any, any, any, any, any, any>,
+  Self extends S.SchemaUPI,
+  That extends S.SchemaUPI,
   Api
 > = DefaultSchema<
   unknown,
@@ -39,10 +39,7 @@ export type IntersectionSchema<
 export const intersectIdentifier =
   S.makeAnnotation<{ self: S.SchemaUPI; that: S.SchemaUPI }>()
 
-export function intersect_<
-  Self extends S.Schema<unknown, any, any, any, any, any, any>,
-  That extends S.Schema<unknown, any, any, any, any, any, any>
->(
+export function intersect_<Self extends S.SchemaUPI, That extends S.SchemaUPI>(
   self: Self,
   that: That
 ): IntersectionSchema<Self, That, IntersectionApi<S.ApiOf<Self>, S.ApiOf<That>>> {
@@ -205,18 +202,16 @@ export function intersect_<
   )
 }
 
-export function intersect<That extends S.Schema<unknown, any, any, any, any, any, any>>(
+export function intersect<That extends S.SchemaUPI>(
   that: That
-): <Self extends S.Schema<unknown, any, any, any, any, any, any>>(
+): <Self extends S.SchemaUPI>(
   self: Self
 ) => IntersectionSchema<Self, That, IntersectionApi<S.ApiOf<Self>, S.ApiOf<That>>> {
   return (self) => intersect_(self, that)
 }
 
-export function intersectLazy<
-  That extends S.Schema<unknown, any, any, any, any, any, any>
->(that: () => That) {
-  return <Self extends S.Schema<unknown, any, any, any, any, any, any>>(
+export function intersectLazy<That extends S.SchemaUPI>(that: () => That) {
+  return <Self extends S.SchemaUPI>(
     self: Self
   ): IntersectionSchema<Self, That, S.ApiOf<Self>> =>
     pipe(
