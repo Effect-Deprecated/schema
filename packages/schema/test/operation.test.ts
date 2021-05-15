@@ -57,5 +57,17 @@ describe("Operation", () => {
         right: { _tag: "Val", value: 0 }
       })
     )
+
+    if (res._tag === "Success") {
+      expect(
+        await T.runPromiseExit(
+          Operation.matchW({
+            Add: () => T.succeed("add"),
+            Mul: () => T.succeed("mul"),
+            Val: () => T.succeed("val")
+          })(res.value)
+        )
+      ).toEqual(Ex.succeed("add"))
+    }
   })
 })
