@@ -14,24 +14,32 @@ const binaryOp = S.intersectLazy(
     })
 )
 
+type BinaryOp = (left: Operation, right: Operation) => Operation
+
 export class Add extends S.Model<Add>()(
   S.props({
     _tag: S.prop(S.literal("Add"))
   })["|>"](binaryOp)
-) {}
+) {
+  static of: BinaryOp = (left, right) => new Add({ left, right })
+}
 
 export class Mul extends S.Model<Mul>()(
   S.props({
     _tag: S.prop(S.literal("Mul"))
   })["|>"](binaryOp)
-) {}
+) {
+  static of: BinaryOp = (left, right) => new Mul({ left, right })
+}
 
 export class Val extends S.Model<Val>()(
   S.props({
     _tag: S.prop(S.literal("Val")),
     value: S.prop(S.number)
   })
-) {}
+) {
+  static of = (value: number): Operation => new Val({ value })
+}
 
 export type Operation = Add | Mul | Val
 
@@ -79,17 +87,7 @@ describe("Operation", () => {
 
       expect(await T.runPromiseExit(compute(res.value))).toEqual(Ex.succeed(3))
       expect(
-        await T.runPromiseExit(
-          compute(
-            new Mul({
-              left: new Add({
-                left: new Val({ value: 2 }),
-                right: new Val({ value: 3 })
-              }),
-              right: new Val({ value: 4 })
-            })
-          )
-        )
+        await T.runPromiseExit(compute(Mul.of(Add.of(Val.of(2), Val.of(3)), Val.of(4))))
       ).toEqual(Ex.succeed(20))
     }
   })
