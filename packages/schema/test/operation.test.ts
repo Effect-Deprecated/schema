@@ -3,31 +3,26 @@ import * as Ex from "@effect-ts/core/Effect/Exit"
 
 import * as S from "../src"
 
-const binaryOp = S.intersectLazy(
-  (): S.Standard<{
-    readonly left: Operation
-    readonly right: Operation
-  }> =>
-    S.props({
-      left: S.prop(Operation),
-      right: S.prop(Operation)
-    })
-)
-
 type BinaryOp = (left: Operation, right: Operation) => Operation
+
+const lazyOperation = S.lazy((): S.Standard<Operation> => Operation)
 
 export class Add extends S.Model<Add>()(
   S.props({
-    _tag: S.prop(S.literal("Add"))
-  })["|>"](binaryOp)
+    _tag: S.prop(S.literal("Add")),
+    left: S.prop(lazyOperation),
+    right: S.prop(lazyOperation)
+  })
 ) {
   static of: BinaryOp = (left, right) => new Add({ left, right })
 }
 
 export class Mul extends S.Model<Mul>()(
   S.props({
-    _tag: S.prop(S.literal("Mul"))
-  })["|>"](binaryOp)
+    _tag: S.prop(S.literal("Mul")),
+    left: S.prop(lazyOperation),
+    right: S.prop(lazyOperation)
+  })
 ) {
   static of: BinaryOp = (left, right) => new Mul({ left, right })
 }
