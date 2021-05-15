@@ -35,7 +35,9 @@ export class Val extends S.Model<Val>()(
 
 export type Operation = Add | Mul | Val
 
-export const Operation = S.union({ Add, Mul, Val })["|>"](S.ensureShape<Operation>())
+export const Operation = S.union({ Add, Mul, Val })
+  ["|>"](S.ensureShape<Operation>())
+  ["|>"](S.brand<Operation>())
 
 const parseOperation = Operation.Parser["|>"](S.condemnFail)
 
