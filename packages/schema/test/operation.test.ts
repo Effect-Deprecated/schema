@@ -39,6 +39,14 @@ export const Operation = S.union({ Add, Mul, Val })
   ["|>"](S.ensureShape<Operation>())
   ["|>"](S.brand<Operation>())
 
+export const compute = Operation.matchW({
+  Add: ({ left, right }): T.UIO<number> =>
+    T.suspend(() => T.zipWith_(compute(left), compute(right), (a, b) => a + b)),
+  Mul: ({ left, right }): T.UIO<number> =>
+    T.suspend(() => T.zipWith_(compute(left), compute(right), (a, b) => a + b)),
+  Val: ({ value }) => T.succeed(value)
+})
+
 const parseOperation = Operation.Parser["|>"](S.condemnFail)
 
 describe("Operation", () => {
@@ -46,15 +54,15 @@ describe("Operation", () => {
     const res = await T.runPromiseExit(
       parseOperation({
         _tag: "Add",
-        left: { _tag: "Val", value: 0 },
-        right: { _tag: "Val", value: 0 }
+        left: { _tag: "Val", value: 1 },
+        right: { _tag: "Val", value: 2 }
       })
     )
     expect(res).toEqual(
       Ex.succeed({
         _tag: "Add",
-        left: { _tag: "Val", value: 0 },
-        right: { _tag: "Val", value: 0 }
+        left: { _tag: "Val", value: 1 },
+        right: { _tag: "Val", value: 2 }
       })
     )
 
@@ -68,6 +76,8 @@ describe("Operation", () => {
           })(res.value)
         )
       ).toEqual(Ex.succeed("add"))
+
+      expect(await T.runPromiseExit(compute(res.value))).toEqual(Ex.succeed(3))
     }
   })
 })
