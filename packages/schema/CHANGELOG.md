@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.7.0...@effect-ts/schema@0.7.1) (2021-05-15)
+
+
+### Features
+
+* **schema:** fix model params ([16d3508](https://github.com/Effect-TS/schema/commit/16d3508bf2245f7ba5fda2389ad4566e10ca1aa8))
+* **schema:** restrict error types, use default ([015d5f2](https://github.com/Effect-TS/schema/commit/015d5f200c18c42d1b4071513c08e77de7606453))
+
+
+
+
+
 # [0.7.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.6.3...@effect-ts/schema@0.7.0) (2021-05-15)
 
 
