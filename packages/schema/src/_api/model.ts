@@ -73,9 +73,7 @@ export interface Model<M, Self extends MO.SchemaAny>
  * @inject genericName
  */
 export function Model<M>(__name?: string) {
-  return <Self extends MO.Schema<any, any, any, any, MO.AnyError, any, any>>(
-    self: Self
-  ): Model<M, Self> => {
+  return <Self extends MO.SchemaAny>(self: Self): Model<M, Self> => {
     const schemed = S.Schemed(named(__name ?? "Model(Anonymous)")(self))
     const schema = S.schema(schemed)
 
