@@ -4,10 +4,12 @@ import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
 import * as Th from "../These"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export const dateIdentifier = S.makeAnnotation<{}>()
 
-export const date: S.Schema<
+export const date: DefaultSchema<
   unknown,
   S.LeafE<S.ParseDateE>,
   Date,
@@ -30,18 +32,29 @@ export const date: S.Schema<
   S.arbitrary((_) => _.date()),
   S.encoder((_) => _.toISOString()),
   S.mapApi((_) => ({})),
+  withDefaults,
   S.annotate(dateIdentifier, {})
 )
 
 export const dateMsIdentifier = S.makeAnnotation<{}>()
 
-export const dateMs: S.Schema<unknown, S.ParseDateMsE, Date, Date, never, number, {}> =
-  pipe(
-    date,
-    S.parser((u) =>
-      typeof u === "number" ? Th.succeed(new Date(u)) : Th.fail(S.parseDateMsE(u))
-    ),
-    S.encoder((_) => _.getTime()),
-    S.mapApi((_) => ({})),
-    S.annotate(dateMsIdentifier, {})
-  )
+export const dateMs: DefaultSchema<
+  unknown,
+  S.LeafE<S.ParseDateMsE>,
+  Date,
+  Date,
+  never,
+  number,
+  {}
+> = pipe(
+  date,
+  S.parser((u) =>
+    typeof u === "number"
+      ? Th.succeed(new Date(u))
+      : Th.fail(S.leafE(S.parseDateMsE(u)))
+  ),
+  S.encoder((_) => _.getTime()),
+  S.mapApi((_) => ({})),
+  withDefaults,
+  S.annotate(dateMsIdentifier, {})
+)

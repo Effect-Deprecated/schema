@@ -11,6 +11,7 @@ import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
+import { lazy } from "./lazy"
 import type { DefaultSchema } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
 
@@ -39,10 +40,47 @@ export type IntersectionSchema<
 export const intersectIdentifier =
   S.makeAnnotation<{ self: S.SchemaUPI; that: S.SchemaUPI }>()
 
-export function intersect_<Self extends S.SchemaUPI, That extends S.SchemaUPI>(
-  self: Self,
-  that: That
-): IntersectionSchema<Self, That, IntersectionApi<S.ApiOf<Self>, S.ApiOf<That>>> {
+export function intersect_<
+  ParserError extends S.AnyError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError extends S.AnyError,
+  Encoded,
+  Api,
+  ThatParserError extends S.AnyError,
+  ThatParsedShape,
+  ThatConstructorInput,
+  ThatConstructorError extends S.AnyError,
+  ThatEncoded,
+  ThatApi
+>(
+  self: S.Schema<
+    unknown,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    Encoded,
+    Api
+  >,
+  that: S.Schema<
+    unknown,
+    ThatParserError,
+    ThatParsedShape,
+    ThatConstructorInput,
+    ThatConstructorError,
+    ThatEncoded,
+    ThatApi
+  >
+): DefaultSchema<
+  unknown,
+  S.IntersectionE<S.MemberE<0, ParserError> | S.MemberE<1, ThatParserError>>,
+  ParsedShape & ThatParsedShape,
+  ConstructorInput & ThatConstructorInput,
+  S.IntersectionE<S.MemberE<0, ConstructorError> | S.MemberE<1, ThatConstructorError>>,
+  Encoded & ThatEncoded,
+  IntersectionApi<Api, ThatApi>
+> {
   const guardSelf = Guard.for(self)
   const guardThat = Guard.for(that)
   const parseSelf = Parser.for(self)
@@ -54,11 +92,8 @@ export function intersect_<Self extends S.SchemaUPI, That extends S.SchemaUPI>(
   const arbSelf = Arbitrary.for(self)
   const arbThat = Arbitrary.for(that)
 
-  const guard = (
-    u: unknown
-  ): u is S.ParsedShapeOf<
-    IntersectionSchema<Self, That, IntersectionApi<S.ApiOf<Self>, S.ApiOf<That>>>
-  > => guardSelf(u) && guardThat(u)
+  const guard = (u: unknown): u is ParsedShape & ThatParsedShape =>
+    guardSelf(u) && guardThat(u)
 
   return pipe(
     S.identity(guard),
@@ -67,37 +102,37 @@ export function intersect_<Self extends S.SchemaUPI, That extends S.SchemaUPI>(
       const right = Th.result(parseThat(u))
 
       let errors =
-        Chunk.empty<
-          S.MemberE<0, S.ParserErrorOf<Self>> | S.MemberE<1, S.ParserErrorOf<That>>
-        >()
+        Chunk.empty<S.MemberE<0, ParserError> | S.MemberE<1, ThatParserError>>()
 
       let errored = false
       let warned = false
 
-      const intersection = {} as unknown as S.ParsedShapeOf<Self> &
-        S.ParsedShapeOf<That>
+      const intersection = {} as unknown as ParsedShape & ThatParsedShape
 
       if (left._tag === "Left") {
-        errors = Chunk.append_(errors, S.memberE(0, left.left))
+        errors = Chunk.append_(errors, S.memberE(0, left.left as ParserError))
 
         errored = true
       } else {
         const warnings = left.right.get(1)
         if (warnings._tag === "Some") {
-          errors = Chunk.append_(errors, S.memberE(0, warnings.value))
+          errors = Chunk.append_(errors, S.memberE(0, warnings.value as ParserError))
 
           warned = true
         }
         Object.assign(intersection, left.right.get(0))
       }
       if (right._tag === "Left") {
-        errors = Chunk.append_(errors, S.memberE(1, right.left))
+        errors = Chunk.append_(errors, S.memberE(1, right.left as ThatParserError))
 
         errored = true
       } else {
         const warnings = right.right.get(1)
         if (warnings._tag === "Some") {
-          errors = Chunk.append_(errors, S.memberE(1, warnings.value))
+          errors = Chunk.append_(
+            errors,
+            S.memberE(1, warnings.value as ThatParserError)
+          )
 
           warned = true
         }
@@ -108,7 +143,7 @@ export function intersect_<Self extends S.SchemaUPI, That extends S.SchemaUPI>(
         return Th.fail(S.intersectionE(errors))
       }
 
-      augmentRecord(intersection)
+      augmentRecord(intersection as {})
 
       if (warned) {
         return Th.warn(intersection, S.intersectionE(errors))
@@ -116,43 +151,47 @@ export function intersect_<Self extends S.SchemaUPI, That extends S.SchemaUPI>(
 
       return Th.succeed(intersection)
     }),
-    S.constructor((u: S.ConstructorInputOf<Self> & S.ConstructorInputOf<That>) => {
+    S.constructor((u: ConstructorInput & ThatConstructorInput) => {
       const left = Th.result(constructSelf(u))
       const right = Th.result(constructThat(u))
 
       let errors =
         Chunk.empty<
-          | S.MemberE<0, S.ConstructorErrorOf<Self>>
-          | S.MemberE<1, S.ConstructorErrorOf<That>>
+          S.MemberE<0, ConstructorError> | S.MemberE<1, ThatConstructorError>
         >()
 
       let errored = false
       let warned = false
 
-      const intersection = {} as unknown as S.ParsedShapeOf<Self> &
-        S.ParsedShapeOf<That>
+      const intersection = {} as unknown as ParsedShape & ThatParsedShape
 
       if (left._tag === "Left") {
-        errors = Chunk.append_(errors, S.memberE(0, left.left))
+        errors = Chunk.append_(errors, S.memberE(0, left.left as ConstructorError))
 
         errored = true
       } else {
         const warnings = left.right.get(1)
         if (warnings._tag === "Some") {
-          errors = Chunk.append_(errors, S.memberE(0, warnings.value))
+          errors = Chunk.append_(
+            errors,
+            S.memberE(0, warnings.value as ConstructorError)
+          )
 
           warned = true
         }
         Object.assign(intersection, left.right.get(0))
       }
       if (right._tag === "Left") {
-        errors = Chunk.append_(errors, S.memberE(1, right.left))
+        errors = Chunk.append_(errors, S.memberE(1, right.left as ThatConstructorError))
 
         errored = true
       } else {
         const warnings = right.right.get(1)
         if (warnings._tag === "Some") {
-          errors = Chunk.append_(errors, S.memberE(1, warnings.value))
+          errors = Chunk.append_(
+            errors,
+            S.memberE(1, warnings.value as ThatConstructorError)
+          )
 
           warned = true
         }
@@ -163,7 +202,7 @@ export function intersect_<Self extends S.SchemaUPI, That extends S.SchemaUPI>(
         return Th.fail(S.intersectionE(errors))
       }
 
-      augmentRecord(intersection)
+      augmentRecord(intersection as {})
 
       if (warned) {
         return Th.warn(intersection, S.intersectionE(errors))
@@ -171,7 +210,7 @@ export function intersect_<Self extends S.SchemaUPI, That extends S.SchemaUPI>(
 
       return Th.succeed(intersection)
     }),
-    S.encoder((_): S.EncodedOf<Self> & S.EncodedOf<That> => ({
+    S.encoder((_): Encoded & ThatEncoded => ({
       ...encodeSelf(_),
       ...encodeThat(_)
     })),
@@ -193,30 +232,111 @@ export function intersect_<Self extends S.SchemaUPI, That extends S.SchemaUPI>(
         }
       }
       if (Object.keys(props).length > 0) {
-        return { props } as IntersectionApi<S.ApiOf<Self>, S.ApiOf<That>>
+        return { props } as IntersectionApi<Api, ThatApi>
       }
-      return {} as IntersectionApi<S.ApiOf<Self>, S.ApiOf<That>>
+      return {} as IntersectionApi<Api, ThatApi>
     }),
     withDefaults,
     S.annotate(intersectIdentifier, { self, that })
   )
 }
 
-export function intersect<That extends S.SchemaUPI>(
-  that: That
-): <Self extends S.SchemaUPI>(
-  self: Self
-) => IntersectionSchema<Self, That, IntersectionApi<S.ApiOf<Self>, S.ApiOf<That>>> {
+export function intersect<
+  ThatParserError extends S.AnyError,
+  ThatParsedShape,
+  ThatConstructorInput,
+  ThatConstructorError extends S.AnyError,
+  ThatEncoded,
+  ThatApi
+>(
+  that: S.Schema<
+    unknown,
+    ThatParserError,
+    ThatParsedShape,
+    ThatConstructorInput,
+    ThatConstructorError,
+    ThatEncoded,
+    ThatApi
+  >
+): <
+  ParserError extends S.AnyError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError extends S.AnyError,
+  Encoded,
+  Api
+>(
+  self: S.Schema<
+    unknown,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    Encoded,
+    Api
+  >
+) => DefaultSchema<
+  unknown,
+  S.IntersectionE<S.MemberE<0, ParserError> | S.MemberE<1, ThatParserError>>,
+  ParsedShape & ThatParsedShape,
+  ConstructorInput & ThatConstructorInput,
+  S.IntersectionE<S.MemberE<0, ConstructorError> | S.MemberE<1, ThatConstructorError>>,
+  Encoded & ThatEncoded,
+  IntersectionApi<Api, ThatApi>
+> {
   return (self) => intersect_(self, that)
 }
 
-export function intersectLazy<That extends S.SchemaUPI>(that: () => That) {
-  return <Self extends S.SchemaUPI>(
-    self: Self
-  ): IntersectionSchema<Self, That, S.ApiOf<Self>> =>
-    pipe(
-      intersect_(self, S.lazy(that)),
-      S.mapApi(() => self.Api as S.ApiOf<Self>),
+export function intersectLazy<
+  ThatParserError extends S.AnyError,
+  ThatParsedShape,
+  ThatConstructorInput,
+  ThatConstructorError extends S.AnyError,
+  ThatEncoded,
+  ThatApi
+>(
+  that: () => S.Schema<
+    unknown,
+    ThatParserError,
+    ThatParsedShape,
+    ThatConstructorInput,
+    ThatConstructorError,
+    ThatEncoded,
+    ThatApi
+  >
+) {
+  return <
+    ParserError extends S.AnyError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError extends S.AnyError,
+    Encoded,
+    Api
+  >(
+    self: S.Schema<
+      unknown,
+      ParserError,
+      ParsedShape,
+      ConstructorInput,
+      ConstructorError,
+      Encoded,
+      Api
+    >
+  ): DefaultSchema<
+    unknown,
+    S.IntersectionE<S.MemberE<0, ParserError> | S.MemberE<1, ThatParserError>>,
+    ParsedShape & ThatParsedShape,
+    ConstructorInput & ThatConstructorInput,
+    S.IntersectionE<
+      S.MemberE<0, ConstructorError> | S.MemberE<1, ThatConstructorError>
+    >,
+    Encoded & ThatEncoded,
+    Api
+  > => {
+    return pipe(
+      intersect_(self, lazy(that)),
+      S.mapApi(() => self.Api),
       withDefaults
     )
+  }
 }

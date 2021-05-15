@@ -5,10 +5,12 @@ import { pipe } from "@effect-ts/core/Function"
 import * as S from "../_schema"
 import * as Th from "../These"
 import { refinement } from "./refinement"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export const stringIdentifier = S.makeAnnotation<{}>()
 
-export const string: S.Schema<
+export const string: DefaultSchema<
   unknown,
   S.RefinementE<S.LeafE<S.ParseStringE>>,
   string,
@@ -25,15 +27,24 @@ export const string: S.Schema<
   S.arbitrary((_) => _.string()),
   S.encoder((s) => s),
   S.mapApi(() => ({})),
+  withDefaults,
   S.annotate(stringIdentifier, {})
 )
 
 export const fromStringIdentifier = S.makeAnnotation<{}>()
 
-export const fromString: S.Schema<string, never, string, string, never, string, {}> =
-  pipe(
-    S.identity((u): u is string => typeof u === "string"),
-    S.arbitrary((_) => _.string()),
-    S.mapApi(() => ({})),
-    S.annotate(fromStringIdentifier, {})
-  )
+export const fromString: DefaultSchema<
+  string,
+  never,
+  string,
+  string,
+  never,
+  string,
+  {}
+> = pipe(
+  S.identity((u): u is string => typeof u === "string"),
+  S.arbitrary((_) => _.string()),
+  S.mapApi(() => ({})),
+  withDefaults,
+  S.annotate(fromStringIdentifier, {})
+)

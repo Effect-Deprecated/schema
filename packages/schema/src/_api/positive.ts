@@ -3,6 +3,8 @@
 import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export interface PositiveBrand {
   readonly Positive: unique symbol
@@ -14,10 +16,10 @@ export const positiveIdentifier = S.makeAnnotation<{ self: S.SchemaAny }>()
 
 export function positive<
   ParserInput,
-  ParserError,
+  ParserError extends S.AnyError,
   ParsedShape extends number,
   ConstructorInput,
-  ConstructorError,
+  ConstructorError extends S.AnyError,
   Encoded,
   Api
 >(
@@ -30,7 +32,7 @@ export function positive<
     Encoded,
     Api
   >
-): S.Schema<
+): DefaultSchema<
   ParserInput,
   S.CompositionE<S.PrevE<ParserError> | S.NextE<S.RefinementE<S.LeafE<S.PositiveE>>>>,
   ParsedShape & PositiveBrand,
@@ -47,6 +49,7 @@ export function positive<
       (n): n is ParsedShape & Positive => n >= 0,
       (n) => S.leafE(S.positiveE(n))
     ),
+    withDefaults,
     S.annotate(positiveIdentifier, { self })
   )
 }

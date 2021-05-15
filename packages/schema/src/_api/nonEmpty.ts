@@ -3,6 +3,8 @@
 import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export interface NonEmptyBrand {
   readonly NonEmpty: unique symbol
@@ -12,10 +14,10 @@ export const nonEmptyIdentifier = S.makeAnnotation<{ self: S.SchemaAny }>()
 
 export function nonEmpty<
   ParserInput,
-  ParserError,
+  ParserError extends S.AnyError,
   ParsedShape extends { length: number },
   ConstructorInput,
-  ConstructorError,
+  ConstructorError extends S.AnyError,
   Encoded,
   Api
 >(
@@ -28,7 +30,7 @@ export function nonEmpty<
     Encoded,
     Api
   >
-): S.Schema<
+): DefaultSchema<
   ParserInput,
   S.CompositionE<
     S.NextE<S.RefinementE<S.LeafE<S.NonEmptyE<ParsedShape>>>> | S.PrevE<ParserError>
@@ -48,6 +50,7 @@ export function nonEmpty<
       (n): n is ParsedShape & NonEmptyBrand => n.length > 0,
       (n) => S.leafE(S.nonEmptyE(n))
     ),
+    withDefaults,
     S.annotate(nonEmptyIdentifier, { self })
   )
 }

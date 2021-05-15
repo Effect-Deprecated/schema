@@ -5,10 +5,12 @@ import { pipe } from "@effect-ts/core/Function"
 import * as S from "../_schema"
 import * as Th from "../These"
 import { refinement } from "./refinement"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export const objectIdentifier = S.makeAnnotation<{}>()
 
-export const object: S.Schema<
+export const object: DefaultSchema<
   unknown,
   S.RefinementE<S.LeafE<S.ParseObjectE>>,
   {},
@@ -25,5 +27,6 @@ export const object: S.Schema<
   S.arbitrary((_) => _.object()),
   S.encoder((_) => _),
   S.mapApi(() => ({})),
+  withDefaults,
   S.annotate(objectIdentifier, {})
 )

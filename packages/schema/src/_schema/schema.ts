@@ -26,10 +26,10 @@ export type SchemaSym = typeof SchemaSym
  */
 export abstract class Schema<
   ParserInput,
-  ParserError,
+  ParserError extends AnyError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError,
+  ConstructorError extends AnyError,
   Encoded,
   Api
 > {
@@ -43,10 +43,10 @@ export abstract class Schema<
   abstract readonly Api: Api
 
   readonly [">>>"] = <
-    ThatParserError,
+    ThatParserError extends AnyError,
     ThatParsedShape,
     ThatConstructorInput,
-    ThatConstructorError,
+    ThatConstructorError extends AnyError,
     ThatApi
   >(
     that: Schema<
@@ -82,14 +82,15 @@ export abstract class Schema<
   > => new SchemaAnnotated(this, identifier, meta)
 }
 
-export type SchemaAny = Schema<any, any, any, any, any, any, any>
-export type SchemaUPI = Schema<unknown, any, any, any, any, any, any>
-export type Standard<A, Enc = unknown, Err = AnyError> = Schema<
+export type SchemaAny = Schema<any, AnyError, any, any, AnyError, any, any>
+export type SchemaUPI = Schema<unknown, AnyError, any, any, AnyError, any, any>
+
+export type Standard<A, Enc = unknown> = Schema<
   unknown,
-  Err,
+  AnyError,
   A,
   A,
-  never,
+  AnyError,
   Enc,
   {}
 >
@@ -108,10 +109,10 @@ export type SchemaContinuationSymbol = typeof SchemaContinuationSymbol
 export interface HasContinuation {
   readonly [SchemaContinuationSymbol]: Schema<
     unknown,
+    AnyError,
     unknown,
     unknown,
-    unknown,
-    unknown,
+    AnyError,
     unknown,
     unknown
   >
@@ -119,10 +120,10 @@ export interface HasContinuation {
 
 export function hasContinuation<
   ParserInput,
-  ParserError,
+  ParserError extends AnyError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError,
+  ConstructorError extends AnyError,
   Encoded,
   Api
 >(
@@ -148,26 +149,51 @@ export function hasContinuation<
   return SchemaContinuationSymbol in schema
 }
 
-export type ParserInputOf<X extends Schema<any, any, any, any, any, any, any>> =
-  Parameters<X["_ParserInput"]>[0]
+export type ParserInputOf<X extends Schema<any, any, any, any, any, any, any>> = [
+  X
+] extends [Schema<infer Y, any, any, any, any, any, any>]
+  ? Y
+  : never
 
-export type ParserErrorOf<X extends Schema<any, any, any, any, any, any, any>> =
-  ReturnType<X["_ParserError"]>
+export type ParserErrorOf<X extends Schema<any, any, any, any, any, any, any>> = [
+  X
+] extends [Schema<any, any, infer Y, any, any, any, any>]
+  ? Y extends AnyError
+    ? Y
+    : never
+  : never
 
-export type ConstructorInputOf<X extends Schema<any, any, any, any, any, any, any>> =
-  Parameters<X["_ConstructorInput"]>[0]
+export type ConstructorInputOf<X extends Schema<any, any, any, any, any, any, any>> = [
+  X
+] extends [Schema<any, any, any, infer Y, any, any, any>]
+  ? Y
+  : never
 
-export type ConstructorErrorOf<X extends Schema<any, any, any, any, any, any, any>> =
-  ReturnType<X["_ConstructorError"]>
+export type ConstructorErrorOf<X extends Schema<any, any, any, any, any, any, any>> = [
+  X
+] extends [Schema<any, any, any, any, infer Y, any, any>]
+  ? Y extends AnyError
+    ? Y
+    : never
+  : never
 
-export type EncodedOf<X extends Schema<any, any, any, any, any, any, any>> = ReturnType<
-  X["_Encoded"]
->
+export type EncodedOf<X extends Schema<any, any, any, any, any, any, any>> = [
+  X
+] extends [Schema<any, any, any, any, any, infer Y, any>]
+  ? Y
+  : never
 
-export type ParsedShapeOf<X extends Schema<any, any, any, any, any, any, any>> =
-  ReturnType<X["_ParsedShape"]>
+export type ParsedShapeOf<X extends Schema<any, any, any, any, any, any, any>> = [
+  X
+] extends [Schema<any, any, infer Y, any, any, any, any>]
+  ? Y
+  : never
 
-export type ApiOf<X extends Schema<any, any, any, any, any, any, any>> = X["Api"]
+export type ApiOf<X extends Schema<any, any, any, any, any, any, any>> = [X] extends [
+  Schema<any, any, any, any, any, any, infer Y>
+]
+  ? Y
+  : never
 
 export class SchemaIdentity<A> extends Schema<A, never, A, A, never, A, {}> {
   readonly Api = {}
@@ -179,12 +205,12 @@ export class SchemaIdentity<A> extends Schema<A, never, A, A, never, A, {}> {
 
 export class SchemaConstructor<
     NewConstructorInput,
-    NewConstructorError,
+    NewConstructorError extends AnyError,
     ParserInput,
-    ParserError,
+    ParserError extends AnyError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError,
+    ConstructorError extends AnyError,
     Encoded,
     Api
   >
@@ -223,12 +249,12 @@ export class SchemaConstructor<
 
 export class SchemaParser<
     NewParserInput,
-    NewParserError,
+    NewParserError extends AnyError,
     ParserInput,
-    ParserError,
+    ParserError extends AnyError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError,
+    ConstructorError extends AnyError,
     Encoded,
     Api
   >
@@ -268,10 +294,10 @@ export class SchemaParser<
 
 export class SchemaArbitrary<
     ParserInput,
-    ParserError,
+    ParserError extends AnyError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError,
+    ConstructorError extends AnyError,
     Encoded,
     Api
   >
@@ -311,10 +337,10 @@ export class SchemaArbitrary<
 
 export class SchemaEncoder<
     ParserInput,
-    ParserError,
+    ParserError extends AnyError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError,
+    ConstructorError extends AnyError,
     Encoded,
     Api,
     Encoded2
@@ -354,13 +380,13 @@ export class SchemaEncoder<
 }
 
 export class SchemaRefinement<
-  E,
+  E extends AnyError,
   NewParsedShape extends ParsedShape,
   ParserInput,
-  ParserError,
+  ParserError extends AnyError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError,
+  ConstructorError extends AnyError,
   Encoded,
   Api
 > extends Schema<
@@ -395,16 +421,16 @@ export class SchemaRefinement<
 
 export class SchemaPipe<
     ParserInput,
-    ParserError,
+    ParserError extends AnyError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError,
+    ConstructorError extends AnyError,
     Encoded,
     Api,
-    ThatParserError,
+    ThatParserError extends AnyError,
     ThatParsedShape,
     ThatConstructorInput,
-    ThatConstructorError,
+    ThatConstructorError extends AnyError,
     ThatApi
   >
   extends Schema<
@@ -450,11 +476,11 @@ export class SchemaPipe<
 
 export class SchemaMapParserError<
     ParserInput,
-    ParserError,
-    ParserError2,
+    ParserError extends AnyError,
+    ParserError2 extends AnyError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError,
+    ConstructorError extends AnyError,
     Encoded,
     Api
   >
@@ -493,11 +519,11 @@ export class SchemaMapParserError<
 
 export class SchemaMapConstructorError<
     ParserInput,
-    ParserError,
+    ParserError extends AnyError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError,
-    ConstructorError2,
+    ConstructorError extends AnyError,
+    ConstructorError2 extends AnyError,
     Encoded,
     Api
   >
@@ -536,10 +562,10 @@ export class SchemaMapConstructorError<
 
 export class SchemaMapApi<
     ParserInput,
-    ParserError,
+    ParserError extends AnyError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError,
+    ConstructorError extends AnyError,
     Encoded,
     Api,
     Api2
@@ -580,10 +606,10 @@ export class SchemaMapApi<
 
 export class SchemaNamed<
     ParserInput,
-    ParserError,
+    ParserError extends AnyError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError,
+    ConstructorError extends AnyError,
     Encoded,
     Api,
     Name extends string
@@ -641,10 +667,10 @@ export function isAnnotated<Self extends SchemaAny, A>(
 
 export class SchemaAnnotated<
     ParserInput,
-    ParserError,
+    ParserError extends AnyError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError,
+    ConstructorError extends AnyError,
     Encoded,
     Api,
     Meta
@@ -687,10 +713,10 @@ export class SchemaAnnotated<
 
 export class SchemaGuard<
     ParserInput,
-    ParserError,
+    ParserError extends AnyError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError,
+    ConstructorError extends AnyError,
     Encoded,
     Api
   >
@@ -729,10 +755,10 @@ export class SchemaGuard<
 
 export class SchemaLazy<
     ParserInput,
-    ParserError,
+    ParserError extends AnyError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError,
+    ConstructorError extends AnyError,
     Encoded,
     Api
   >

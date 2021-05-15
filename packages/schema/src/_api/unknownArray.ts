@@ -5,10 +5,12 @@ import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
 import { unknown } from "./unknown"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export const unknownArrayIdentifier = S.makeAnnotation<{}>()
 
-export const unknownArray: S.Schema<
+export const unknownArray: DefaultSchema<
   unknown,
   S.RefinementE<S.LeafE<S.UnknownArrayE>>,
   readonly unknown[],
@@ -25,5 +27,6 @@ export const unknownArray: S.Schema<
   S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
   S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
   S.encoder((_) => _),
+  withDefaults,
   S.annotate(unknownArrayIdentifier, {})
 )

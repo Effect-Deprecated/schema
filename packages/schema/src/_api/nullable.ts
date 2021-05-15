@@ -8,25 +8,43 @@ import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as Th from "../These"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export const nullableIdentifier = S.makeAnnotation<{ self: S.SchemaAny }>()
 
-export function nullable<Self extends S.SchemaAny>(
-  self: Self
-): S.Schema<
-  S.ParserInputOf<Self> | null,
-  S.LeafE<ReturnType<Self["_ConstructorError"]>>,
-  O.Option<ReturnType<Self["_ParsedShape"]>>,
-  O.Option<S.ConstructorInputOf<Self>>,
-  S.LeafE<ReturnType<Self["_ConstructorError"]>>,
-  S.EncodedOf<Self> | null,
-  S.ApiOf<Self>
+export function nullable<
+  ParserInput,
+  ParserError extends S.AnyError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError extends S.AnyError,
+  Encoded,
+  Api
+>(
+  self: S.Schema<
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    Encoded,
+    Api
+  >
+): DefaultSchema<
+  ParserInput | null,
+  ParserError,
+  O.Option<ParsedShape>,
+  O.Option<ConstructorInput>,
+  ConstructorError,
+  Encoded | null,
+  Api
 > {
   const guard = Guard.for(self)
   const arb = Arbitrary.for(self)
   const create = Constructor.for(self)
   const parse = Parser.for(self)
-  const refinement = (u: unknown): u is O.Option<S.ParsedShapeOf<Self>> =>
+  const refinement = (u: unknown): u is O.Option<ParsedShape> =>
     typeof u === "object" &&
     u !== null &&
     ["None", "Some"].indexOf(u["_tag"]) !== -1 &&
@@ -36,17 +54,19 @@ export function nullable<Self extends S.SchemaAny>(
   return pipe(
     S.identity(refinement),
     S.arbitrary((_) => _.option(arb(_)).map(O.fromNullable)),
-    S.parser((i: S.ParserInputOf<Self> | null) =>
+    S.parser((i: ParserInput | null) =>
       i === null ? Th.succeed(O.none) : Th.map_(parse(i), O.some)
     ),
-    S.constructor(
-      O.fold(
+    S.constructor((x: O.Option<ConstructorInput>) =>
+      O.fold_(
+        x,
         () => Th.succeed(O.none),
         (v) => Th.map_(create(v), O.some)
       )
     ),
-    S.encoder((_) => O.map_(_, encode)["|>"](O.toNullable) as S.EncodedOf<Self> | null),
-    S.mapApi(() => self.Api as S.ApiOf<Self>),
+    S.encoder((_) => O.map_(_, encode)["|>"](O.toNullable) as Encoded | null),
+    S.mapApi(() => self.Api as Api),
+    withDefaults,
     S.annotate(nullableIdentifier, { self })
   )
 }

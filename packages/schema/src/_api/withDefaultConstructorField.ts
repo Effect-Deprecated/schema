@@ -3,6 +3,8 @@ import { pipe } from "@effect-ts/system/Function"
 
 import * as S from "../_schema"
 import * as Constructor from "../Constructor"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export type OptionalKey<ConstructorInput, Key extends keyof ConstructorInput> = Omit<
   ConstructorInput,
@@ -23,7 +25,14 @@ export function withDefaultConstructorField<
 >(
   key: Key,
   value: Lazy<ConstructorInput[Key]>
-): <ParserInput, ParserError, ParsedShape, ConstructorError, Encoded, Api>(
+): <
+  ParserInput,
+  ParserError extends S.AnyError,
+  ParsedShape,
+  ConstructorError extends S.AnyError,
+  Encoded,
+  Api
+>(
   self: S.Schema<
     ParserInput,
     ParserError,
@@ -33,7 +42,7 @@ export function withDefaultConstructorField<
     Encoded,
     Api
   >
-) => S.Schema<
+) => DefaultSchema<
   ParserInput,
   ParserError,
   ParsedShape,
@@ -49,6 +58,7 @@ export function withDefaultConstructorField<
       S.constructor((u: any) =>
         constructSelf(typeof u[key] !== "undefined" ? u : { ...u, [key]: value() })
       ),
+      withDefaults,
       S.annotate(withDefaultConstructorFieldIdentifier, { self, key, value })
     )
   }

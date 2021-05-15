@@ -7,22 +7,29 @@ type BinaryOp = (left: Operation, right: Operation) => Operation
 
 const lazyOperation = S.lazy((): S.Standard<Operation> => Operation)
 
+const withLeftAndRight = S.intersectLazy(
+  (): S.Standard<{
+    readonly left: Operation
+    readonly right: Operation
+  }> =>
+    S.props({
+      left: S.prop(lazyOperation),
+      right: S.prop(lazyOperation)
+    })
+)
+
 export class Add extends S.Model<Add>()(
   S.props({
-    _tag: S.prop(S.literal("Add")),
-    left: S.prop(lazyOperation),
-    right: S.prop(lazyOperation)
-  })
+    _tag: S.prop(S.literal("Add"))
+  })["|>"](withLeftAndRight)
 ) {
   static of: BinaryOp = (left, right) => new Add({ left, right })
 }
 
 export class Mul extends S.Model<Mul>()(
   S.props({
-    _tag: S.prop(S.literal("Mul")),
-    left: S.prop(lazyOperation),
-    right: S.prop(lazyOperation)
-  })
+    _tag: S.prop(S.literal("Mul"))
+  })["|>"](withLeftAndRight)
 ) {
   static of: BinaryOp = (left, right) => new Mul({ left, right })
 }

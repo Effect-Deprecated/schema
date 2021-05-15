@@ -49,10 +49,10 @@ export interface Model<M, Self extends MO.SchemaAny>
   extends S.Schemed<Self>,
     MO.Schema<
       MO.ParserInputOf<Self>,
-      MO.ParserErrorOf<Self>,
+      MO.NamedE<string, MO.ParserErrorOf<Self>>,
       M,
       MO.ConstructorInputOf<Self>,
-      MO.ConstructorErrorOf<Self>,
+      MO.NamedE<string, MO.ConstructorErrorOf<Self>>,
       MO.EncodedOf<Self>,
       MO.ApiOf<Self>
     > {
@@ -76,7 +76,7 @@ export function Model<M>(__name?: string) {
   return <Self extends MO.Schema<any, any, any, any, MO.AnyError, any, any>>(
     self: Self
   ): Model<M, Self> => {
-    const schemed = S.Schemed(__name ? named(__name)(self) : self)
+    const schemed = S.Schemed(named(__name ?? "Model(Anonymous)")(self))
     const schema = S.schema(schemed)
 
     Object.defineProperty(schemed, MO.SchemaContinuationSymbol, {

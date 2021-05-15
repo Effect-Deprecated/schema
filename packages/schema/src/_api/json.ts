@@ -3,6 +3,8 @@ import { pipe } from "@effect-ts/core/Function"
 import * as S from "../_schema"
 import * as Th from "../These"
 import { string } from "./string"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export const jsonFromStringIdentifier = S.makeAnnotation<{}>()
 
@@ -19,7 +21,7 @@ export class JsonDecodingE
   }
 }
 
-export const jsonString: S.Schema<
+export const jsonString: DefaultSchema<
   string,
   S.LeafE<JsonDecodingE>,
   unknown,
@@ -39,12 +41,13 @@ export const jsonString: S.Schema<
       return Th.fail(S.leafE(new JsonDecodingE({ actual: p, error: err })))
     }
   }),
+  withDefaults,
   S.annotate(jsonFromStringIdentifier, {})
 )
 
 export const jsonIdentifier = S.makeAnnotation<{}>()
 
-export const json: S.Schema<
+export const json: DefaultSchema<
   unknown,
   S.CompositionE<
     S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>> | S.NextE<S.LeafE<JsonDecodingE>>
@@ -54,4 +57,4 @@ export const json: S.Schema<
   never,
   string,
   {}
-> = pipe(string[">>>"](jsonString), S.annotate(jsonIdentifier, {}))
+> = pipe(string[">>>"](jsonString), withDefaults, S.annotate(jsonIdentifier, {}))

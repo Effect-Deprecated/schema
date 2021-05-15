@@ -32,15 +32,29 @@ export type ShapeFromSchemedOut<
   ? T
   : never
 
-export type SchemaForSchemed<Self extends SchemedOut<any>> = S.Schema<
-  S.ParserInputOf<Self[schemaField]>,
-  S.ParserErrorOf<Self[schemaField]>,
-  ShapeFromSchemedOut<Self>,
-  S.ConstructorInputOf<Self[schemaField]>,
-  S.ConstructorErrorOf<Self[schemaField]>,
-  S.EncodedOf<Self[schemaField]>,
-  S.ApiOf<Self[schemaField]> & S.ApiSelfType<ShapeFromSchemedOut<Self>>
->
+export type SchemaForSchemed<Self extends SchemedOut<S.SchemaAny>> = [
+  Self[schemaField]
+] extends [
+  S.Schema<
+    infer ParserInput,
+    infer ParserError,
+    any,
+    infer ConstructorInput,
+    infer ConstructorError,
+    infer Encoded,
+    infer Api
+  >
+]
+  ? S.Schema<
+      ParserInput,
+      ParserError,
+      ShapeFromSchemedOut<Self>,
+      ConstructorInput,
+      ConstructorError,
+      Encoded,
+      Api & S.ApiSelfType<ShapeFromSchemedOut<Self>>
+    >
+  : never
 
 export interface Copy {
   copy(args: {} extends this ? void : Partial<Omit<this, "copy">>): this
@@ -143,7 +157,7 @@ export function schema<Self extends SchemedOut<any>>(self: Self) {
       const warnings = res.effect.right.get(1)
       const out = res.effect.right.get(0)
       // @ts-expect-error
-      const x = new self()
+      const x = new self() as ShapeFromClass<Self>
       x[fromFields](out)
       if (warnings._tag === "Some") {
         return Th.warn(x, warnings.value)
@@ -158,7 +172,7 @@ export function schema<Self extends SchemedOut<any>>(self: Self) {
       const warnings = res.effect.right.get(1)
       const out = res.effect.right.get(0)
       // @ts-expect-error
-      const x = new self()
+      const x = new self() as ShapeFromClass<Self>
       x[fromFields](out)
       if (warnings._tag === "Some") {
         return Th.warn(x, warnings.value)
@@ -168,7 +182,7 @@ export function schema<Self extends SchemedOut<any>>(self: Self) {
     S.arbitrary((_) =>
       arb(_).map((out) => {
         // @ts-expect-error
-        const x = new self()
+        const x = new self() as ShapeFromClass<Self>
         x[fromFields](out)
         return x
       })

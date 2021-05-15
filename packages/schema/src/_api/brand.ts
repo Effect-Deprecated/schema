@@ -7,7 +7,7 @@ import { withDefaults } from "./withDefaults"
 export function brand<B>() {
   return <
     ParserInput,
-    ParserError,
+    ParserError extends MO.AnyError,
     ParsedShape,
     ConstructorInput,
     ConstructorError extends MO.AnyError,

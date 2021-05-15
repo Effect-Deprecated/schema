@@ -5,10 +5,12 @@ import { makeAnnotation, parseBoolE } from "../_schema"
 import * as S from "../_schema"
 import * as Th from "../These"
 import { refinement } from "./refinement"
+import type { DefaultSchema } from "./withDefaults"
+import { withDefaults } from "./withDefaults"
 
 export const boolIdentifier = makeAnnotation<{}>()
 
-export const bool: S.Schema<
+export const bool: DefaultSchema<
   unknown,
   S.RefinementE<S.LeafE<ParseBoolE>>,
   boolean,
@@ -25,5 +27,6 @@ export const bool: S.Schema<
   S.arbitrary((_) => _.boolean()),
   S.encoder((s) => s),
   S.mapApi(() => ({})),
+  withDefaults,
   S.annotate(boolIdentifier, {})
 )
