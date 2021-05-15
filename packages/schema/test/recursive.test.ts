@@ -6,17 +6,13 @@ import * as S from "../src"
 import * as Encoder from "../src/Encoder"
 import * as Parser from "../src/Parser"
 
+export const Friends = S.lazy((): S.Standard<Chunk.Chunk<Person>> => S.chunk(Person))
+
 export class Person extends S.Model<Person>()(
-  S.lazy(
-    (): S.Standard<{
-      readonly id: string
-      readonly friends: Chunk.Chunk<Person>
-    }> =>
-      S.props({
-        id: S.prop(S.string),
-        friends: S.prop(S.chunk(Person))
-      })
-  )
+  S.props({
+    id: S.prop(S.string),
+    friends: S.prop(Friends)
+  })
 ) {}
 
 const parsePerson = Parser.for(Person)["|>"](S.condemnFail)
