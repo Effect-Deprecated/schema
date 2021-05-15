@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.6.3...@effect-ts/schema@0.7.0) (2021-05-15)
+
+
+### Bug Fixes
+
+* **schema:** use default schema ([8b183cf](https://github.com/Effect-TS/schema/commit/8b183cf2892f1f419a9c0c5b688d22e874f010da))
+
+
+### Features
+
+* **schema:** ensureShape ([07cf479](https://github.com/Effect-TS/schema/commit/07cf479d6be525ea6724e73d84be9af9e444ce7f))
+* **schema:** handle lazy properly ([7c5c50f](https://github.com/Effect-TS/schema/commit/7c5c50fd2594531a34ee3a93afd914d6a543a95c))
+* **schema:** intersectLazy ([64c82c5](https://github.com/Effect-TS/schema/commit/64c82c5b5c59b68753471af71ead9ddd6f78ee13))
+* **schema:** pickProps, omitProps, use default in intersect ([0ca2472](https://github.com/Effect-TS/schema/commit/0ca24727a3f3461d5115bd7731a24880c6bf8ab3))
+* **schema:** recursive default params ([2faac7f](https://github.com/Effect-TS/schema/commit/2faac7f5b41372a8e1ae56b0cf626aa7e30f1cf7))
+* **schema:** remove fields, merge props in intersect, expose key ([4fcc2a4](https://github.com/Effect-TS/schema/commit/4fcc2a474e7d8e33bdb53764afd268b569e3be90))
+* **schema:** remove recursive ([e345ef8](https://github.com/Effect-TS/schema/commit/e345ef88a2e62496fc743c40085c7724973c3b98))
+* **schema:** shorter alias ([b3164a4](https://github.com/Effect-TS/schema/commit/b3164a48d7e4a4e8cf7bc7da4d60fc35ace88975))
+
+
+
+
+
 ## [0.6.3](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.6.2...@effect-ts/schema@0.6.3) (2021-05-14)
 
 
