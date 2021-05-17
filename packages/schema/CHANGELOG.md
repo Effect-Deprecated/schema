@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.7.1...@effect-ts/schema@0.7.2) (2021-05-17)
+
+
+### Features
+
+* **schema:** interpreter to collect annotations ([94932a8](https://github.com/Effect-TS/schema/commit/94932a8460b48253bc0811a621cbb536fa3522ff))
+
+
+
+
+
 ## [0.7.1](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.7.0...@effect-ts/schema@0.7.1) (2021-05-15)
 
 
