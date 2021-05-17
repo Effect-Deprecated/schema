@@ -665,6 +665,20 @@ export function isAnnotated<Self extends SchemaAny, A>(
   )
 }
 
+export function isAnnotatedSchema<Self extends SchemaAny>(
+  self: Self
+): self is Self & {
+  readonly self: Self extends { self: infer X } ? X : SchemaAny
+  readonly annotation: Annotation<any>
+  readonly meta: any
+} {
+  return (
+    (typeof self === "object" || typeof self === "function") &&
+    self != null &&
+    Identifiable in self
+  )
+}
+
 export class SchemaAnnotated<
     ParserInput,
     ParserError extends AnyError,

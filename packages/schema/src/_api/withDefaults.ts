@@ -3,7 +3,6 @@ import type { UnionToIntersection } from "@effect-ts/core/Utils"
 import type { Annotation } from "../_schema"
 import * as MO from "../_schema"
 import type { Schema } from "../_schema/schema"
-import { Identifiable } from "../_schema/schema"
 import * as Arbitrary from "../Arbitrary"
 import * as Constructor from "../Constructor"
 import * as Encoder from "../Encoder"
@@ -155,14 +154,8 @@ export function withDefaults<
   })
 
   Object.defineProperty(schemed, "annotate", {
-    value: <Meta>(annotation: Annotation<Meta>, meta: Meta) => {
-      const x = withDefaults(self)
-      x[Identifiable] = Identifiable
-      x["annotation"] = annotation
-      x["self"] = self
-      x["meta"] = meta
-      return x
-    }
+    value: <Meta>(annotation: Annotation<Meta>, meta: Meta) =>
+      withDefaults(self.annotate(annotation, meta))
   })
 
   for (const k of carryOver) {
