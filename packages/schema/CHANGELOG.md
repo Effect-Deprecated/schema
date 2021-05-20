@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.4](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.7.3...@effect-ts/schema@0.7.4) (2021-05-20)
+
+
+### Features
+
+* **schema:** expose self api in array & chunk ([3d4065f](https://github.com/Effect-TS/schema/commit/3d4065f19f15daf5ef589c4da3c79c653ccaaa52))
+
+
+
+
+
 ## [0.7.3](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.7.2...@effect-ts/schema@0.7.3) (2021-05-17)
 
 **Note:** Version bump only for package @effect-ts/schema
