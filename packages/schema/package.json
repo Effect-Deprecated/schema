@@ -26,10 +26,10 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@effect-ts/core": "^0.39.2"
+    "@effect-ts/core": "^0.39.3"
   },
   "peerDependencies": {
-    "fast-check": ">= 2.14.0"
+    "fast-check": "^2.14.0"
   },
   "config": {
     "modules": [
