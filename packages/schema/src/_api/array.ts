@@ -41,7 +41,7 @@ export function array<
   readonly ParsedShape[],
   never,
   readonly Encoded[],
-  {}
+  { self: Api }
 > {
   const guardSelf = Guard.for(self)
   const arbitrarySelf = Arbitrary.for(self)
@@ -61,6 +61,7 @@ export function array<
     S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
     S.constructor((_: readonly ParsedShape[]) => Th.succeed(_)),
     S.encoder((u) => u.map(encodeSelf)),
+    S.mapApi(() => ({ self: self.Api })),
     withDefaults,
     S.annotate(arrayIdentifier, { self })
   )

@@ -41,7 +41,7 @@ export function fromChunk<
   Iterable<ParsedShape>,
   never,
   readonly Encoded[],
-  Api
+  { self: Api }
 > {
   const guard = Guard.for(self)
   const arb = Arbitrary.for(self)
@@ -86,7 +86,7 @@ export function fromChunk<
     }),
     S.constructor((i: Iterable<ParsedShape>) => Th.succeed(Chunk.from(i))),
     S.encoder((_) => Chunk.toArray(Chunk.map_(_, encode)) as readonly Encoded[]),
-    S.mapApi(() => self.Api as Api),
+    S.mapApi(() => ({ self: self.Api })),
     withDefaults,
     S.annotate(fromChunkIdentifier, { self })
   )
@@ -121,7 +121,7 @@ export function chunk<
   Iterable<ParsedShape>,
   never,
   readonly Encoded[],
-  Api
+  { self: Api }
 > {
   const encodeSelf = Encoder.for(self)
   return pipe(
