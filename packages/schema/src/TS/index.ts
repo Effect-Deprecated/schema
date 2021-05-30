@@ -22,8 +22,10 @@ export default function augmentName(_program: ts.Program) {
               signature &&
               signature
                 .getJsDocTags()
-                .findIndex((_) => _.name === "inject" && _.text === "genericName") !==
-                -1 &&
+                .findIndex(
+                  (_) =>
+                    _.name === "inject" && _.text?.map((_) => _.text === "genericName")
+                ) !== -1 &&
               signature?.parameters.length === 1 &&
               signature?.parameters[0].name === "__name"
             ) {
