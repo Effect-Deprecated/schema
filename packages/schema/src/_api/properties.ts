@@ -579,3 +579,30 @@ export function propsOmit<Props extends PropertyRecord, KS extends (keyof Props)
     return newProps
   }
 }
+
+export type ParserInputFromProperties<Props extends PropertyRecord> = Compute<
+  UnionToIntersection<
+    {
+      [k in keyof Props]: Props[k] extends AnyProperty
+        ? Props[k]["_optional"] extends "optional"
+          ? {
+              readonly [h in Props[k]["_as"] extends O.Some<any>
+                ? Props[k]["_as"]["value"]
+                : k]?: S.EncodedOf<Props[k]["_schema"]>
+            }
+          : Props[k]["_def"] extends O.Option<["parser" | "both", any]>
+          ? {
+              readonly [h in Props[k]["_as"] extends O.Some<any>
+                ? Props[k]["_as"]["value"]
+                : k]?: S.EncodedOf<Props[k]["_schema"]>
+            }
+          : {
+              readonly [h in Props[k]["_as"] extends O.Some<any>
+                ? Props[k]["_as"]["value"]
+                : k]: S.EncodedOf<Props[k]["_schema"]>
+            }
+        : never
+    }[keyof Props]
+  >,
+  "flat"
+>
