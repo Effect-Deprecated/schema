@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.8.0...@effect-ts/schema@0.8.1) (2021-05-30)
+
+
+### Bug Fixes
+
+* **schema:** ParserInputFromProperties should look for O.Some, not Option. ([955b12a](https://github.com/Effect-TS/schema/commit/955b12a78d71c19ca0b65168db4c334ef4709fbb))
+
+
+
+
+
 # [0.8.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.7.4...@effect-ts/schema@0.8.0) (2021-05-30)
 
 
