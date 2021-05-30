@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.7.4...@effect-ts/schema@0.8.0) (2021-05-30)
+
+
+### Bug Fixes
+
+* **plugin:** adapt to ts 4.3 ([56b8bf0](https://github.com/Effect-TS/schema/commit/56b8bf07b6caec997e56e3ba6f97ebab0a10f69e))
+
+
+### Features
+
+* **schema:** add utils ParserInputFromProperties, closes [#37](https://github.com/Effect-TS/schema/issues/37) ([32b1ab7](https://github.com/Effect-TS/schema/commit/32b1ab7cffe7b5a34d0a4f038837bfbf191c818d))
+
+
+
+
+
 ## [0.7.4](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.7.3...@effect-ts/schema@0.7.4) (2021-05-20)
 
 
