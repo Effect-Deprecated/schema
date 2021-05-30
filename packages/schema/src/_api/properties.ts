@@ -590,7 +590,7 @@ export type ParserInputFromProperties<Props extends PropertyRecord> = Compute<
                 ? Props[k]["_as"]["value"]
                 : k]?: S.EncodedOf<Props[k]["_schema"]>
             }
-          : Props[k]["_def"] extends O.Option<["parser" | "both", any]>
+          : Props[k]["_def"] extends O.Some<["parser" | "both", any]>
           ? {
               readonly [h in Props[k]["_as"] extends O.Some<any>
                 ? Props[k]["_as"]["value"]
