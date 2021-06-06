@@ -6,7 +6,7 @@ import type * as fc from "fast-check"
 
 import type * as Th from "../These"
 import type { Annotation } from "./annotation"
-import type { AnyError, CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
+import type { CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
 
 export const SchemaSym = Symbol()
 export type SchemaSym = typeof SchemaSym
@@ -85,15 +85,7 @@ export abstract class Schema<
 export type SchemaAny = Schema<any, any, any, any, any, any, any>
 export type SchemaUPI = Schema<unknown, any, any, any, any, any, any>
 
-export type Standard<A, Enc = unknown> = Schema<
-  unknown,
-  AnyError,
-  A,
-  A,
-  AnyError,
-  Enc,
-  {}
->
+export type Standard<A, Enc = unknown> = Schema<unknown, any, A, A, any, Enc, {}>
 
 export interface ApiSelfType<AS = unknown> {
   _AS: AS
@@ -109,10 +101,10 @@ export type SchemaContinuationSymbol = typeof SchemaContinuationSymbol
 export interface HasContinuation {
   readonly [SchemaContinuationSymbol]: Schema<
     unknown,
-    AnyError,
+    any,
     unknown,
     unknown,
-    AnyError,
+    any,
     unknown,
     unknown
   >
