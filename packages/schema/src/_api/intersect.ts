@@ -41,16 +41,16 @@ export const intersectIdentifier =
   S.makeAnnotation<{ self: S.SchemaUPI; that: S.SchemaUPI }>()
 
 export function intersect_<
-  ParserError extends S.AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends S.AnyError,
+  ConstructorError,
   Encoded,
   Api,
-  ThatParserError extends S.AnyError,
+  ThatParserError,
   ThatParsedShape,
   ThatConstructorInput,
-  ThatConstructorError extends S.AnyError,
+  ThatConstructorError,
   ThatEncoded,
   ThatApi
 >(
@@ -242,10 +242,10 @@ export function intersect_<
 }
 
 export function intersect<
-  ThatParserError extends S.AnyError,
+  ThatParserError,
   ThatParsedShape,
   ThatConstructorInput,
-  ThatConstructorError extends S.AnyError,
+  ThatConstructorError,
   ThatEncoded,
   ThatApi
 >(
@@ -258,14 +258,7 @@ export function intersect<
     ThatEncoded,
     ThatApi
   >
-): <
-  ParserError extends S.AnyError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError extends S.AnyError,
-  Encoded,
-  Api
->(
+): <ParserError, ParsedShape, ConstructorInput, ConstructorError, Encoded, Api>(
   self: S.Schema<
     unknown,
     ParserError,
@@ -288,10 +281,10 @@ export function intersect<
 }
 
 export function intersectLazy<
-  ThatParserError extends S.AnyError,
+  ThatParserError,
   ThatParsedShape,
   ThatConstructorInput,
-  ThatConstructorError extends S.AnyError,
+  ThatConstructorError,
   ThatEncoded,
   ThatApi
 >(
@@ -305,14 +298,7 @@ export function intersectLazy<
     ThatApi
   >
 ) {
-  return <
-    ParserError extends S.AnyError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError extends S.AnyError,
-    Encoded,
-    Api
-  >(
+  return <ParserError, ParsedShape, ConstructorInput, ConstructorError, Encoded, Api>(
     self: S.Schema<
       unknown,
       ParserError,

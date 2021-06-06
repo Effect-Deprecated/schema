@@ -276,7 +276,6 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
           )
         )
       } else {
-        // @ts-expect-error
         return Th.mapError_(parsers[tag.value.index[u[tag.value.key]]](u), (e) =>
           S.compositionE(
             Chunk.single(
@@ -296,7 +295,6 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
       const res = parser(u)
 
       if (res.effect._tag === "Right") {
-        // @ts-expect-error
         return Th.mapError_(res, (e) =>
           S.compositionE(Chunk.single(S.nextE(S.unionE(Chunk.single(S.memberE(k, e))))))
         )

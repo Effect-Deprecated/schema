@@ -14,10 +14,10 @@ export const nonEmptyIdentifier = S.makeAnnotation<{ self: S.SchemaAny }>()
 
 export function nonEmpty<
   ParserInput,
-  ParserError extends S.AnyError,
+  ParserError,
   ParsedShape extends { length: number },
   ConstructorInput,
-  ConstructorError extends S.AnyError,
+  ConstructorError,
   Encoded,
   Api
 >(

@@ -25,14 +25,7 @@ export function withDefaultConstructorField<
 >(
   key: Key,
   value: Lazy<ConstructorInput[Key]>
-): <
-  ParserInput,
-  ParserError extends S.AnyError,
-  ParsedShape,
-  ConstructorError extends S.AnyError,
-  Encoded,
-  Api
->(
+): <ParserInput, ParserError, ParsedShape, ConstructorError, Encoded, Api>(
   self: S.Schema<
     ParserInput,
     ParserError,

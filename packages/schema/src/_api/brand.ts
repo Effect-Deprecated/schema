@@ -1,5 +1,4 @@
 // tracing: off
-import type * as MO from "../_schema"
 import type { ApiSelfType, Schema } from "../_schema/schema"
 import type { DefaultSchema } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
@@ -7,10 +6,10 @@ import { withDefaults } from "./withDefaults"
 export function brand<B>() {
   return <
     ParserInput,
-    ParserError extends MO.AnyError,
+    ParserError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError extends MO.AnyError,
+    ConstructorError,
     Encoded,
     Api
   >(
