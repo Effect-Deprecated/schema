@@ -58,29 +58,19 @@ export const interpreters: ((schema: S.SchemaAny) => O.Option<() => any>)[] = [
       return () => collectAnnotationsFor(schema.self)
     }
     return miss()
-  })
+  }),
 ]
 
 const cache = new WeakMap()
 
 export function collectAnnotationsFor<
   ParserInput,
-  ParserError extends S.AnyError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends S.AnyError,
   Encoded,
   Api
 >(
-  schema: S.Schema<
-    ParserInput,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
+  schema: S.Schema<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>
 ): CollectAnnotations {
   if (cache.has(schema)) {
     return cache.get(schema)

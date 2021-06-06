@@ -15,16 +15,8 @@ export const positiveIntFromNumberIdentifier = S.makeAnnotation<{}>()
 
 export const positiveIntFromNumber: DefaultSchema<
   number,
-  S.CompositionE<
-    | S.PrevE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
-    | S.NextE<S.RefinementE<S.LeafE<S.PositiveE>>>
-  >,
   Int & Positive,
   number,
-  S.CompositionE<
-    | S.PrevE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
-    | S.NextE<S.RefinementE<S.LeafE<S.PositiveE>>>
-  >,
   number,
   S.ApiSelfType<Int & Positive>
 > = pipe(
@@ -39,21 +31,8 @@ export const positiveIntIdentifier = S.makeAnnotation<{}>()
 
 export const positiveInt: DefaultSchema<
   unknown,
-  S.CompositionE<
-    | S.PrevE<S.RefinementE<S.LeafE<S.ParseNumberE>>>
-    | S.NextE<
-        S.CompositionE<
-          | S.PrevE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
-          | S.NextE<S.RefinementE<S.LeafE<S.PositiveE>>>
-        >
-      >
-  >,
   Int & Positive,
   number,
-  S.CompositionE<
-    | S.PrevE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
-    | S.NextE<S.RefinementE<S.LeafE<S.PositiveE>>>
-  >,
   number,
   S.ApiSelfType<Int & Positive>
 > = pipe(

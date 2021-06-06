@@ -68,30 +68,14 @@ export const interpreters: ((
       }
     }
     return miss()
-  })
+  }),
 ]
 
 const cache = new WeakMap()
 
-function constructorFor<
-  ParserInput,
-  ParserError extends S.AnyError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError extends S.AnyError,
-  Encoded,
-  Api
->(
-  schema: S.Schema<
-    ParserInput,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
-): Constructor<ConstructorInput, ParsedShape, ConstructorError> {
+function constructorFor<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>(
+  schema: S.Schema<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>
+): Constructor<ConstructorInput, ParsedShape, any> {
   if (cache.has(schema)) {
     return cache.get(schema)
   }
@@ -99,7 +83,7 @@ function constructorFor<
     const of_: Constructor<unknown, unknown, unknown> = (__) =>
       constructorFor(schema.self())(__)
     cache.set(schema, of_)
-    return of_ as Constructor<ConstructorInput, ParsedShape, ConstructorError>
+    return of_ as Constructor<ConstructorInput, ParsedShape, any>
   }
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
@@ -112,7 +96,7 @@ function constructorFor<
         return x(__)
       }
       cache.set(schema, of_)
-      return of_ as Constructor<ConstructorInput, ParsedShape, ConstructorError>
+      return of_ as Constructor<ConstructorInput, ParsedShape, any>
     }
   }
   if (hasContinuation(schema)) {
@@ -123,7 +107,7 @@ function constructorFor<
       }
       return x(__)
     }
-    return of_ as Constructor<ConstructorInput, ParsedShape, ConstructorError>
+    return of_ as Constructor<ConstructorInput, ParsedShape, any>
   }
   throw new Error(`Missing guard integration for: ${JSON.stringify(schema)}`)
 }

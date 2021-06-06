@@ -10,15 +10,7 @@ import { withDefaults } from "./withDefaults"
 
 export const objectIdentifier = S.makeAnnotation<{}>()
 
-export const object: DefaultSchema<
-  unknown,
-  S.RefinementE<S.LeafE<S.ParseObjectE>>,
-  {},
-  {},
-  never,
-  {},
-  {}
-> = pipe(
+export const object: DefaultSchema<unknown, {}, {}, {}, {}> = pipe(
   refinement(
     (u): u is {} => typeof u === "object" && u != null,
     (v) => S.leafE(S.parseObjectE(v))

@@ -14,32 +14,12 @@ import { withDefaults } from "./withDefaults"
 
 export const arrayIdentifier = S.makeAnnotation<{ self: S.SchemaUPI }>()
 
-export function array<
-  ParserError extends S.AnyError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError extends S.AnyError,
-  Encoded,
-  Api
->(
-  self: S.Schema<
-    unknown,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
+export function array<ParsedShape, ConstructorInput, Encoded, Api>(
+  self: S.Schema<unknown, ParsedShape, ConstructorInput, Encoded, Api>
 ): DefaultSchema<
   unknown,
-  S.CompositionE<
-    | S.PrevE<S.RefinementE<S.LeafE<S.UnknownArrayE>>>
-    | S.NextE<S.CollectionE<S.OptionalIndexE<number, ParserError>>>
-  >,
   readonly ParsedShape[],
   readonly ParsedShape[],
-  never,
   readonly Encoded[],
   { self: Api }
 > {
@@ -58,7 +38,7 @@ export function array<
 
   return pipe(
     chunk(self)[">>>"](fromChunk),
-    S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
+    S.mapParserError((_) => (Chunk.unsafeHead((_ as any).errors) as any).error),
     S.constructor((_: readonly ParsedShape[]) => Th.succeed(_)),
     S.encoder((u) => u.map(encodeSelf)),
     S.mapApi(() => ({ self: self.Api })),

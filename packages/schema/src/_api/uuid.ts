@@ -25,26 +25,12 @@ const isUUID: Refinement<string, UUID> = (s: string): s is UUID => {
   return regexUUID.test(s)
 }
 
-export const UUIDFromString: DefaultSchema<
-  string,
-  S.CompositionE<
-    | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
-    | S.PrevE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
-  >,
-  UUID,
-  string,
-  S.CompositionE<
-    | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
-    | S.PrevE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
-  >,
-  string,
-  {}
-> = pipe(
+export const UUIDFromString: DefaultSchema<string, UUID, string, string, {}> = pipe(
   fromString,
   S.arbitrary((FC) => FC.uuid()),
   nonEmpty,
-  S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
-  S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
+  S.mapParserError((_) => (Chunk.unsafeHead((_ as any).errors) as any).error),
+  S.mapConstructorError((_) => (Chunk.unsafeHead((_ as any).errors) as any).error),
   S.refine(isUUID, (n) => S.leafE(parseUuidE(n))),
   brand<UUID>(),
   S.annotate(UUIDFromStringIdentifier, {})
@@ -52,23 +38,5 @@ export const UUIDFromString: DefaultSchema<
 
 export const UUIDIdentifier = S.makeAnnotation<{}>()
 
-export const UUID: DefaultSchema<
-  unknown,
-  S.CompositionE<
-    | S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>>
-    | S.NextE<
-        S.CompositionE<
-          | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
-          | S.PrevE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
-        >
-      >
-  >,
-  UUID,
-  string,
-  S.CompositionE<
-    | S.NextE<S.RefinementE<S.LeafE<S.ParseUuidE>>>
-    | S.PrevE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
-  >,
-  string,
-  S.ApiSelfType<UUID>
-> = pipe(string[">>>"](UUIDFromString), brand<UUID>(), S.annotate(UUIDIdentifier, {}))
+export const UUID: DefaultSchema<unknown, UUID, string, string, S.ApiSelfType<UUID>> =
+  pipe(string[">>>"](UUIDFromString), brand<UUID>(), S.annotate(UUIDIdentifier, {}))

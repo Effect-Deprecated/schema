@@ -14,33 +14,16 @@ export const nonEmptyIdentifier = S.makeAnnotation<{ self: S.SchemaAny }>()
 
 export function nonEmpty<
   ParserInput,
-  ParserError extends S.AnyError,
   ParsedShape extends { length: number },
   ConstructorInput,
-  ConstructorError extends S.AnyError,
   Encoded,
   Api
 >(
-  self: S.Schema<
-    ParserInput,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
+  self: S.Schema<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>
 ): DefaultSchema<
   ParserInput,
-  S.CompositionE<
-    S.NextE<S.RefinementE<S.LeafE<S.NonEmptyE<ParsedShape>>>> | S.PrevE<ParserError>
-  >,
   ParsedShape & NonEmptyBrand,
   ConstructorInput,
-  S.CompositionE<
-    | S.NextE<S.RefinementE<S.LeafE<S.NonEmptyE<ParsedShape>>>>
-    | S.PrevE<ConstructorError>
-  >,
   Encoded,
   Api
 > {

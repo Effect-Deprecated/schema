@@ -21,25 +21,14 @@ export function fromChunk<
   ParserError extends S.AnyError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends S.AnyError,
   Encoded,
   Api
 >(
-  self: S.Schema<
-    ParserInput,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
+  self: S.Schema<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>
 ): DefaultSchema<
   readonly ParserInput[],
-  S.CollectionE<S.OptionalIndexE<number, ParserError>>,
   Chunk.Chunk<ParsedShape>,
   Iterable<ParsedShape>,
-  never,
   readonly Encoded[],
   { self: Api }
 > {
@@ -94,32 +83,12 @@ export function fromChunk<
 
 export const chunkIdentifier = makeAnnotation<{ self: S.SchemaAny }>()
 
-export function chunk<
-  ParserError extends S.AnyError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError extends S.AnyError,
-  Encoded,
-  Api
->(
-  self: S.Schema<
-    unknown,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
+export function chunk<ParsedShape, ConstructorInput, Encoded, Api>(
+  self: S.Schema<unknown, ParsedShape, ConstructorInput, Encoded, Api>
 ): DefaultSchema<
   unknown,
-  S.CompositionE<
-    | S.PrevE<S.RefinementE<S.LeafE<S.UnknownArrayE>>>
-    | S.NextE<S.CollectionE<S.OptionalIndexE<number, ParserError>>>
-  >,
   Chunk.Chunk<ParsedShape>,
   Iterable<ParsedShape>,
-  never,
   readonly Encoded[],
   { self: Api }
 > {

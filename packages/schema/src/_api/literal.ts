@@ -31,15 +31,7 @@ export const literalIdentifier = S.makeAnnotation<{ literals: readonly string[] 
 
 export function literal<KS extends readonly string[]>(
   ...literals: KS
-): DefaultSchema<
-  unknown,
-  S.RefinementE<S.LeafE<S.LiteralE<KS>>>,
-  KS[number],
-  KS[number],
-  never,
-  KS[number],
-  LiteralApi<KS>
-> {
+): DefaultSchema<unknown, KS[number], KS[number], KS[number], LiteralApi<KS>> {
   const ko = {}
   for (const k of literals) {
     ko[k] = true
@@ -57,7 +49,7 @@ export function literal<KS extends readonly string[]>(
         _AS: undefined as any,
         literals,
         matchS: (m) => (k) => m[k](k),
-        matchW: (m) => (k) => m[k](k)
+        matchW: (m) => (k) => m[k](k),
       })
     ),
     withDefaults,

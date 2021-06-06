@@ -99,30 +99,14 @@ export const interpreters: ((
       }
     }
     return miss()
-  })
+  }),
 ]
 
 const cache = new WeakMap()
 
-function parserFor<
-  ParserInput,
-  ParserError extends S.AnyError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError extends S.AnyError,
-  Encoded,
-  Api
->(
-  schema: Schema<
-    ParserInput,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
-): Parser<ParserInput, ParserError, ParsedShape> {
+function parserFor<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>(
+  schema: Schema<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>
+): Parser<ParserInput, any, ParsedShape> {
   if (cache.has(schema)) {
     return cache.get(schema)
   }
@@ -130,7 +114,7 @@ function parserFor<
     const parser: Parser<unknown, unknown, unknown> = (__) =>
       parserFor(schema.self())(__)
     cache.set(schema, parser)
-    return parser as Parser<ParserInput, ParserError, ParsedShape>
+    return parser as Parser<ParserInput, any, ParsedShape>
   }
   for (const interpreter of interpreters) {
     const _ = interpreter(schema)
@@ -142,7 +126,7 @@ function parserFor<
         }
         return x(__)
       }
-      return parser as Parser<ParserInput, ParserError, ParsedShape>
+      return parser as Parser<ParserInput, any, ParsedShape>
     }
   }
   if (hasContinuation(schema)) {
@@ -154,7 +138,7 @@ function parserFor<
       return x(__)
     }
     cache.set(schema, parser)
-    return parser as Parser<ParserInput, ParserError, ParsedShape>
+    return parser as Parser<ParserInput, any, ParsedShape>
   }
   throw new Error(`Missing parser integration for: ${schema.constructor}`)
 }

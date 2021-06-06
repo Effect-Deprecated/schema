@@ -21,15 +21,7 @@ export class JsonDecodingE
   }
 }
 
-export const jsonString: DefaultSchema<
-  string,
-  S.LeafE<JsonDecodingE>,
-  unknown,
-  unknown,
-  never,
-  string,
-  {}
-> = pipe(
+export const jsonString: DefaultSchema<string, unknown, unknown, string, {}> = pipe(
   S.identity((u): u is string => typeof u === "string"),
   S.constructor((n) => Th.succeed(n)),
   S.arbitrary((_) => _.anything()),
@@ -47,14 +39,8 @@ export const jsonString: DefaultSchema<
 
 export const jsonIdentifier = S.makeAnnotation<{}>()
 
-export const json: DefaultSchema<
-  unknown,
-  S.CompositionE<
-    S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>> | S.NextE<S.LeafE<JsonDecodingE>>
-  >,
-  unknown,
-  unknown,
-  never,
-  string,
-  {}
-> = pipe(string[">>>"](jsonString), withDefaults, S.annotate(jsonIdentifier, {}))
+export const json: DefaultSchema<unknown, unknown, unknown, string, {}> = pipe(
+  string[">>>"](jsonString),
+  withDefaults,
+  S.annotate(jsonIdentifier, {})
+)

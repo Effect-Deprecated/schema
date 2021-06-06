@@ -10,15 +10,7 @@ import { withDefaults } from "./withDefaults"
 
 export const stringIdentifier = S.makeAnnotation<{}>()
 
-export const string: DefaultSchema<
-  unknown,
-  S.RefinementE<S.LeafE<S.ParseStringE>>,
-  string,
-  string,
-  never,
-  string,
-  {}
-> = pipe(
+export const string: DefaultSchema<unknown, string, string, string, {}> = pipe(
   refinement(
     (u): u is string => typeof u === "string",
     (v) => S.leafE(S.parseStringE(v))
@@ -33,15 +25,7 @@ export const string: DefaultSchema<
 
 export const fromStringIdentifier = S.makeAnnotation<{}>()
 
-export const fromString: DefaultSchema<
-  string,
-  never,
-  string,
-  string,
-  never,
-  string,
-  {}
-> = pipe(
+export const fromString: DefaultSchema<string, string, string, string, {}> = pipe(
   S.identity((u): u is string => typeof u === "string"),
   S.arbitrary((_) => _.string()),
   S.mapApi(() => ({})),

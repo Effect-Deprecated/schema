@@ -9,15 +9,7 @@ import { withDefaults } from "./withDefaults"
 
 export const unknownIdentifier = S.makeAnnotation<{}>()
 
-export const unknown: DefaultSchema<
-  unknown,
-  never,
-  unknown,
-  unknown,
-  never,
-  unknown,
-  {}
-> = pipe(
+export const unknown: DefaultSchema<unknown, unknown, unknown, unknown, {}> = pipe(
   identity((_): _ is unknown => true),
   withDefaults,
   annotate(unknownIdentifier, {})

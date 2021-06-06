@@ -13,30 +13,12 @@ import { withDefaults } from "./withDefaults"
 
 export const nullableIdentifier = S.makeAnnotation<{ self: S.SchemaAny }>()
 
-export function nullable<
-  ParserInput,
-  ParserError extends S.AnyError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError extends S.AnyError,
-  Encoded,
-  Api
->(
-  self: S.Schema<
-    ParserInput,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
+export function nullable<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>(
+  self: S.Schema<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>
 ): DefaultSchema<
   ParserInput | null,
-  ParserError,
   O.Option<ParsedShape>,
   O.Option<ConstructorInput>,
-  ConstructorError,
   Encoded | null,
   Api
 > {

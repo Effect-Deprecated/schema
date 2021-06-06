@@ -9,15 +9,7 @@ import { withDefaults } from "./withDefaults"
 
 export const dateIdentifier = S.makeAnnotation<{}>()
 
-export const date: DefaultSchema<
-  unknown,
-  S.LeafE<S.ParseDateE>,
-  Date,
-  Date,
-  never,
-  string,
-  {}
-> = pipe(
+export const date: DefaultSchema<unknown, Date, Date, string, {}> = pipe(
   S.identity((u): u is Date => u instanceof Date),
   S.parser((u: unknown) => {
     if (typeof u !== "string" || u == null) {
@@ -38,15 +30,7 @@ export const date: DefaultSchema<
 
 export const dateMsIdentifier = S.makeAnnotation<{}>()
 
-export const dateMs: DefaultSchema<
-  unknown,
-  S.LeafE<S.ParseDateMsE>,
-  Date,
-  Date,
-  never,
-  number,
-  {}
-> = pipe(
+export const dateMs: DefaultSchema<unknown, Date, Date, number, {}> = pipe(
   date,
   S.parser((u) =>
     typeof u === "number"

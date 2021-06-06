@@ -35,22 +35,12 @@ export type ShapeFromSchemedOut<
 export type SchemaForSchemed<Self extends SchemedOut<S.SchemaAny>> = [
   Self[schemaField]
 ] extends [
-  S.Schema<
-    infer ParserInput,
-    infer ParserError,
-    any,
-    infer ConstructorInput,
-    infer ConstructorError,
-    infer Encoded,
-    infer Api
-  >
+  S.Schema<infer ParserInput, any, infer ConstructorInput, infer Encoded, infer Api>
 ]
   ? S.Schema<
       ParserInput,
-      ParserError,
       ShapeFromSchemedOut<Self>,
       ConstructorInput,
-      ConstructorError,
       Encoded,
       Api & S.ApiSelfType<ShapeFromSchemedOut<Self>>
     >
@@ -77,9 +67,9 @@ type ShapeFromClass<
 
 export const fromFields = Symbol()
 
-export function Schemed<
-  Self extends S.Schema<any, any, any, any, S.AnyError, any, any>
->(self: Self): Schemed<Self> {
+export function Schemed<Self extends S.Schema<any, any, any, any, any>>(
+  self: Self
+): Schemed<Self> {
   const of_ = Constructor.for(self)["|>"](unsafe)
   // @ts-expect-error
   return class {
