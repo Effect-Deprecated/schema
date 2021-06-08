@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.2](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.8.1...@effect-ts/schema@0.8.2) (2021-06-08)
+
+
+### Features
+
+* **schema:** add stable decorator ([0e4890e](https://github.com/Effect-TS/schema/commit/0e4890eab0cdfae4352ef6e02ceb57928c1053cd))
+
+
+
+
+
 ## [0.8.1](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.8.0...@effect-ts/schema@0.8.1) (2021-05-30)
 
 
