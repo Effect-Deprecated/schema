@@ -69,6 +69,8 @@ export interface Model<M, Self extends MO.SchemaAny>
   readonly Arbitrary: ArbitraryFor<SchemaForModel<M, Self>>
 }
 
+export const NameSym = Symbol()
+
 /**
  * @inject genericName
  */
@@ -76,6 +78,8 @@ export function Model<M>(__name?: string) {
   return <Self extends MO.SchemaAny>(self: Self): Model<M, Self> => {
     const schemed = S.Schemed(named(__name ?? "Model(Anonymous)")(self))
     const schema = S.schema(schemed)
+
+    Object.defineProperty(schemed, NameSym, { value: __name })
 
     Object.defineProperty(schemed, MO.SchemaContinuationSymbol, {
       value: schema
@@ -119,4 +123,49 @@ export function Model<M>(__name?: string) {
     // @ts-expect-error the following is correct
     return schemed
   }
+}
+
+export function stable<T, A extends MO.SchemaAny>(constructor: Model<T, A>) {
+  const schema = named(constructor[NameSym] ?? "Model(Anonymous)")(
+    S.schema(constructor)
+  )
+
+  Object.defineProperty(constructor, MO.SchemaContinuationSymbol, {
+    value: schema
+  })
+
+  Object.defineProperty(constructor, "Api", {
+    get() {
+      return schema.Api
+    }
+  })
+
+  Object.defineProperty(constructor, ">>>", {
+    value: schema[">>>"]
+  })
+
+  Object.defineProperty(constructor, "Parser", {
+    value: Parser.for(schema)
+  })
+
+  Object.defineProperty(constructor, "Constructor", {
+    value: Constructor.for(schema)
+  })
+
+  Object.defineProperty(constructor, "Encoder", {
+    value: Encoder.for(schema)
+  })
+
+  Object.defineProperty(constructor, "Guard", {
+    value: Guard.for(schema)
+  })
+
+  Object.defineProperty(constructor, "Arbitrary", {
+    value: Arbitrary.for(schema)
+  })
+
+  Object.defineProperty(constructor, "annotate", {
+    value: <Meta>(identifier: MO.Annotation<Meta>, meta: Meta) =>
+      new MO.SchemaAnnotated(schema, identifier, meta)
+  })
 }
