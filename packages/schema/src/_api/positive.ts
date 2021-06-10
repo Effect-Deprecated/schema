@@ -16,30 +16,16 @@ export const positiveIdentifier = S.makeAnnotation<{ self: S.SchemaAny }>()
 
 export function positive<
   ParserInput,
-  ParserError extends S.AnyError,
   ParsedShape extends number,
   ConstructorInput,
-  ConstructorError extends S.AnyError,
   Encoded,
   Api
 >(
-  self: S.Schema<
-    ParserInput,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
+  self: S.Schema<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>
 ): DefaultSchema<
   ParserInput,
-  S.CompositionE<S.PrevE<ParserError> | S.NextE<S.RefinementE<S.LeafE<S.PositiveE>>>>,
   ParsedShape & PositiveBrand,
   ConstructorInput,
-  S.CompositionE<
-    S.PrevE<ConstructorError> | S.NextE<S.RefinementE<S.LeafE<S.PositiveE>>>
-  >,
   Encoded,
   Api
 > {

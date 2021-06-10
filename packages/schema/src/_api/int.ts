@@ -17,15 +17,7 @@ export type Int = number & IntBrand
 
 export const intFromNumberIdentifier = S.makeAnnotation<{}>()
 
-export const intFromNumber: DefaultSchema<
-  number,
-  S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
-  Int,
-  number,
-  S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
-  number,
-  {}
-> = pipe(
+export const intFromNumber: DefaultSchema<number, Int, number, number, {}> = pipe(
   fromNumber,
   S.arbitrary((_) => _.integer()),
   S.refine(
@@ -33,8 +25,8 @@ export const intFromNumber: DefaultSchema<
     (n) => S.leafE(S.invalidIntegerE(n))
   ),
   S.encoder((_) => _ as number),
-  S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
-  S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
+  S.mapConstructorError((_) => (Chunk.unsafeHead((_ as any).errors) as any).error),
+  S.mapParserError((_) => (Chunk.unsafeHead((_ as any).errors) as any).error),
   S.mapApi(() => ({})),
   brand<Int>(),
   S.annotate(intFromNumberIdentifier, {})
@@ -44,13 +36,8 @@ export const stringIntFromStringIdentifier = S.makeAnnotation<{}>()
 
 export const stringIntFromString: DefaultSchema<
   string,
-  S.CompositionE<
-    | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
-    | S.PrevE<S.LeafE<S.ParseNumberE>>
-  >,
   Int,
   number,
-  S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
   string,
   S.ApiSelfType<Int>
 > = pipe(
@@ -63,18 +50,8 @@ export const stringIntIdentifier = S.makeAnnotation<{}>()
 
 export const stringInt: DefaultSchema<
   unknown,
-  S.CompositionE<
-    | S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>>
-    | S.NextE<
-        S.CompositionE<
-          | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
-          | S.PrevE<S.LeafE<S.ParseNumberE>>
-        >
-      >
-  >,
   Int,
   number,
-  S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
   string,
   S.ApiSelfType<Int>
 > = pipe(
@@ -85,15 +62,5 @@ export const stringInt: DefaultSchema<
 
 export const intIdentifier = S.makeAnnotation<{}>()
 
-export const int: DefaultSchema<
-  unknown,
-  S.CompositionE<
-    | S.NextE<S.RefinementE<S.LeafE<S.InvalidIntegerE>>>
-    | S.PrevE<S.RefinementE<S.LeafE<S.ParseNumberE>>>
-  >,
-  Int,
-  number,
-  S.RefinementE<S.LeafE<S.InvalidIntegerE>>,
-  number,
-  S.ApiSelfType<Int>
-> = pipe(number[">>>"](intFromNumber), brand<Int>(), S.annotate(intIdentifier, {}))
+export const int: DefaultSchema<unknown, Int, number, number, S.ApiSelfType<Int>> =
+  pipe(number[">>>"](intFromNumber), brand<Int>(), S.annotate(intIdentifier, {}))

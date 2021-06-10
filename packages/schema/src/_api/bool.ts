@@ -1,6 +1,5 @@
 import { pipe } from "@effect-ts/core/Function"
 
-import type { ParseBoolE } from "../_schema"
 import { makeAnnotation, parseBoolE } from "../_schema"
 import * as S from "../_schema"
 import * as Th from "../These"
@@ -10,15 +9,7 @@ import { withDefaults } from "./withDefaults"
 
 export const boolIdentifier = makeAnnotation<{}>()
 
-export const bool: DefaultSchema<
-  unknown,
-  S.RefinementE<S.LeafE<ParseBoolE>>,
-  boolean,
-  boolean,
-  never,
-  boolean,
-  {}
-> = pipe(
+export const bool: DefaultSchema<unknown, boolean, boolean, boolean, {}> = pipe(
   refinement(
     (u): u is boolean => typeof u === "boolean",
     (v) => S.leafE(parseBoolE(v))

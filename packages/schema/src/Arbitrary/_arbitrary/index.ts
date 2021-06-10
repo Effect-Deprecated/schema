@@ -23,29 +23,13 @@ export const interpreters: ((schema: S.SchemaAny) => O.Option<() => Gen<unknown>
       }
     }
     return miss()
-  })
+  }),
 ]
 
 const cache = new WeakMap()
 
-function for_<
-  ParserInput,
-  ParserError extends S.AnyError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError extends S.AnyError,
-  Encoded,
-  Api
->(
-  schema: S.Schema<
-    ParserInput,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
+function for_<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>(
+  schema: S.Schema<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>
 ): Gen<ParsedShape> {
   if (cache.has(schema)) {
     return cache.get(schema)

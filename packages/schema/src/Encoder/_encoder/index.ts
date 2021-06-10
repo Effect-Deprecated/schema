@@ -28,29 +28,13 @@ export const interpreters: ((
       return () => schema.encoder
     }
     return miss()
-  })
+  }),
 ]
 
 const cache = new WeakMap()
 
-function encoderFor<
-  ParserInput,
-  ParserError extends S.AnyError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError extends S.AnyError,
-  Encoded,
-  Api
->(
-  schema: S.Schema<
-    ParserInput,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
+function encoderFor<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>(
+  schema: S.Schema<ParserInput, ParsedShape, ConstructorInput, Encoded, Api>
 ): Encoder<ParsedShape, Encoded> {
   if (cache.has(schema)) {
     return cache.get(schema)

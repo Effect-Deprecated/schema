@@ -5,7 +5,7 @@ import type { Refinement } from "@effect-ts/core/Function"
 import { pipe } from "@effect-ts/core/Function"
 
 import * as S from "../_schema"
-import type { RefinementE } from "../_schema/error"
+//import type { RefinementE } from "../_schema/error"
 import { unknown } from "./unknown"
 import type { DefaultSchema } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
@@ -19,20 +19,12 @@ export const refinementIdentifier =
 export function refinement<E extends S.AnyError, NewParsedShape>(
   refinement: Refinement<unknown, NewParsedShape>,
   error: (value: unknown) => E
-): DefaultSchema<
-  unknown,
-  RefinementE<E>,
-  NewParsedShape,
-  unknown,
-  RefinementE<E>,
-  unknown,
-  {}
-> {
+): DefaultSchema<unknown, NewParsedShape, unknown, unknown, {}> {
   return pipe(
     unknown,
     S.refine(refinement, error),
-    S.mapParserError((e) => Chunk.unsafeHead(e.errors).error),
-    S.mapConstructorError((e) => Chunk.unsafeHead(e.errors).error),
+    S.mapParserError((e) => (Chunk.unsafeHead((e as any).errors) as any).error),
+    S.mapConstructorError((e) => (Chunk.unsafeHead((e as any).errors) as any).error),
     withDefaults,
     S.annotate(refinementIdentifier, { refinement, error })
   )

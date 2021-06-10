@@ -280,10 +280,8 @@ export const propertiesIdentifier = S.makeAnnotation<{ props: PropertyRecord }>(
 
 export type SchemaProperties<Props extends PropertyRecord> = DefaultSchema<
   unknown,
-  ParserErrorFromProperties<Props>,
   ShapeFromProperties<Props>,
   ConstructorFromProperties<Props>,
-  never,
   EncodedFromProperties<Props>,
   { props: Props }
 >

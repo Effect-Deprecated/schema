@@ -25,14 +25,8 @@ export type IntersectionSchema<
   Api
 > = DefaultSchema<
   unknown,
-  S.IntersectionE<
-    S.MemberE<0, S.ParserErrorOf<Self>> | S.MemberE<1, S.ParserErrorOf<That>>
-  >,
   S.ParsedShapeOf<Self> & S.ParsedShapeOf<That>,
   S.ConstructorInputOf<Self> & S.ConstructorInputOf<That>,
-  S.IntersectionE<
-    S.MemberE<0, S.ConstructorErrorOf<Self>> | S.MemberE<1, S.ConstructorErrorOf<That>>
-  >,
   S.EncodedOf<Self> & S.EncodedOf<That>,
   Api
 >
@@ -41,43 +35,21 @@ export const intersectIdentifier =
   S.makeAnnotation<{ self: S.SchemaUPI; that: S.SchemaUPI }>()
 
 export function intersect_<
-  ParserError extends S.AnyError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends S.AnyError,
   Encoded,
   Api,
-  ThatParserError extends S.AnyError,
   ThatParsedShape,
   ThatConstructorInput,
-  ThatConstructorError extends S.AnyError,
   ThatEncoded,
   ThatApi
 >(
-  self: S.Schema<
-    unknown,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >,
-  that: S.Schema<
-    unknown,
-    ThatParserError,
-    ThatParsedShape,
-    ThatConstructorInput,
-    ThatConstructorError,
-    ThatEncoded,
-    ThatApi
-  >
+  self: S.Schema<unknown, ParsedShape, ConstructorInput, Encoded, Api>,
+  that: S.Schema<unknown, ThatParsedShape, ThatConstructorInput, ThatEncoded, ThatApi>
 ): DefaultSchema<
   unknown,
-  S.IntersectionE<S.MemberE<0, ParserError> | S.MemberE<1, ThatParserError>>,
   ParsedShape & ThatParsedShape,
   ConstructorInput & ThatConstructorInput,
-  S.IntersectionE<S.MemberE<0, ConstructorError> | S.MemberE<1, ThatConstructorError>>,
   Encoded & ThatEncoded,
   IntersectionApi<Api, ThatApi>
 > {
@@ -101,8 +73,7 @@ export function intersect_<
       const left = Th.result(parseSelf(u))
       const right = Th.result(parseThat(u))
 
-      let errors =
-        Chunk.empty<S.MemberE<0, ParserError> | S.MemberE<1, ThatParserError>>()
+      let errors = Chunk.empty<S.MemberE<0, any> | S.MemberE<1, any>>()
 
       let errored = false
       let warned = false
@@ -110,29 +81,26 @@ export function intersect_<
       const intersection = {} as unknown as ParsedShape & ThatParsedShape
 
       if (left._tag === "Left") {
-        errors = Chunk.append_(errors, S.memberE(0, left.left as ParserError))
+        errors = Chunk.append_(errors, S.memberE(0, left.left as any))
 
         errored = true
       } else {
         const warnings = left.right.get(1)
         if (warnings._tag === "Some") {
-          errors = Chunk.append_(errors, S.memberE(0, warnings.value as ParserError))
+          errors = Chunk.append_(errors, S.memberE(0, warnings.value as any))
 
           warned = true
         }
         Object.assign(intersection, left.right.get(0))
       }
       if (right._tag === "Left") {
-        errors = Chunk.append_(errors, S.memberE(1, right.left as ThatParserError))
+        errors = Chunk.append_(errors, S.memberE(1, right.left as any))
 
         errored = true
       } else {
         const warnings = right.right.get(1)
         if (warnings._tag === "Some") {
-          errors = Chunk.append_(
-            errors,
-            S.memberE(1, warnings.value as ThatParserError)
-          )
+          errors = Chunk.append_(errors, S.memberE(1, warnings.value as any))
 
           warned = true
         }
@@ -155,10 +123,7 @@ export function intersect_<
       const left = Th.result(constructSelf(u))
       const right = Th.result(constructThat(u))
 
-      let errors =
-        Chunk.empty<
-          S.MemberE<0, ConstructorError> | S.MemberE<1, ThatConstructorError>
-        >()
+      let errors = Chunk.empty<S.MemberE<0, any> | S.MemberE<1, any>>()
 
       let errored = false
       let warned = false
@@ -166,32 +131,26 @@ export function intersect_<
       const intersection = {} as unknown as ParsedShape & ThatParsedShape
 
       if (left._tag === "Left") {
-        errors = Chunk.append_(errors, S.memberE(0, left.left as ConstructorError))
+        errors = Chunk.append_(errors, S.memberE(0, left.left as any))
 
         errored = true
       } else {
         const warnings = left.right.get(1)
         if (warnings._tag === "Some") {
-          errors = Chunk.append_(
-            errors,
-            S.memberE(0, warnings.value as ConstructorError)
-          )
+          errors = Chunk.append_(errors, S.memberE(0, warnings.value as any))
 
           warned = true
         }
         Object.assign(intersection, left.right.get(0))
       }
       if (right._tag === "Left") {
-        errors = Chunk.append_(errors, S.memberE(1, right.left as ThatConstructorError))
+        errors = Chunk.append_(errors, S.memberE(1, right.left as any))
 
         errored = true
       } else {
         const warnings = right.right.get(1)
         if (warnings._tag === "Some") {
-          errors = Chunk.append_(
-            errors,
-            S.memberE(1, warnings.value as ThatConstructorError)
-          )
+          errors = Chunk.append_(errors, S.memberE(1, warnings.value as any))
 
           warned = true
         }
@@ -212,7 +171,7 @@ export function intersect_<
     }),
     S.encoder((_): Encoded & ThatEncoded => ({
       ...encodeSelf(_),
-      ...encodeThat(_)
+      ...encodeThat(_),
     })),
     S.arbitrary((FC) => {
       const self = arbSelf(FC)
@@ -241,46 +200,14 @@ export function intersect_<
   )
 }
 
-export function intersect<
-  ThatParserError extends S.AnyError,
-  ThatParsedShape,
-  ThatConstructorInput,
-  ThatConstructorError extends S.AnyError,
-  ThatEncoded,
-  ThatApi
->(
-  that: S.Schema<
-    unknown,
-    ThatParserError,
-    ThatParsedShape,
-    ThatConstructorInput,
-    ThatConstructorError,
-    ThatEncoded,
-    ThatApi
-  >
-): <
-  ParserError extends S.AnyError,
-  ParsedShape,
-  ConstructorInput,
-  ConstructorError extends S.AnyError,
-  Encoded,
-  Api
->(
-  self: S.Schema<
-    unknown,
-    ParserError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError,
-    Encoded,
-    Api
-  >
+export function intersect<ThatParsedShape, ThatConstructorInput, ThatEncoded, ThatApi>(
+  that: S.Schema<unknown, ThatParsedShape, ThatConstructorInput, ThatEncoded, ThatApi>
+): <ParsedShape, ConstructorInput, Encoded, Api>(
+  self: S.Schema<unknown, ParsedShape, ConstructorInput, Encoded, Api>
 ) => DefaultSchema<
   unknown,
-  S.IntersectionE<S.MemberE<0, ParserError> | S.MemberE<1, ThatParserError>>,
   ParsedShape & ThatParsedShape,
   ConstructorInput & ThatConstructorInput,
-  S.IntersectionE<S.MemberE<0, ConstructorError> | S.MemberE<1, ThatConstructorError>>,
   Encoded & ThatEncoded,
   IntersectionApi<Api, ThatApi>
 > {
@@ -288,48 +215,25 @@ export function intersect<
 }
 
 export function intersectLazy<
-  ThatParserError extends S.AnyError,
   ThatParsedShape,
   ThatConstructorInput,
-  ThatConstructorError extends S.AnyError,
   ThatEncoded,
   ThatApi
 >(
   that: () => S.Schema<
     unknown,
-    ThatParserError,
     ThatParsedShape,
     ThatConstructorInput,
-    ThatConstructorError,
     ThatEncoded,
     ThatApi
   >
 ) {
-  return <
-    ParserError extends S.AnyError,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError extends S.AnyError,
-    Encoded,
-    Api
-  >(
-    self: S.Schema<
-      unknown,
-      ParserError,
-      ParsedShape,
-      ConstructorInput,
-      ConstructorError,
-      Encoded,
-      Api
-    >
+  return <ParsedShape, ConstructorInput, Encoded, Api>(
+    self: S.Schema<unknown, ParsedShape, ConstructorInput, Encoded, Api>
   ): DefaultSchema<
     unknown,
-    S.IntersectionE<S.MemberE<0, ParserError> | S.MemberE<1, ThatParserError>>,
     ParsedShape & ThatParsedShape,
     ConstructorInput & ThatConstructorInput,
-    S.IntersectionE<
-      S.MemberE<0, ConstructorError> | S.MemberE<1, ThatConstructorError>
-    >,
     Encoded & ThatEncoded,
     Api
   > => {

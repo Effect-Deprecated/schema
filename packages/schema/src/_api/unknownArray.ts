@@ -12,10 +12,8 @@ export const unknownArrayIdentifier = S.makeAnnotation<{}>()
 
 export const unknownArray: DefaultSchema<
   unknown,
-  S.RefinementE<S.LeafE<S.UnknownArrayE>>,
   readonly unknown[],
   unknown,
-  S.RefinementE<S.LeafE<S.UnknownArrayE>>,
   readonly unknown[],
   {}
 > = pipe(
@@ -24,8 +22,8 @@ export const unknownArray: DefaultSchema<
     (u): u is readonly unknown[] => Array.isArray(u),
     (val) => S.leafE(S.unknownArrayE(val))
   ),
-  S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
-  S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
+  S.mapParserError((_) => (Chunk.unsafeHead((_ as any).errors) as any).error),
+  S.mapConstructorError((_) => (Chunk.unsafeHead((_ as any).errors) as any).error),
   S.encoder((_) => _),
   withDefaults,
   S.annotate(unknownArrayIdentifier, {})

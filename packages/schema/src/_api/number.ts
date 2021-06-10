@@ -12,15 +12,7 @@ import { withDefaults } from "./withDefaults"
 
 export const fromNumberIdentifier = S.makeAnnotation<{}>()
 
-export const fromNumber: DefaultSchema<
-  number,
-  never,
-  number,
-  number,
-  never,
-  number,
-  {}
-> = pipe(
+export const fromNumber: DefaultSchema<number, number, number, number, {}> = pipe(
   S.identity((u): u is number => typeof u === "number"),
   S.arbitrary((_) => _.double()),
   S.mapApi(() => ({})),
@@ -30,15 +22,7 @@ export const fromNumber: DefaultSchema<
 
 export const numberIdentifier = S.makeAnnotation<{}>()
 
-export const number: DefaultSchema<
-  unknown,
-  S.RefinementE<S.LeafE<S.ParseNumberE>>,
-  number,
-  number,
-  never,
-  number,
-  {}
-> = pipe(
+export const number: DefaultSchema<unknown, number, number, number, {}> = pipe(
   refinement(
     (u): u is number => typeof u === "number",
     (v) => S.leafE(S.parseNumberE(v))
@@ -53,44 +37,27 @@ export const number: DefaultSchema<
 
 export const stringNumberFromStringIdentifier = S.makeAnnotation<{}>()
 
-export const stringNumberFromString: DefaultSchema<
-  string,
-  S.LeafE<S.ParseNumberE>,
-  number,
-  number,
-  never,
-  string,
-  {}
-> = pipe(
-  fromString[">>>"](
-    pipe(
-      number,
-      S.encoder((_) => String(_)),
-      S.parser((s) =>
-        pipe(Number.parseFloat(s), (n) =>
-          Number.isNaN(n) ? Th.fail(S.leafE(S.parseNumberE(s))) : Th.succeed(n)
+export const stringNumberFromString: DefaultSchema<string, number, number, string, {}> =
+  pipe(
+    fromString[">>>"](
+      pipe(
+        number,
+        S.encoder((_) => String(_)),
+        S.parser((s) =>
+          pipe(Number.parseFloat(s), (n) =>
+            Number.isNaN(n) ? Th.fail(S.leafE(S.parseNumberE(s))) : Th.succeed(n)
+          )
         )
       )
-    )
-  ),
-  S.mapParserError((e) => Chunk.unsafeHead(e.errors).error),
-  withDefaults,
-  S.annotate(stringNumberFromStringIdentifier, {})
-)
+    ),
+    S.mapParserError((e) => (Chunk.unsafeHead((e as any).errors) as any).error),
+    withDefaults,
+    S.annotate(stringNumberFromStringIdentifier, {})
+  )
 
 export const stringNumberIdentifier = S.makeAnnotation<{}>()
 
-export const stringNumber: DefaultSchema<
-  unknown,
-  S.CompositionE<
-    S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>> | S.NextE<S.LeafE<S.ParseNumberE>>
-  >,
-  number,
-  number,
-  never,
-  string,
-  {}
-> = pipe(
+export const stringNumber: DefaultSchema<unknown, number, number, string, {}> = pipe(
   string[">>>"](stringNumberFromString),
   withDefaults,
   S.annotate(stringNumberIdentifier, {})

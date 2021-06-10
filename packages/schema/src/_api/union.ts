@@ -120,23 +120,12 @@ export interface UnionApi<Props extends Record<PropertyKey, S.SchemaUPI>>
 
 export type SchemaUnion<Props extends Record<PropertyKey, S.SchemaUPI>> = DefaultSchema<
   unknown,
-  S.CompositionE<
-    | S.PrevE<S.LeafE<S.ExtractKeyE>>
-    | S.NextE<
-        S.UnionE<
-          {
-            [k in keyof Props]: S.MemberE<k, S.ParserErrorOf<Props[k]>>
-          }[keyof Props]
-        >
-      >
-  >,
   {
     [k in keyof Props]: S.ParsedShapeOf<Props[k]>
   }[keyof Props],
   {
     [k in keyof Props]: S.ParsedShapeOf<Props[k]>
   }[keyof Props],
-  never,
   {
     [k in keyof Props]: S.EncodedOf<Props[k]>
   }[keyof Props],
@@ -172,7 +161,7 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
         k,
         "props" in s.Api && isPropertyRecord(s.Api["props"])
           ? tagsFromProps(s.Api["props"])
-          : {}
+          : {},
       ] as const
   )
 
@@ -196,7 +185,7 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
         key: tagField,
         index: D.fromArray(tags),
         reverse: D.fromArray(tags.map(({ tuple: [a, b] }) => tuple(b, a))),
-        values: tags.map((_) => _.get(0))
+        values: tags.map((_) => _.get(0)),
       })
     }
 
@@ -276,7 +265,7 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
           )
         )
       } else {
-        // @ts-expect-error
+        // // @ts-expect-error
         return Th.mapError_(parsers[tag.value.index[u[tag.value.key]]](u), (e) =>
           S.compositionE(
             Chunk.single(
@@ -296,7 +285,6 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
       const res = parser(u)
 
       if (res.effect._tag === "Right") {
-        // @ts-expect-error
         return Th.mapError_(res, (e) =>
           S.compositionE(Chunk.single(S.nextE(S.unionE(Chunk.single(S.memberE(k, e))))))
         )
@@ -339,7 +327,7 @@ export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
               }
             }
             throw new Error(`bug: can't find any valid matcher`)
-          }
+          },
         } as UnionApi<Props>)
     ),
     withDefaults,

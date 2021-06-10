@@ -16,18 +16,16 @@ export const nonEmptyStringFromStringIdentifier = S.makeAnnotation<{}>()
 
 export const nonEmptyStringFromString: DefaultSchema<
   string,
-  S.RefinementE<S.LeafE<S.NonEmptyE<string>>>,
   NonEmptyString,
   string,
-  S.RefinementE<S.LeafE<S.NonEmptyE<string>>>,
   string,
   {}
 > = pipe(
   fromString,
   S.arbitrary((FC) => FC.string({ minLength: 1 })),
   nonEmpty,
-  S.mapParserError((_) => Chunk.unsafeHead(_.errors).error),
-  S.mapConstructorError((_) => Chunk.unsafeHead(_.errors).error),
+  S.mapParserError((_) => (Chunk.unsafeHead((_ as any).errors) as any).error),
+  S.mapConstructorError((_) => (Chunk.unsafeHead((_ as any).errors) as any).error),
   brand<NonEmptyString>(),
   S.annotate(nonEmptyStringFromStringIdentifier, {})
 )
@@ -36,13 +34,8 @@ export const nonEmptyStringIdentifier = S.makeAnnotation<{}>()
 
 export const nonEmptyString: DefaultSchema<
   unknown,
-  S.CompositionE<
-    | S.NextE<S.RefinementE<S.LeafE<S.NonEmptyE<string>>>>
-    | S.PrevE<S.RefinementE<S.LeafE<S.ParseStringE>>>
-  >,
   NonEmptyString,
   string,
-  S.RefinementE<S.LeafE<S.NonEmptyE<string>>>,
   string,
   S.ApiSelfType<NonEmptyString>
 > = pipe(
