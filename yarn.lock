@@ -374,7 +374,7 @@
   resolved "https://registry.yarnpkg.com/@effect-ts/build-utils/-/build-utils-0.20.10.tgz#c089fc1400fa1fb3548cc54f65d859d2d247f1ba"
   integrity sha512-S+ldty7iKDdXtxdNmsgNCqnmdw9evOj0G3UWGEeUuzjh5NEwfL1npEiG0uxGH/0+rczKZM6XNmS+QtgdEaBVOg==
 
-"@effect-ts/core@^0.40.0", "@effect-ts/core@^0.40.8":
+"@effect-ts/core@^0.40.8":
   version "0.40.8"
   resolved "https://registry.yarnpkg.com/@effect-ts/core/-/core-0.40.8.tgz#18ea172e90174fe52a55d174b90ec4d3c3581ea8"
   integrity sha512-5lr8WrJ+5Pfx4VTOpv6GdmrQdsB7fhtjaAeEGD5vYE5jaCewMUiKIpWzXiJZoGfTRnotyAB+aYVCFeC4McFlBw==
@@ -8259,10 +8259,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@4.4.0-dev.20210625:
-  version "4.4.0-dev.20210625"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.0-dev.20210625.tgz#0a22fef024138ff6f2d9c660006a5cb6984307dd"
-  integrity sha512-ThG1wgNkWHH2vdXHOfT2docBIOFTEoRiLqyQIm+nfP9t9bS1Nd7Ze268vCXKhItdhIrUQ4scTRyw7xdiHEHo+A==
+typescript@4.4.0-dev.20210626:
+  version "4.4.0-dev.20210626"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.0-dev.20210626.tgz#70aa1d42543aaf8f144a6b30f995be2614644d68"
+  integrity sha512-MFcWObbYbLlJi6WxfF7hv4YtR3hv8s7Mh68kBsV1v3jW5SVLcs2KNEPRPxLPHJlKXm8CRKjhb0iukS5qfOI9HQ==
 
 typescript@next:
   version "4.4.0-dev.20210530"
