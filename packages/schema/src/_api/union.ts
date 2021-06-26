@@ -143,16 +143,15 @@ export type SchemaUnion<Props extends Record<PropertyKey, S.SchemaUPI>> = Defaul
   UnionApi<Props>
 >
 
-export const unionIdentifier =
-  S.makeAnnotation<{
-    props: Record<PropertyKey, S.SchemaUPI>
-    tag: O.Option<{
-      key: string
-      index: D.Dictionary<string>
-      reverse: D.Dictionary<string>
-      values: readonly string[]
-    }>
-  }>()
+export const unionIdentifier = S.makeAnnotation<{
+  props: Record<PropertyKey, S.SchemaUPI>
+  tag: O.Option<{
+    key: string
+    index: D.Dictionary<string>
+    reverse: D.Dictionary<string>
+    values: readonly string[]
+  }>
+}>()
 
 export function union<Props extends Record<PropertyKey, S.SchemaUPI>>(
   props: Props & EnforceNonEmptyRecord<Props>

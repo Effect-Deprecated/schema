@@ -416,8 +416,9 @@ export function props<Props extends PropertyRecord>(
       )
     }
 
-    let errors =
-      Chunk.empty<S.OptionalKeyE<string, unknown> | S.RequiredKeyE<string, unknown>>()
+    let errors = Chunk.empty<
+      S.OptionalKeyE<string, unknown> | S.RequiredKeyE<string, unknown>
+    >()
 
     let isError = false
 
