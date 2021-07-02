@@ -11,8 +11,7 @@ module.exports = {
   setupFilesAfterEnv: ["<rootDir>/scripts/jest-setup-after-env.ts"],
   modulePathIgnorePatterns: [
     "<rootDir>/packages/.*/build",
-    "<rootDir>/packages/.*/compiler-debug",
-    "<rootDir>/_tmp"
+    "<rootDir>/packages/.*/dist"
   ],
   verbose: true,
   globals: {
