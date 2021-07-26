@@ -119,4 +119,62 @@ describe("Props", () => {
     expect(await T.runPromise(matchStringOrNumberDef("ok"))).toEqual({ a: 1 })
     expect(await T.runPromise(matchStringOrNumberWDef("ok"))).toEqual({ b: 1 })
   })
+
+  it("optional", async () => {
+    const A = S.props({
+      name: S.prop(string),
+      opt: S.prop(string).opt()
+    })
+
+    class A2 extends S.Model<A2>()(
+      S.props({
+        name: S.prop(string),
+        opt: S.prop(string).opt()
+      })
+    ) {}
+
+    const parse = A.Parser["|>"](S.condemnFail)
+    const construct = A.Constructor["|>"](S.condemnFail)
+    expect(await T.runPromiseExit(parse({ name: "abc" }))).toEqual(
+      Ex.succeed({ name: "abc" })
+    )
+    expect(
+      await T.runPromiseExit(
+        parse({ name: "abc", opt: undefined }["|>"](JSON.stringify)["|>"](JSON.parse))
+      )
+    ).toEqual(
+      Ex.succeed({
+        name: "abc"
+      })
+    )
+    expect(await T.runPromiseExit(parse({ name: "abc", opt: undefined }))).toEqual(
+      Ex.succeed({
+        name: "abc"
+      })
+    )
+
+    expect(await T.runPromiseExit(construct({ name: "abc" }))).toEqual(
+      Ex.succeed({ name: "abc" })
+    )
+
+    expect(await T.runPromiseExit(construct({ name: "abc", opt: undefined }))).toEqual(
+      Ex.succeed({
+        name: "abc"
+      })
+    )
+
+    expect(
+      A.Encoder(await T.runPromise(construct({ name: "abc", opt: undefined })))
+    ).toEqual({
+      name: "abc"
+    })
+
+    expect(new A2({ name: "abc", opt: undefined })).toEqual({
+      name: "abc",
+      opt: undefined
+    })
+    expect(A2.Encoder(new A2({ name: "abc", opt: undefined }))).toEqual({
+      name: "abc"
+    })
+  })
 })
