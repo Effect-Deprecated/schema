@@ -35,10 +35,10 @@ const cache = new WeakMap()
 
 function encoderFor<
   ParserInput,
-  ParserError extends S.AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends S.AnyError,
+  ConstructorError,
   Encoded,
   Api
 >(

@@ -12,10 +12,10 @@ import { unsafe } from "./condemn"
 
 export interface SchemaDefaultSchema<
   ParserInput,
-  ParserError extends MO.AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends MO.AnyError,
+  ConstructorError,
   Encoded,
   Api
 > extends Schema<
@@ -59,10 +59,10 @@ export interface SchemaDefaultSchema<
 
 export type DefaultSchema<
   ParserInput,
-  ParserError extends MO.AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends MO.AnyError,
+  ConstructorError,
   Encoded,
   Api
 > = SchemaDefaultSchema<
@@ -89,9 +89,9 @@ type CarryFromApi<Api> = UnionToIntersection<
 export function withDefaults<
   ParserInput,
   ParsedShape,
-  ParserError extends MO.AnyError,
+  ParserError,
   ConstructorInput,
-  ConstructorError extends MO.AnyError,
+  ConstructorError,
   Encoded,
   Api
 >(

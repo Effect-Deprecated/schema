@@ -15,7 +15,7 @@ export const refinementIdentifier = S.makeAnnotation<{
   error: (value: unknown) => unknown
 }>()
 
-export function refinement<E extends S.AnyError, NewParsedShape>(
+export function refinement<E, NewParsedShape>(
   refinement: Refinement<unknown, NewParsedShape>,
   error: (value: unknown) => E
 ): DefaultSchema<

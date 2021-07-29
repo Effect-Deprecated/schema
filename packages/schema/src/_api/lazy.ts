@@ -1,14 +1,14 @@
-import type { AnyError, Schema } from "../_schema"
+import type { Schema } from "../_schema"
 import { SchemaLazy } from "../_schema"
 import type { DefaultSchema } from "./withDefaults"
 import { withDefaults } from "./withDefaults"
 
 export function lazy<
   ParserInput,
-  ParserError extends AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends AnyError,
+  ConstructorError,
   Encoded,
   Api
 >(

@@ -18,10 +18,10 @@ export const fromChunkIdentifier = makeAnnotation<{ self: S.SchemaAny }>()
 
 export function fromChunk<
   ParserInput,
-  ParserError extends S.AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends S.AnyError,
+  ConstructorError,
   Encoded,
   Api
 >(
@@ -95,10 +95,10 @@ export function fromChunk<
 export const chunkIdentifier = makeAnnotation<{ self: S.SchemaAny }>()
 
 export function chunk<
-  ParserError extends S.AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends S.AnyError,
+  ConstructorError,
   Encoded,
   Api
 >(

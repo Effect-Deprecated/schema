@@ -5,7 +5,7 @@ import type * as fc from "fast-check"
 
 import type * as Th from "../These"
 import type { Annotation } from "./annotation"
-import type { AnyError, CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
+import type { CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
 import type { ApiSelfType, Schema, SchemaAny } from "./schema"
 import {
   SchemaAnnotated,
@@ -24,14 +24,7 @@ import {
 } from "./schema"
 
 export function opaque<Shape>() {
-  return <
-    ConstructorInput,
-    ConstructorError extends AnyError,
-    ParserInput,
-    ParserError extends AnyError,
-    Encoded,
-    Api
-  >(
+  return <ConstructorInput, ConstructorError, ParserInput, ParserError, Encoded, Api>(
     schema: Schema<
       ParserInput,
       ParserError,
@@ -55,10 +48,10 @@ export function opaque<Shape>() {
 export function named<Name extends string>(name: Name) {
   return <
     ParserInput,
-    ParserError extends AnyError,
+    ParserError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError extends AnyError,
+    ConstructorError,
     Encoded,
     Api
   >(
@@ -90,12 +83,12 @@ export function identity<A>(
 
 export function constructor<
   NewConstructorInput,
-  NewConstructorError extends AnyError,
+  NewConstructorError,
   ParserInput,
-  ParserError extends AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends AnyError,
+  ConstructorError,
   Encoded,
   Api
 >(f: (_: NewConstructorInput) => Th.These<NewConstructorError, ParsedShape>) {
@@ -122,12 +115,12 @@ export function constructor<
 
 export function constructor_<
   NewConstructorInput,
-  NewConstructorError extends AnyError,
+  NewConstructorError,
   ParserInput,
-  ParserError extends AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends AnyError,
+  ConstructorError,
   Encoded,
   Api
 >(
@@ -155,12 +148,12 @@ export function constructor_<
 
 export function parser<
   NewParserInput,
-  NewParserError extends AnyError,
+  NewParserError,
   ParserInput,
-  ParserError extends AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends AnyError,
+  ConstructorError,
   Encoded,
   Api
 >(f: (_: NewParserInput) => Th.These<NewParserError, ParsedShape>) {
@@ -187,12 +180,12 @@ export function parser<
 
 export function parser_<
   NewParserInput,
-  NewParserError extends AnyError,
+  NewParserError,
   ParserInput,
-  ParserError extends AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends AnyError,
+  ConstructorError,
   Encoded,
   Api
 >(
@@ -221,14 +214,7 @@ export function parser_<
 export function arbitrary<A extends ParsedShape, ParsedShape>(
   f: (_: typeof fc) => fc.Arbitrary<A>
 ) {
-  return <
-    ParserInput,
-    ParserError extends AnyError,
-    ConstructorInput,
-    ConstructorError extends AnyError,
-    Encoded,
-    Api
-  >(
+  return <ParserInput, ParserError, ConstructorInput, ConstructorError, Encoded, Api>(
     self: Schema<
       ParserInput,
       ParserError,
@@ -251,10 +237,10 @@ export function arbitrary<A extends ParsedShape, ParsedShape>(
 
 export function arbitrary_<
   ParserInput,
-  ParserError extends AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends AnyError,
+  ConstructorError,
   Encoded,
   Api
 >(
@@ -281,14 +267,7 @@ export function arbitrary_<
 }
 
 export function encoder<ParsedShape, A>(f: (_: ParsedShape) => A) {
-  return <
-    ParserInput,
-    ParserError extends AnyError,
-    ConstructorInput,
-    ConstructorError extends AnyError,
-    Encoded,
-    Api
-  >(
+  return <ParserInput, ParserError, ConstructorInput, ConstructorError, Encoded, Api>(
     self: Schema<
       ParserInput,
       ParserError,
@@ -311,10 +290,10 @@ export function encoder<ParsedShape, A>(f: (_: ParsedShape) => A) {
 
 export function encoder_<
   ParserInput,
-  ParserError extends AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends AnyError,
+  ConstructorError,
   Encoded,
   Api,
   A
@@ -341,21 +320,10 @@ export function encoder_<
   return new SchemaEncoder(self, f)
 }
 
-export function refine<
-  E extends AnyError,
-  NewParsedShape extends ParsedShape,
-  ParsedShape
->(
+export function refine<E, NewParsedShape extends ParsedShape, ParsedShape>(
   refinement: Refinement<ParsedShape, NewParsedShape>,
   error: (value: ParsedShape) => E
-): <
-  ParserInput,
-  ParserError extends AnyError,
-  ConstructorInput,
-  ConstructorError extends AnyError,
-  Encoded,
-  Api
->(
+): <ParserInput, ParserError, ConstructorInput, ConstructorError, Encoded, Api>(
   self: Schema<
     ParserInput,
     ParserError,
@@ -377,17 +345,8 @@ export function refine<
   return (self) => new SchemaRefinement(self, refinement, error)
 }
 
-export function mapParserError<E extends AnyError, E1 extends AnyError>(
-  f: (e: E) => E1
-) {
-  return <
-    ParserInput,
-    ParsedShape,
-    ConstructorInput,
-    ConstructorError extends AnyError,
-    Encoded,
-    Api
-  >(
+export function mapParserError<E, E1>(f: (e: E) => E1) {
+  return <ParserInput, ParsedShape, ConstructorInput, ConstructorError, Encoded, Api>(
     self: Schema<
       ParserInput,
       E,
@@ -408,17 +367,8 @@ export function mapParserError<E extends AnyError, E1 extends AnyError>(
   > => new SchemaMapParserError(self, f)
 }
 
-export function mapConstructorError<E extends AnyError, E1 extends AnyError>(
-  f: (e: E) => E1
-) {
-  return <
-    ParserInput,
-    ParserError extends AnyError,
-    ParsedShape,
-    ConstructorInput,
-    Encoded,
-    Api
-  >(
+export function mapConstructorError<E, E1>(f: (e: E) => E1) {
+  return <ParserInput, ParserError, ParsedShape, ConstructorInput, Encoded, Api>(
     self: Schema<
       ParserInput,
       ParserError,
@@ -442,10 +392,10 @@ export function mapConstructorError<E extends AnyError, E1 extends AnyError>(
 export function mapApi<E, E1>(f: (e: E) => E1) {
   return <
     ParserInput,
-    ParserError extends AnyError,
+    ParserError,
     ParsedShape,
     ConstructorInput,
-    ConstructorError extends AnyError,
+    ConstructorError,
     Encoded
   >(
     self: Schema<
@@ -470,10 +420,10 @@ export function mapApi<E, E1>(f: (e: E) => E1) {
 
 export function identified_<
   ParserInput,
-  ParserError extends AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends AnyError,
+  ConstructorError,
   Encoded,
   Api,
   Meta
@@ -517,10 +467,10 @@ export function annotate<Meta>(
 
 export function guard_<
   ParserInput,
-  ParserError extends AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends AnyError,
+  ConstructorError,
   Encoded,
   Api
 >(
@@ -548,14 +498,7 @@ export function guard_<
 
 export function guard<ParsedShape>(
   guard: (u: unknown) => u is ParsedShape
-): <
-  ParserInput,
-  ParserError extends AnyError,
-  ConstructorInput,
-  ConstructorError extends AnyError,
-  Encoded,
-  Api
->(
+): <ParserInput, ParserError, ConstructorInput, ConstructorError, Encoded, Api>(
   self: Schema<
     ParserInput,
     ParserError,
@@ -579,16 +522,16 @@ export function guard<ParsedShape>(
 
 export function into_<
   ParserInput,
-  ParserError extends AnyError,
+  ParserError,
   ParsedShape,
   ConstructorInput,
-  ConstructorError extends AnyError,
+  ConstructorError,
   Encoded,
   Api,
-  ThatParserError extends AnyError,
+  ThatParserError,
   ThatParsedShape,
   ThatConstructorInput,
-  ThatConstructorError extends AnyError,
+  ThatConstructorError,
   ThatApi
 >(
   self: Schema<
@@ -623,10 +566,10 @@ export function into_<
 
 export function into<
   Api,
-  ThatParserError extends AnyError,
+  ThatParserError,
   ThatParsedShape,
   ThatConstructorInput,
-  ThatConstructorError extends AnyError,
+  ThatConstructorError,
   ThatApi,
   ParsedShape
 >(
@@ -639,13 +582,7 @@ export function into<
     ParsedShape,
     ThatApi
   >
-): <
-  ParserInput,
-  ParserError extends AnyError,
-  ConstructorInput,
-  ConstructorError extends AnyError,
-  Encoded
->(
+): <ParserInput, ParserError, ConstructorInput, ConstructorError, Encoded>(
   self: Schema<
     ParserInput,
     ParserError,
