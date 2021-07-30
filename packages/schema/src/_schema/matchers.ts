@@ -1,4 +1,4 @@
-// tracing: off
+// ets_tracing: off
 
 import { pattern } from "@effect-ts/core/Utils"
 

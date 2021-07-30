@@ -1,4 +1,4 @@
-// tracing: off
+// ets_tracing: off
 import type * as MO from "../_schema"
 import type { ApiSelfType, Schema } from "../_schema/schema"
 import type { DefaultSchema } from "./withDefaults"

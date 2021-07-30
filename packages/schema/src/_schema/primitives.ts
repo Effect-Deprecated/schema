@@ -1,4 +1,4 @@
-// tracing: off
+// ets_tracing: off
 
 import type { Refinement } from "@effect-ts/system/Function"
 import type * as fc from "fast-check"

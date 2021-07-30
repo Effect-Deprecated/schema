@@ -1,4 +1,4 @@
-// tracing: off
+// ets_tracing: off
 
 import type { Refinement } from "@effect-ts/core/Function"
 import { LazyGetter } from "@effect-ts/core/Utils"

@@ -1,4 +1,4 @@
-// tracing: off
+// ets_tracing: off
 import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import * as O from "@effect-ts/core/Option"
 

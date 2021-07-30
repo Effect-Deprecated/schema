@@ -1,4 +1,4 @@
-// tracing: off
+// ets_tracing: off
 
 import * as O from "@effect-ts/core/Option"
 import type * as fc from "fast-check"

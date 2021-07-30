@@ -1,4 +1,4 @@
-// tracing: off
+// ets_tracing: off
 
 import * as Tp from "@effect-ts/core/Collections/Immutable/Tuple"
 import { _A, _E } from "@effect-ts/core/Effect"

@@ -1,4 +1,4 @@
-// tracing: off
+// ets_tracing: off
 
 // based on the work of Giulio Canti in io-ts (3.x poc stage)
 

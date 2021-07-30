@@ -1,4 +1,4 @@
-// tracing: off
+// ets_tracing: off
 
 import * as St from "@effect-ts/core/Structural"
 
