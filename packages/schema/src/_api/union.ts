@@ -38,14 +38,12 @@ export interface MatchS<Props extends Record<PropertyKey, S.SchemaUPI>, AS> {
       >]
     ) => Result
   ): (ks: AS) => Result
-  <Result>(
-    mat: {
-      [K in keyof Props]: (
-        _: S.ParsedShapeOf<Props[K]>,
-        __: S.ParsedShapeOf<Props[K]>
-      ) => Result
-    }
-  ): (ks: AS) => Result
+  <Result>(mat: {
+    [K in keyof Props]: (
+      _: S.ParsedShapeOf<Props[K]>,
+      __: S.ParsedShapeOf<Props[K]>
+    ) => Result
+  }): (ks: AS) => Result
 }
 
 export interface MatchW<Props extends Record<PropertyKey, S.SchemaUPI>, AS> {
