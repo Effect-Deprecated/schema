@@ -16,8 +16,7 @@ module.exports = {
   verbose: true,
   globals: {
     "ts-jest": {
-      tsconfig: "<rootDir>/tsconfig.jest.json",
-      compiler: "ttypescript"
+      tsconfig: "<rootDir>/tsconfig.jest.json"
     }
   }
 }
