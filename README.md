@@ -1,4 +1,4 @@
-## Welcome to Effect-TS - Schema
+## Welcome to Effect-TS - Schema [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/Effect-TS/schema)
 
 Please follow up to: [https://github.com/Effect-TS/schema/tree/master/packages/schema](https://github.com/Effect-TS/schema/tree/master/packages/schema)
 
