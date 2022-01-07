@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.13.0...@effect-ts/schema@0.14.0) (2022-01-07)
+
+
+### Bug Fixes
+
+* default value for a property must be applied not only when omitted, but also when provided as undefined. ([bbd3666](https://github.com/Effect-TS/schema/commit/bbd3666c5f0d5d5728c595dff26c8bc964066834))
+
+
+### Features
+
+* **schema:** Add "Either" ([15373c8](https://github.com/Effect-TS/schema/commit/15373c84203013f96144853167d6dfaae9d5ae1b))
+* **schema:** Add "Set" ([e6ca641](https://github.com/Effect-TS/schema/commit/e6ca64185b60ae22d50c759dca30c4a3a22edab1))
+* **schema:** Add Dictionary. ([b272e1f](https://github.com/Effect-TS/schema/commit/b272e1f1eb3df93c4a5f27a96ac9152d33007123))
+* **schema:** Add tuple and map. ([cca9200](https://github.com/Effect-TS/schema/commit/cca92001354f69e6e62e7e55b479ffcf7a910c80))
+
+
+
+
+
 # [0.13.0](https://github.com/Effect-TS/schema/compare/@effect-ts/schema@0.12.0...@effect-ts/schema@0.13.0) (2022-01-07)
 
 **Note:** Version bump only for package @effect-ts/schema
