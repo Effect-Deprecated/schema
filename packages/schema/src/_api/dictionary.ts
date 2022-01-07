@@ -61,8 +61,9 @@ export function dictionary<
         S.compositionE(Chunk.single(S.prevE(S.leafE(S.unknownRecordE(_)))))
       )
     }
-    let errors =
-      Chunk.empty<S.OptionalKeyE<string, unknown> | S.RequiredKeyE<string, unknown>>()
+    let errors = Chunk.empty<
+      S.OptionalKeyE<string, unknown> | S.RequiredKeyE<string, unknown>
+    >()
 
     let isError = false
 
