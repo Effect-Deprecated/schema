@@ -10,10 +10,10 @@ import * as S from "./schemed"
 
 export type SchemaForModel<M, Self extends MO.SchemaAny> = MO.Schema<
   MO.ParserInputOf<Self>,
-  MO.ParserErrorOf<Self>,
+  MO.NamedE<string, MO.ParserErrorOf<Self>>,
   M,
   MO.ConstructorInputOf<Self>,
-  MO.ConstructorErrorOf<Self>,
+  MO.NamedE<string, MO.ConstructorErrorOf<Self>>,
   MO.EncodedOf<Self>,
   MO.ApiOf<Self> & MO.ApiSelfType<M>
 >
@@ -47,17 +47,7 @@ export type ModelFor<M, Self extends MO.SchemaAny> = M extends MO.ParsedShapeOf<
 
 export interface Model<M, Self extends MO.SchemaAny>
   extends S.Schemed<Self>,
-    MO.Schema<
-      MO.ParserInputOf<Self>,
-      MO.NamedE<string, MO.ParserErrorOf<Self>>,
-      M,
-      MO.ConstructorInputOf<Self>,
-      MO.NamedE<string, MO.ConstructorErrorOf<Self>>,
-      MO.EncodedOf<Self>,
-      MO.ApiOf<Self>
-    > {
-  [S.schemaField]: Self
-
+    SchemaForModel<M, Self> {
   readonly Parser: ParserFor<SchemaForModel<M, Self>>
 
   readonly Constructor: ConstructorFor<SchemaForModel<M, Self>>
