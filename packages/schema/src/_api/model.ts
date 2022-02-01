@@ -7,15 +7,34 @@ import * as Encoder from "../Encoder"
 import * as Guard from "../Guard"
 import * as Parser from "../Parser"
 import * as S from "./schemed"
+import type { SchemaDefaultSchema } from "./withDefaults"
 
-export type SchemaForModel<M, Self extends MO.SchemaAny> = MO.Schema<
+interface SchemaModel<
+  ParserInput,
+  ParserError extends MO.AnyError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError extends MO.AnyError,
+  Encoded,
+  Api
+> extends SchemaDefaultSchema<
+    ParserInput,
+    MO.NamedE<string, ParserError>,
+    ParsedShape,
+    ConstructorInput,
+    MO.NamedE<string, ConstructorError>,
+    Encoded,
+    Api & MO.ApiSelfType<ParsedShape>
+  > {}
+
+export type SchemaForModel<M, Self extends MO.SchemaAny> = SchemaModel<
   MO.ParserInputOf<Self>,
-  MO.NamedE<string, MO.ParserErrorOf<Self>>,
+  MO.ParserErrorOf<Self>,
   M,
   MO.ConstructorInputOf<Self>,
-  MO.NamedE<string, MO.ConstructorErrorOf<Self>>,
+  MO.ConstructorErrorOf<Self>,
   MO.EncodedOf<Self>,
-  MO.ApiOf<Self> & MO.ApiSelfType<M>
+  MO.ApiOf<Self>
 >
 
 export type ParserFor<Self extends MO.SchemaAny> = Parser.Parser<
@@ -45,19 +64,45 @@ export type ModelFor<M, Self extends MO.SchemaAny> = M extends MO.ParsedShapeOf<
   ? SchemaForModel<M, Self>
   : SchemaForModel<MO.ParsedShapeOf<Self>, Self>
 
-export interface Model<M, Self extends MO.SchemaAny>
-  extends S.Schemed<Self>,
-    SchemaForModel<M, Self> {
-  readonly Parser: ParserFor<SchemaForModel<M, Self>>
+export interface ModelInfer<M, Self extends MO.SchemaAny>
+  extends Model<
+    MO.ParserInputOf<Self>,
+    MO.ParserErrorOf<Self>,
+    M,
+    MO.ConstructorInputOf<Self>,
+    MO.ConstructorErrorOf<Self>,
+    MO.EncodedOf<Self>,
+    MO.ApiOf<Self>
+  > {}
 
-  readonly Constructor: ConstructorFor<SchemaForModel<M, Self>>
-
-  readonly Encoder: EncoderFor<SchemaForModel<M, Self>>
-
-  readonly Guard: GuardFor<SchemaForModel<M, Self>>
-
-  readonly Arbitrary: ArbitraryFor<SchemaForModel<M, Self>>
-}
+export interface Model<
+  ParserInput,
+  ParserError extends MO.AnyError,
+  ParsedShape,
+  ConstructorInput,
+  ConstructorError extends MO.AnyError,
+  Encoded,
+  Api
+> extends S.Schemed<
+      SchemaModel<
+        ParserInput,
+        ParserError,
+        ParsedShape,
+        ConstructorInput,
+        ConstructorError,
+        Encoded,
+        Api
+      >
+    >,
+    SchemaModel<
+      ParserInput,
+      ParserError,
+      ParsedShape,
+      ConstructorInput,
+      ConstructorError,
+      Encoded,
+      Api
+    > {}
 
 export const NameSym = Symbol()
 
@@ -65,7 +110,33 @@ export const NameSym = Symbol()
  * @inject genericName
  */
 export function Model<M>(__name?: string) {
-  return <Self extends MO.SchemaAny>(self: Self): Model<M, Self> => {
+  return <
+    ParserInput,
+    ParserError extends MO.AnyError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError extends MO.AnyError,
+    Encoded,
+    Api
+  >(
+    self: MO.Schema<
+      ParserInput,
+      ParserError,
+      ParsedShape,
+      ConstructorInput,
+      ConstructorError,
+      Encoded,
+      Api
+    >
+  ): Model<
+    ParserInput,
+    ParserError,
+    ParsedShape,
+    ConstructorInput,
+    ConstructorError,
+    Encoded,
+    Api
+  > => {
     const schemed = S.Schemed(named(__name ?? "Model(Anonymous)")(self))
     const schema = S.schema(schemed)
 
@@ -115,7 +186,7 @@ export function Model<M>(__name?: string) {
   }
 }
 
-export function stable<T, A extends MO.SchemaAny>(constructor: Model<T, A>) {
+export function stable<T, A extends MO.SchemaAny>(constructor: ModelInfer<T, A>) {
   const schema = named(constructor[NameSym] ?? "Model(Anonymous)")(
     S.schema(constructor)
   )
