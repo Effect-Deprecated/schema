@@ -1,12 +1,14 @@
+// ets_tracing: off
+
 import { pipe } from "@effect-ts/core/Function"
 
-import type { ParseBoolE } from "../_schema"
-import { makeAnnotation, parseBoolE } from "../_schema"
-import * as S from "../_schema"
-import * as Th from "../These"
-import { refinement } from "./refinement"
-import type { DefaultSchema } from "./withDefaults"
-import { withDefaults } from "./withDefaults"
+import type { ParseBoolE } from "../_schema/index.js"
+import { makeAnnotation, parseBoolE } from "../_schema/index.js"
+import * as S from "../_schema/index.js"
+import * as Th from "../These/index.js"
+import { refinement } from "./refinement.js"
+import type { DefaultSchema } from "./withDefaults.js"
+import { withDefaults } from "./withDefaults.js"
 
 export const boolIdentifier = makeAnnotation<{}>()
 

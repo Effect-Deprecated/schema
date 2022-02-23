@@ -4,9 +4,16 @@ import type { Refinement } from "@effect-ts/core/Function"
 import { LazyGetter } from "@effect-ts/core/Utils"
 import type * as fc from "fast-check"
 
-import type * as Th from "../These"
-import type { Annotation } from "./annotation"
-import type { AnyError, CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
+import type * as Th from "../These/index.js"
+import type { Annotation } from "./annotation.js"
+import type {
+  AnyError,
+  CompositionE,
+  NamedE,
+  NextE,
+  PrevE,
+  RefinementE
+} from "./error.js"
 
 export const SchemaSym = Symbol()
 export type SchemaSym = typeof SchemaSym

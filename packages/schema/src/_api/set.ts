@@ -1,3 +1,5 @@
+// ets_tracing: off
+
 // tracing: off
 
 import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
@@ -11,14 +13,14 @@ import type * as Eq from "@effect-ts/core/Equal"
 import { pipe } from "@effect-ts/core/Function"
 import * as Ord from "@effect-ts/core/Ord"
 
-import * as S from "../_schema"
-import * as Arbitrary from "../Arbitrary"
-import * as Encoder from "../Encoder"
-import * as Guard from "../Guard"
-import * as Th from "../These"
-import { chunk } from "./chunk"
-import type { DefaultSchema } from "./withDefaults"
-import { withDefaults } from "./withDefaults"
+import * as S from "../_schema/index.js"
+import * as Arbitrary from "../Arbitrary/index.js"
+import * as Encoder from "../Encoder/index.js"
+import * as Guard from "../Guard/index.js"
+import * as Th from "../These/index.js"
+import { chunk } from "./chunk.js"
+import type { DefaultSchema } from "./withDefaults.js"
+import { withDefaults } from "./withDefaults.js"
 
 export const setIdentifier = S.makeAnnotation<{ self: S.SchemaUPI }>()
 

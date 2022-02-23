@@ -1,3 +1,5 @@
+// ets_tracing: off
+
 import * as A from "@effect-ts/core/Collections/Immutable/Array"
 import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import * as D from "@effect-ts/core/Collections/Immutable/Dictionary"
@@ -6,15 +8,15 @@ import { pipe } from "@effect-ts/core/Function"
 import * as O from "@effect-ts/core/Option"
 import type { EnforceNonEmptyRecord, Unify } from "@effect-ts/core/Utils"
 
-import * as S from "../_schema"
-import * as Arbitrary from "../Arbitrary"
-import * as Encoder from "../Encoder"
-import * as Guard from "../Guard"
-import * as Parser from "../Parser"
-import * as Th from "../These"
-import { isPropertyRecord, tagsFromProps } from "./properties"
-import type { DefaultSchema } from "./withDefaults"
-import { withDefaults } from "./withDefaults"
+import * as S from "../_schema/index.js"
+import * as Arbitrary from "../Arbitrary/index.js"
+import * as Encoder from "../Encoder/index.js"
+import * as Guard from "../Guard/index.js"
+import * as Parser from "../Parser/index.js"
+import * as Th from "../These/index.js"
+import { isPropertyRecord, tagsFromProps } from "./properties.js"
+import type { DefaultSchema } from "./withDefaults.js"
+import { withDefaults } from "./withDefaults.js"
 
 export interface MatchS<Props extends Record<PropertyKey, S.SchemaUPI>, AS> {
   <

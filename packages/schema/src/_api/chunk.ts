@@ -3,16 +3,16 @@
 import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import { pipe } from "@effect-ts/core/Function"
 
-import * as S from "../_schema"
-import { makeAnnotation } from "../_schema"
-import * as Arbitrary from "../Arbitrary"
-import * as Encoder from "../Encoder"
-import * as Guard from "../Guard"
-import * as Parser from "../Parser"
-import * as Th from "../These"
-import { unknownArray } from "./unknownArray"
-import type { DefaultSchema } from "./withDefaults"
-import { withDefaults } from "./withDefaults"
+import * as S from "../_schema/index.js"
+import { makeAnnotation } from "../_schema/index.js"
+import * as Arbitrary from "../Arbitrary/index.js"
+import * as Encoder from "../Encoder/index.js"
+import * as Guard from "../Guard/index.js"
+import * as Parser from "../Parser/index.js"
+import * as Th from "../These/index.js"
+import { unknownArray } from "./unknownArray.js"
+import type { DefaultSchema } from "./withDefaults.js"
+import { withDefaults } from "./withDefaults.js"
 
 export const fromChunkIdentifier = makeAnnotation<{ self: S.SchemaAny }>()
 

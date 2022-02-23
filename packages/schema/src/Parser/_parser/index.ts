@@ -3,11 +3,11 @@
 import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import * as O from "@effect-ts/core/Option"
 
-import type { Schema, SchemaAny } from "../../_schema"
-import * as S from "../../_schema"
-import { hasContinuation, SchemaContinuationSymbol } from "../../_schema"
-import type * as T from "../../These"
-import * as Th from "../../These"
+import type { Schema, SchemaAny } from "../../_schema/index.js"
+import * as S from "../../_schema/index.js"
+import { hasContinuation, SchemaContinuationSymbol } from "../../_schema/index.js"
+import type * as T from "../../These/index.js"
+import * as Th from "../../These/index.js"
 
 export type Parser<I, E, A> = {
   (u: I): T.These<E, A>

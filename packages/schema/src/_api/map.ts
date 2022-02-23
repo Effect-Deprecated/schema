@@ -1,18 +1,20 @@
+// ets_tracing: off
+
 // tracing: off
 
 import { Map } from "@effect-ts/core/Collections/Immutable/Map"
 import { pipe } from "@effect-ts/core/Function"
 
-import * as S from "../_schema"
-import * as Arbitrary from "../Arbitrary"
-import * as Encoder from "../Encoder"
-import * as Guard from "../Guard"
-import * as Parser from "../Parser"
-import * as Th from "../These"
-import { array } from "./array"
-import { tuple } from "./tuple"
-import type { DefaultSchema } from "./withDefaults"
-import { withDefaults } from "./withDefaults"
+import * as S from "../_schema/index.js"
+import * as Arbitrary from "../Arbitrary/index.js"
+import * as Encoder from "../Encoder/index.js"
+import * as Guard from "../Guard/index.js"
+import * as Parser from "../Parser/index.js"
+import * as Th from "../These/index.js"
+import { array } from "./array.js"
+import { tuple } from "./tuple.js"
+import type { DefaultSchema } from "./withDefaults.js"
+import { withDefaults } from "./withDefaults.js"
 
 export const mapIdentifier = S.makeAnnotation<{}>()
 

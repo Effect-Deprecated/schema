@@ -3,10 +3,17 @@
 import type { Refinement } from "@effect-ts/system/Function"
 import type * as fc from "fast-check"
 
-import type * as Th from "../These"
-import type { Annotation } from "./annotation"
-import type { AnyError, CompositionE, NamedE, NextE, PrevE, RefinementE } from "./error"
-import type { ApiSelfType, Schema, SchemaAny } from "./schema"
+import type * as Th from "../These/index.js"
+import type { Annotation } from "./annotation.js"
+import type {
+  AnyError,
+  CompositionE,
+  NamedE,
+  NextE,
+  PrevE,
+  RefinementE
+} from "./error.js"
+import type { ApiSelfType, Schema, SchemaAny } from "./schema.js"
 import {
   SchemaAnnotated,
   SchemaArbitrary,
@@ -21,7 +28,7 @@ import {
   SchemaParser,
   SchemaPipe,
   SchemaRefinement
-} from "./schema"
+} from "./schema.js"
 
 export function opaque<Shape>() {
   return <

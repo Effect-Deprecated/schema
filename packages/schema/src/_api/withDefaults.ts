@@ -1,14 +1,16 @@
+// ets_tracing: off
+
 import type { UnionToIntersection } from "@effect-ts/core/Utils"
 
-import type { Annotation } from "../_schema"
-import * as MO from "../_schema"
-import type { Schema } from "../_schema/schema"
-import * as Arbitrary from "../Arbitrary"
-import * as Constructor from "../Constructor"
-import * as Encoder from "../Encoder"
-import * as Guard from "../Guard"
-import * as Parser from "../Parser"
-import { unsafe } from "./condemn"
+import type { Annotation } from "../_schema/index.js"
+import * as MO from "../_schema/index.js"
+import type { Schema } from "../_schema/schema.js"
+import * as Arbitrary from "../Arbitrary/index.js"
+import * as Constructor from "../Constructor/index.js"
+import * as Encoder from "../Encoder/index.js"
+import * as Guard from "../Guard/index.js"
+import * as Parser from "../Parser/index.js"
+import { unsafe } from "./condemn.js"
 
 export interface SchemaDefaultSchema<
   ParserInput,

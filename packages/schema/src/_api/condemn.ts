@@ -4,9 +4,9 @@ import * as T from "@effect-ts/core/Effect"
 import * as E from "@effect-ts/core/Either"
 import { Case } from "@effect-ts/system/Case"
 
-import type { AnyError } from "../_schema"
-import { drawError } from "../_schema"
-import type { These } from "../These"
+import type { AnyError } from "../_schema/index.js"
+import { drawError } from "../_schema/index.js"
+import type { These } from "../These/index.js"
 
 export function condemn<X, E, A>(self: (a: X) => These<E, A>): (a: X) => T.IO<E, A> {
   return (x) =>

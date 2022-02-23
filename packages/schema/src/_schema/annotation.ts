@@ -1,3 +1,5 @@
+// ets_tracing: off
+
 export class Annotation<A> {
   readonly _tag = "Annotation"
   readonly _A!: () => A

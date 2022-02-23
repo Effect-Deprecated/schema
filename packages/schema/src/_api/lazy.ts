@@ -1,7 +1,9 @@
-import type { AnyError, Schema } from "../_schema"
-import { SchemaLazy } from "../_schema"
-import type { DefaultSchema } from "./withDefaults"
-import { withDefaults } from "./withDefaults"
+// ets_tracing: off
+
+import type { AnyError, Schema } from "../_schema/index.js"
+import { SchemaLazy } from "../_schema/index.js"
+import type { DefaultSchema } from "./withDefaults.js"
+import { withDefaults } from "./withDefaults.js"
 
 export function lazy<
   ParserInput,

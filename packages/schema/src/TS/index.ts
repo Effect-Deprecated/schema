@@ -1,3 +1,5 @@
+// ets_tracing: off
+
 import ts from "typescript"
 
 export default function augmentName(_program: ts.Program) {

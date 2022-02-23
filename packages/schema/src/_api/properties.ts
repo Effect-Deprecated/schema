@@ -1,3 +1,5 @@
+// ets_tracing: off
+
 import * as Chunk from "@effect-ts/core/Collections/Immutable/Chunk"
 import * as Dictionary from "@effect-ts/core/Collections/Immutable/Dictionary"
 import * as HashMap from "@effect-ts/core/Collections/Immutable/HashMap"
@@ -7,17 +9,17 @@ import type { Compute, UnionToIntersection } from "@effect-ts/core/Utils"
 import { intersect } from "@effect-ts/core/Utils"
 import type * as fc from "fast-check"
 
-import * as S from "../_schema"
-import type { Annotation } from "../_schema/annotation"
-import { augmentRecord } from "../_utils"
-import * as Arbitrary from "../Arbitrary"
-import * as Encoder from "../Encoder"
-import * as Guard from "../Guard"
-import * as Parser from "../Parser"
-import * as Th from "../These"
-import type { LiteralApi } from "./literal"
-import type { DefaultSchema } from "./withDefaults"
-import { withDefaults } from "./withDefaults"
+import type { Annotation } from "../_schema/annotation.js"
+import * as S from "../_schema/index.js"
+import { augmentRecord } from "../_utils/index.js"
+import * as Arbitrary from "../Arbitrary/index.js"
+import * as Encoder from "../Encoder/index.js"
+import * as Guard from "../Guard/index.js"
+import * as Parser from "../Parser/index.js"
+import * as Th from "../These/index.js"
+import type { LiteralApi } from "./literal.js"
+import type { DefaultSchema } from "./withDefaults.js"
+import { withDefaults } from "./withDefaults.js"
 
 export class Property<
   Self extends S.SchemaUPI,

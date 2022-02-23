@@ -1,15 +1,17 @@
+// ets_tracing: off
+
 import { pipe } from "@effect-ts/core/Function"
 import * as O from "@effect-ts/core/Option"
 
-import * as S from "../_schema"
-import * as Arbitrary from "../Arbitrary"
-import * as Constructor from "../Constructor"
-import * as Encoder from "../Encoder"
-import * as Guard from "../Guard"
-import * as Parser from "../Parser"
-import * as Th from "../These"
-import type { DefaultSchema } from "./withDefaults"
-import { withDefaults } from "./withDefaults"
+import * as S from "../_schema/index.js"
+import * as Arbitrary from "../Arbitrary/index.js"
+import * as Constructor from "../Constructor/index.js"
+import * as Encoder from "../Encoder/index.js"
+import * as Guard from "../Guard/index.js"
+import * as Parser from "../Parser/index.js"
+import * as Th from "../These/index.js"
+import type { DefaultSchema } from "./withDefaults.js"
+import { withDefaults } from "./withDefaults.js"
 
 export const nullableIdentifier = S.makeAnnotation<{ self: S.SchemaAny }>()
 
