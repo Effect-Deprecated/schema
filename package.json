@@ -45,7 +45,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.16.8",
     "@effect-ts/build-utils": "^0.37.5",
     "@effect-ts/core": "^0.57.4",
-    "@effect-ts/tracing-plugin": "^0.18.5",
+    "@effect-ts/tracing-plugin": "^0.19.0",
     "@types/cpx": "^1.5.2",
     "@types/glob": "^7.2.0",
     "@types/jest": "^27.4.1",
