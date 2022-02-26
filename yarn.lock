@@ -512,25 +512,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@effect-ts/build-utils@npm:^0.37.5":
-  version: 0.37.5
-  resolution: "@effect-ts/build-utils@npm:0.37.5"
+"@effect-ts/build-utils@npm:^0.38.0":
+  version: 0.38.0
+  resolution: "@effect-ts/build-utils@npm:0.38.0"
   peerDependencies:
     "@effect-ts/core": ">= 0.28.9"
     chalk: ">= 4.1.0"
     cpx: ">= 1.5.0"
   bin:
     build-utils: build-utils
-  checksum: 9308b99c48d5facd8dd64f019254b761afaeccaa862d51a1e7bc2272f0a6d4fbbfcb9572732c364e220dfe7f7c1b318cf10344fc508db4b3ab20810491c2cab7
+  checksum: 3efadc74da9b49142f700d6b3d6b52f1d66921115491f356ea7942deeb9dd2993305a114b7f74928d27870250992399e8d8a10571e1d4981a5e21cc5d7b05578
   languageName: node
   linkType: hard
 
-"@effect-ts/core@npm:^0.57.4":
-  version: 0.57.4
-  resolution: "@effect-ts/core@npm:0.57.4"
+"@effect-ts/core@npm:^0.58.0":
+  version: 0.58.0
+  resolution: "@effect-ts/core@npm:0.58.0"
   dependencies:
-    "@effect-ts/system": ^0.54.4
-  checksum: d2365576d0fb5987e27805091e2869759e4d46d5d70b00f31da015a38968b719cf0173a745e25fe5aa867cee21ac60e383faa9ea8595cb158b843621983c87da
+    "@effect-ts/system": ^0.55.0
+  checksum: d3cc0d2f99f90e6a93844124fa5e51c4552a1c9286190b7aba81890d17282c16c301b5c80c64668bdf7e434253b8dddd8dfebacfc2c105400247b6432a418fa8
   languageName: node
   linkType: hard
 
@@ -538,28 +538,28 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@effect-ts/schema@workspace:packages/schema"
   peerDependencies:
-    "@effect-ts/core": ^0.52.0
+    "@effect-ts/core": ^0.58.0
     fast-check: ^2.17.0
   languageName: unknown
   linkType: soft
 
-"@effect-ts/system@npm:^0.54.4":
-  version: 0.54.4
-  resolution: "@effect-ts/system@npm:0.54.4"
-  checksum: aaf775c4161dce363c70e29fe643445230b7d987b9a542b647eae08c3d26a12136e234b51161eb89840db8f720e7af003be604ff0d2d5a27a8fc9d0134173436
+"@effect-ts/system@npm:^0.55.0":
+  version: 0.55.0
+  resolution: "@effect-ts/system@npm:0.55.0"
+  checksum: 22638c977324f859c8efbf1366cd284505ab9e6427ff8a7d373fb108a99434e5f9ff380aca24229a7d7b97d60d8b6a69918bc517243aebeab549ec9bf7ef4a2f
   languageName: node
   linkType: hard
 
-"@effect-ts/tracing-plugin@npm:^0.18.5":
-  version: 0.18.5
-  resolution: "@effect-ts/tracing-plugin@npm:0.18.5"
-  checksum: 855caae518985a939d05d1cbd90c4999b8e984036f4ca01f2a0822ab1b1f0c8f6852e6fa3322900ae7c3d3fe066359cacd40e23b7cd180e9d4a83b9b65d90cd9
+"@effect-ts/tracing-plugin@npm:^0.19.0":
+  version: 0.19.0
+  resolution: "@effect-ts/tracing-plugin@npm:0.19.0"
+  checksum: 00f7ae11dc859f11507703920613b381fd7c69e60f0abae17ac2d0c8105286d6d8f6112625a46a39e6ab75f3cf4b08a4eaf2d99717db7b514b05b8e2f11950b7
   languageName: node
   linkType: hard
 
-"@eslint/eslintrc@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@eslint/eslintrc@npm:1.1.0"
+"@eslint/eslintrc@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@eslint/eslintrc@npm:1.2.0"
   dependencies:
     ajv: ^6.12.4
     debug: ^4.3.2
@@ -570,7 +570,7 @@ __metadata:
     js-yaml: ^4.1.0
     minimatch: ^3.0.4
     strip-json-comments: ^3.1.1
-  checksum: 784aa2157e2808b52bbbaf1d1cfca9a6ba0b2faaa3696eb7a1229d4b357400fbd8a6aa09a16e7ae0868ea075d3a8f365cf5928b6d05a1df47f40a1167423a4fa
+  checksum: a5e51dcf02627363567094456d7880b46b6a14a285d7a057f083ca903bdd862483bb6314cbc9fb6fa2d2c4537d50e0d28bd5e39650840241ae4796faaec65d2e
   languageName: node
   linkType: hard
 
@@ -2093,10 +2093,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^17.0.20":
-  version: 17.0.20
-  resolution: "@types/node@npm:17.0.20"
-  checksum: 50cdbd3c4c93f117f95e7c11ee28540f388500d6496e9efc8610f7e27839cb1fcf6c2479cac1dcd00fcc4658029a41201cc3294ae0d42e24ffcc71477a44191c
+"@types/node@npm:*, @types/node@npm:^17.0.21":
+  version: 17.0.21
+  resolution: "@types/node@npm:17.0.21"
+  checksum: 89dcd2fe82f21d3634266f8384e9c865cf8af49685639fbdbd799bdd1040480fb1e8eeda2d3b9fce41edbe704d2a4be9f427118c4ae872e8d9bb7cbeb3c41a94
   languageName: node
   linkType: hard
 
@@ -4096,13 +4096,13 @@ __metadata:
     "@babel/cli": ^7.17.6
     "@babel/core": ^7.17.5
     "@babel/plugin-transform-modules-commonjs": ^7.16.8
-    "@effect-ts/build-utils": ^0.37.5
-    "@effect-ts/core": ^0.57.4
-    "@effect-ts/tracing-plugin": ^0.18.5
+    "@effect-ts/build-utils": ^0.38.0
+    "@effect-ts/core": ^0.58.0
+    "@effect-ts/tracing-plugin": ^0.19.0
     "@types/cpx": ^1.5.2
     "@types/glob": ^7.2.0
     "@types/jest": ^27.4.1
-    "@types/node": ^17.0.20
+    "@types/node": ^17.0.21
     "@typescript-eslint/eslint-plugin": ^5.12.1
     "@typescript-eslint/parser": ^5.12.1
     babel-plugin-annotate-pure-calls: ^0.4.0
@@ -4111,7 +4111,7 @@ __metadata:
     concurrently: ^7.0.0
     cpx: ^1.5.0
     cz-conventional-changelog: ^3.3.0
-    eslint: ^8.9.0
+    eslint: ^8.10.0
     eslint-config-prettier: ^8.4.0
     eslint-import-resolver-typescript: ^2.5.0
     eslint-plugin-codegen: ^0.16.1
@@ -4492,11 +4492,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.9.0":
-  version: 8.9.0
-  resolution: "eslint@npm:8.9.0"
+"eslint@npm:^8.10.0":
+  version: 8.10.0
+  resolution: "eslint@npm:8.10.0"
   dependencies:
-    "@eslint/eslintrc": ^1.1.0
+    "@eslint/eslintrc": ^1.2.0
     "@humanwhocodes/config-array": ^0.9.2
     ajv: ^6.10.0
     chalk: ^4.0.0
@@ -4533,7 +4533,7 @@ __metadata:
     v8-compile-cache: ^2.0.3
   bin:
     eslint: bin/eslint.js
-  checksum: 8efecdb9752ee6cb4d2787a14e00cbeab29562ed95dd71c6f3f8ac410426a067d5aa659416d2290e46ca44bc5607e6a6e6c62f814694d8639f80666f522022a7
+  checksum: 8b31ab3de5b48b6828bf13c09c9e62ee0045fa0afa017efaa73eedcf4dc33bc204ee4c467d4677e37967d1645f73816ddef4271422e691fded352040f8f83093
   languageName: node
   linkType: hard
 

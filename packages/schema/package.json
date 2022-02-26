@@ -22,7 +22,7 @@
     "directory": "dist"
   },
   "peerDependencies": {
-    "@effect-ts/core": "^0.52.0",
+    "@effect-ts/core": "^0.58.0",
     "fast-check": "^2.17.0"
   },
   "config": {
