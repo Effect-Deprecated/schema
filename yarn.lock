@@ -513,15 +513,15 @@ __metadata:
   linkType: hard
 
 "@effect-ts/build-utils@npm:^0.38.2":
-  version: 0.38.2
-  resolution: "@effect-ts/build-utils@npm:0.38.2"
+  version: 0.38.3
+  resolution: "@effect-ts/build-utils@npm:0.38.3"
   peerDependencies:
     "@effect-ts/core": ">= 0.28.9"
     chalk: ">= 4.1.0"
     cpx: ">= 1.5.0"
   bin:
     build-utils: build-utils
-  checksum: 5f04d6213077ea4d79a0dbd950f72cfd11ebe9eaa206ed4b3b0856327b1e526d943d6e19afd640c5843dd9aa8b91f37892a556c94cf3eb2d5411abd29d3ebdaa
+  checksum: 9e441c1850d43051ee62887638dd85ca43c953b75ba46e0f263167420f888c1f53d0e5a8c55b96de0aa73cdabed9e9b1dfb5e0cbe9b65cebaba82d2432aea306
   languageName: node
   linkType: hard
 
