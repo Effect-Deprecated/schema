@@ -512,16 +512,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@effect-ts/build-utils@npm:^0.38.2":
-  version: 0.38.2
-  resolution: "@effect-ts/build-utils@npm:0.38.2"
+"@effect-ts/build-utils@npm:^0.40.7":
+  version: 0.40.7
+  resolution: "@effect-ts/build-utils@npm:0.40.7"
   peerDependencies:
     "@effect-ts/core": ">= 0.28.9"
-    chalk: ">= 4.1.0"
     cpx: ">= 1.5.0"
+    picocolors: ^1.0.0
   bin:
     build-utils: build-utils
-  checksum: 5f04d6213077ea4d79a0dbd950f72cfd11ebe9eaa206ed4b3b0856327b1e526d943d6e19afd640c5843dd9aa8b91f37892a556c94cf3eb2d5411abd29d3ebdaa
+  checksum: dbbe2b0a3cb96dea4f3fcf90cc19b1cb6705fb545350b6019f56c6c02662b8a36eddbeca800c0e33236c859e782b6189b9732f865e02fe92a3fb946c48af2ba0
   languageName: node
   linkType: hard
 
@@ -4096,7 +4096,7 @@ __metadata:
     "@babel/cli": ^7.17.6
     "@babel/core": ^7.17.5
     "@babel/plugin-transform-modules-commonjs": ^7.16.8
-    "@effect-ts/build-utils": ^0.38.2
+    "@effect-ts/build-utils": ^0.40.7
     "@effect-ts/core": ^0.58.0
     "@effect-ts/tracing-plugin": ^0.19.0
     "@types/cpx": ^1.5.2
